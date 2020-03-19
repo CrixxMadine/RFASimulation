@@ -12,7 +12,7 @@ int main()
 {
     std::cout << "Hello World!\n";
 
-    DemoClass dem = DemoClass(10);
+    DemoClass dem = DemoClass(20);
 
     auto var = dem.GetMyInt();
 
