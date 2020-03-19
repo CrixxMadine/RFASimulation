@@ -1,0 +1,63 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Template für die Erstellung einer Arbeit an der TH Nürnberg
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Definition des Grundsätzlichen dokumententyps und -layouts
+\documentclass[parskip=half, titlepage=yes, 12pt, BCOR=12mm, DIV=calc]{scrartcl}
+
+% Definition der Praeambel
+% Praeambel = Quasi-Klasse mit Definitionen des Layouts
+% und Definition einbinden der verwendeten Pakete
+\input{Praeambel}
+
+
+\usepackage{amsthm}
+\usepackage{lipsum}
+
+%% Hier startet der eigentliche Dokumenteninhalt
+\begin{document}
+
+
+%% Titelblatt und Verzeichnisse
+\maketitle
+\tableofcontents
+%\clearpage
+\listoffigures
+\listoftables
+\lstlistoflistings
+\clearpage
+
+
+%% Teil 1, Einleitung 
+
+\section{Introduction}
+
+\subsection{foo}
+
+\blindtext
+
+
+\subsection{bar}
+
+\subsubsection{git}
+
+\subsubsection{bash}
+
+\subsection{waldo}
+
+\Blindtext
+
+
+%% Literaturverzeichnis mit allen Einträgen der .bib-Datei
+\clearpage
+\nocite{*}
+\printbibliography
+
+%% Letzter Teil, Anhang
+\appendix
+
+%\input{Anhang} % Wird gerade nicht gebraucht
+
+\end{document} 

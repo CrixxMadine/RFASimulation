@@ -1,0 +1,210 @@
+%!TeX root=Anwendungsprojekt.tex
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%           Allgemeine Einstellungen          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Pakete für die Darstellung und Eingabemöglichkeit von Umlauten
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+
+% Schriftarten anpassen auf helvet für seriefenlose Schrift 
+% und passende Mathematik-Schrift
+\usepackage{mathptmx}
+\usepackage{courier}
+\usepackage{microtype}     % Paket für Randausgleich
+
+% Paket zum verwendeten erweiterter Floatoptionen
+\usepackage{float}
+
+% Pakete zum Einbinden von Bildern und Farben
+\usepackage{xcolor}
+\usepackage{graphicx}           
+
+
+% Verwendung englischer Begriffe für automatisch generierte Worte
+% wie z.B. "Contents" anstelle von "Inhaltsverzeichnis"
+\usepackage[english]{babel}
+
+% Paket um Dummy-Text/Blindtext zu erzeugen
+\usepackage{blindtext}
+
+
+% Mathematik Befehle und Formelsätze
+\usepackage{amsmath} 
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[free-standing-units,locale = DE]{siunitx} % SI-Einheiten
+\usepackage[english]{algorithm2e}     % Algorithmen
+%\usepackage{MnSymbol}                % große Klammern -> falsch benutzt
+
+
+% Tabellen
+\usepackage{booktabs}     % Schöne Tabellen
+\usepackage{supertabular} % Tabellen über mehr als eine Seite
+
+%%%%% Literaturverzeichnis
+
+
+% Literaturverzeichnis mitt BibLaTeX und Biber erstellen
+\usepackage[style=numeric, sorting=none, backend=biber]{biblatex}
+\addbibresource{Literatur.bib}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%            Dokumentenlayout                 %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Eigene Style-Klasse fuer eigenes Titelblatt
+\usepackage{Titel}
+
+
+% Allgemeine Papiergometrie
+\usepackage{geometry}
+\geometry{a4paper}
+
+
+% Abstand der weißen Ränder
+\geometry{margin=3.0cm, inner=2.5cm, outer=2.5cm} 
+
+
+% Zeilenabstand auf 1,5 setzen
+\usepackage[onehalfspacing]{setspace}
+    \AfterTOCHead{\singlespacing}
+% KOMA Klasse für europ. Layout - Wird hier nicht verwendet
+  %  \KOMAoptions{DIV=last}     
+
+
+% Zeit und Datumsbefehle  
+\usepackage{scrdate, scrtime}   
+
+
+% Erweitere Layout-Optionen
+\usepackage{scrlayer-scrpage}   
+
+
+% Zusätzliches Seitenlayout selbst definieren
+\pagestyle{scrheadings}         
+
+
+%%%%% Kopf- und Fußzeile
+
+% Belegung von KOMA Variablen für Kopf- und Fußzeilen Gestaltung
+\newcommand{\footlinetext}{\footnotesize \textsf{\color{gray}  Martin Michel, B-AMP 6  \normalsize}}
+
+\KOMAoptions{headsepline = no, footsepline = yes}
+\ihead{\headmark}
+\chead{}
+\ohead{}
+\ifoot{\footlinetext}
+\cfoot{\color{gray}\pagemark}
+\ofoot{\footnotesize \textsf{\color{gray}  Radio frequency ablation with finite elements \normalsize}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%   Einstellungen für Programmierquellcode    %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Paket und Spezifikation der Parameter zur Darstellung 
+% von Programmcode mit Courier-Schriftart
+\usepackage{listings}  % Darstellung von Quellcode
+\usepackage{courier}   % Schriftart laden
+
+
+% Anzeigeeinstellungen für C++ Code
+% Siehe Dokumentation für weitere Sprachen
+\lstset{
+    language=C++,
+    basicstyle=\footnotesize\ttfamily,  % Standardschrift
+    numbers=left,                       % Ort der Zeilennummern
+    numberstyle=\tiny,                  % Stil der Zeilennummern
+    %stepnumber=2,  % Abstand zwischen den Zeilennummern
+    numbersep=5pt,  % Abstand der Nummern zum Text
+    tabsize=2,      % Groesse von Tabs
+    extendedchars=true, %
+    breaklines=true,    % Zeilen werden Umgebrochen
+    keywordstyle=\color{blue}\bfseries,
+    frame=b,
+    % keywordstyle=[1]\textbf, % Stil der Keywords
+    % keywordstyle=[2]\textbf, %
+    % keywordstyle=[3]\textbf, %
+    % keywordstyle=[4]\textbf, \sqrt{\sqrt{}} %
+    stringstyle=\color{magenta}\ttfamily, % Farbe der Strings
+    showspaces=false,   % Keine Leerzeichen anzeigen 
+    showtabs=false,     % Keine Tabs anzeigen 
+    % xleftmargin=17pt,  % Abstände
+    % framexleftmargin=17pt,
+    % framexrightmargin=5pt,
+    % framexbottommargin=4pt,
+    commentstyle=\color{green!100!blue}\bfseries,
+    %backgroundcolor=\color{grey},
+    showstringspaces=true,      % Leerzeichen in Strings anzeigen
+    morekeywords={__global__},  % additional language specific keywords
+    morecomment=[l]
+    }
+
+    
+% Syntax-Highligthing aktivieren
+\lstloadlanguages{ 
+    %[Visual]Basic
+    %Pascal
+    C,
+    C++,
+    %XML
+    %HTML
+    Matlab
+    %Java
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%           Layout im PDF Viewer              %%%
+%%%    Muss als letztes Paket geladen werden    %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\usepackage{hyperref}           
+\hypersetup{
+    plainpages=false,
+    linktocpage=true,
+    breaklinks=true,
+    colorlinks=true,
+    linkcolor=black,%blue,
+    anchorcolor=black,
+    citecolor=black,%green,
+    filecolor=black,%blue,
+    urlcolor=black,%blue%
+    pdfstartview={FitV},
+    pdfview={FitH},
+    pdfpagelayout={SinglePage},
+    pdfpagemode={None},
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%          Variablen zum Belegen              %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%% Variablen für Titelblatt
+
+\DAAutor{Martin Michel}
+\DATyp{Report of the application project}
+\DAAutorAdresse{Keßlerplatz 12\par DE-90489 Nuremberg}
+\DAFachbereich{AMP}
+\DATitel{Simulation of a medical therapy \\ method with finite elements}
+\DABetreuerA{Prof.\ Dr.\ rer.\ nat.\ Tim\ Kröger}
+\DABetreuerB{Prof.\ Dr.\ rer.\ nat.\ habil.\ Jörg\ Steinbach}
+\DABetreuerC{Prof.\ Dr.\ rer.\ nat.\ Thomas\ Lauterbach}
+\DAOrt{Nuremberg}
+\DAAbgabedatum{01.\,January\,1900}
