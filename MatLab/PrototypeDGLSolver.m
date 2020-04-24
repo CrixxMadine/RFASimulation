@@ -8,6 +8,10 @@
 
 disp('MatLab ..... yeah :(')
 
+% Transformation to zylindric coordinates 
+x = @(r,phi,z) r * cos(phi);
+y = @(r,phi,z) r * sin(phi);
+z = @(r,phi,z) z;
 
 % Material parameters
 % For the first run, everything is const.
@@ -19,3 +23,15 @@ c      = [ 3455       0      -0.376     0   ]';
 lambda = [ 0.437    0.0025      0       0   ]';
 
 
+% Constant Prefactors for PDE
+nu = @(x) 0.01765;  % Constant in first try
+
+
+% PDE
+Q_rf   = @(t,x) 1; % TODO
+Q_perf = @(t,x) 1; % TODO
+
+Q_pc   = @(t,x) 0; % Is not considered in first simulation 
+
+pde_phi = @(x) 1;
+pde_Q = @(t,x) Q_rf(t,x) + Q_perf(t,x) + Q_pc(t,x);
