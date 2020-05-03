@@ -6,6 +6,7 @@
 %  Ablation with State Dependent Material
 %  Parameters in Three Space Dimensions"
 
+clear variables;
 disp('MatLab ..... yeah :(')
 
 %% Space and time dimensions
@@ -25,7 +26,8 @@ z = @(r,phi,z) z;
 t_start = 0.00;
 t_step  = 0.01;
 t_end   = 5.00;   
-T = [t_start t_step t_end];
+t_vec   = t_start:t_step:t_end;
+
 
 %% Material parameters
 % For the first run, everything should be absolutely const.
@@ -64,30 +66,79 @@ nu = @(x) 0.01765;  % Constant in first try
 
 
 
-%% PDE
+%% Information on solving the PDE's
 
-%% Electric energy
+% In Numerik 3 an elliptical PDE problem was discussed
+
+% We can solve the classic problem as 
+% -div( k(x)) grad u(x) ) + q(x) u(x) = f (x)
+
+% x can be a vector of any dimension up to 3 dimensions
+% every boundary condition is allowed, with a constraint on Robin
+
+% With the following constraints:
+% assuming k(x) ELEMENT OF C^1{OMEGA}
+% assuming q(x), f(x) ELEMENT OF C{OEMGA}
+% assuming k(x) >= k_0 > 0  (must be positive)
+% assuming q(x) >= 0        (can be positive or zero) 
+% -> In case of robin boundary conditions: 
+% assuming prefactor kappa(x) >= 0 
 
 
-% fixed potential on electrodes (I x OMEGA_elec)
-% phi = +/- 1  
+%% Electric energy (EE)
+
+% TODO
+
+% We can use the elliptical approach above to compute phi(t,x)
+% Assuming phi(t,x) is quasistatic, we can model it as follows
+
+%% phi: Fixed potential on electrodes (I x OMEGA_elec)
+
 % -- First try only, this is very arbitrarily
 % -- Actually the potential is induced by a function
+phi_electrode1 = +1;
+phi_electrode2 = -1;
 
-% inner domain (I x (OMEGA \ OMEGA_elec) )
-% - (NABLA) ( (sigma * (NABLA) phi) ) = 0
 
-% robin boundary condition (I x GAMMA)
+%% phi: Inner domain (I x (OMEGA \ OMEGA_elec) )
+
+% In the inner domain, phi is modeled as follows
+% - div ( (sigma(x,y,z) * grad phi(x,y,z) ) = 0
+
+% this is an elliptic problem analogous to Numerik 3
+% q(x) = 0, so the mass matrix is empty
+
+% If sigma is constant, you can rewrite the problem
+% - sigma * LAPLACE ( phi(x,y,z) )
+% So it becomes type of Laplace's Equation
+
+k_inner_domain = sigma;  % Assuming sigma is constant
+q_inner_domain = 0;
+f_inner_domain = 0;
+
+% TODO: this is phi, calculate it
+u_inner_domain = [];   
+
+
+%% phi: Robin boundary condition (I x GAMMA)
 % n * NABLA phi = ( (n * (s-x)) / ( |s-x|^2 ) ) * phi
 % s = barycenter of the union of all probes
 
-% 
+% TODO
+
+%% E: calculate the power
+
+% TODO
+
+% In case of constant material parameters:
+% Phi becomes linear and time independent
+% Since phi is time independent, we only have to solve it once
+
 % Q_rf(t,x) = p((t,x)) * (p_eff(t)/p_total(t))
 
 
 
-
-%% Temperature 
+%% Temperature  
 Q_rf   = @(t,x) 1;     % 
 % TODO
 
@@ -106,14 +157,21 @@ pde_Q = @(t,x) Q_rf(t,x) + Q_perf(t,x) + Q_pc(t,x);
 %% Abbreviations
 %
 % ----- Keywords ------
-% Keywords describe specific variables
+% Keywords in comments are written in capital letters
 % 
+% NABLA  : The nabla operator
+%
+% DIV    : divergence,       NABLA /dotproduct something
+% GRAD   : gradient,         NABLA /multiply something
+% LAPLACE: Laplace operator, NABLA /dotproduct NABLA /multiply something
+%
+% PARAM  : this marks a material parameter
+% PDE    : this marks a PDE
+% STATE  : this marks a depending state
 % 
-% PARAM : this is a material parameter
-% PDE   : this is a PDE
-% STATE : this is depending state
-% 
-% 
+%
+
+
 % ----- All Abbreviations in order -----
 %
 % c      : PARAM - specific heat capacity
