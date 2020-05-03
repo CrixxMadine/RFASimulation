@@ -28,14 +28,22 @@ t_end   = 5.00;
 T = [t_start t_step t_end];
 
 %% Material parameters
-% For the first run, everything should be const.
-% for ref. see books from Stein T. and Kröger T.
+% For the first run, everything should be absolutely const.
 
-% Constant material parameters
-sigma  = [ 0.21     0.013      -1     1.143 ]'; % electric conductivity
-rho    = [ 1080   -0.00056   -0.657     0   ]'; % density
-c      = [ 3455       0      -0.376     0   ]'; % specific heat capacity
-lambda = [ 0.437    0.0025      0       0   ]'; % thermal conductivty
+% Constant material parameters 
+sigma = 0;  % electric conductivity
+rho    = 0; % density
+c      = 0; % specific heat capacity
+lambda = 0; % thermal conductivty
+
+% TODO
+
+% Alternative model for linear dependent material parameters
+% for ref. see books from Stein T. and Kröger T.
+sigma  = [ 0.21     0.013      -1     1.143 ]'; 
+rho    = [ 1080   -0.00056   -0.657     0   ]';
+c      = [ 3455       0      -0.376     0   ]'; 
+lambda = [ 0.437    0.0025      0       0   ]'; 
 
 % variable state parameters
 phi   = [ ]; % electric potential  
@@ -58,7 +66,7 @@ nu = @(x) 0.01765;  % Constant in first try
 
 %% PDE
 
-% Electric energy
+%% Electric energy
 
 
 % fixed potential on electrodes (I x OMEGA_elec)
@@ -76,17 +84,63 @@ nu = @(x) 0.01765;  % Constant in first try
 % 
 % Q_rf(t,x) = p((t,x)) * (p_eff(t)/p_total(t))
 
-Q_rf   = @(t,x) 1; % TODO
-Q_perf = @(t,x) 1; % TODO
 
-Q_pc   = @(t,x) 0; % Is not considered in first simulation 
-                   % Cause its not reliably (Kroeger)
+
+
+%% Temperature 
+Q_rf   = @(t,x) 1;     % 
+% TODO
+
+Q_perf = @(t,x) 1;     % Q_perfusion (~Durchströmung)
+% TODO    
+
+Q_pc   = @(t,x) 0;     % Q_phase_change
+% Is not considered in first simulation 
+% Cause its model not reliably (Kroeger)
 
 pde_phi = @(x) 1;
 pde_Q = @(t,x) Q_rf(t,x) + Q_perf(t,x) + Q_pc(t,x);
 
 
 
-% Temperature 
-
-% TODO
+%% Abbreviations
+%
+% ----- Keywords ------
+% Keywords describe specific variables
+% 
+% 
+% PARAM : this is a material parameter
+% PDE   : this is a PDE
+% STATE : this is depending state
+% 
+% 
+% ----- All Abbreviations in order -----
+%
+% c      : PARAM - specific heat capacity
+%  
+% F      : marks stated related to fluid
+% F_wat  : STATE - relative content of fluid water
+% F_vap  : STATE - relative content of vapor
+% F_coa  : STARE - coagulation state
+%
+% gamma  : the outer boundary of the domain
+%
+% lambda : PARAM - thermal conductivity
+% 
+% omega  : the whole domain
+%
+% phi    : PDE, STATE - electric potential  phi(t,x)
+%
+% Q      : PDE  -  heat energy Q(t,x)
+% 
+% Q_pc   : phase change part of Q
+% Q_perf : perfusion part of Q 
+% Q_rf   : radio frequency part of Q
+%
+% rho    : PARAM - density
+%
+% sigma  : PARAM - electric conductivity
+%
+% Temp   : STATE - temperature distribution
+%
+%
