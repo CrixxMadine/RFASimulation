@@ -37,8 +37,9 @@
 \textcolor{blue}{Lets talk about:\\
 - Medical Treatment of Tumor\\
 - Radio frequency ablation\\
+- Why RFA Simulation is important \\
+- Motivation \\
 - This project in General\\
-- Motivation
 }
 
 % part 2, Main
@@ -50,10 +51,30 @@
 Introduction
 }
 
+\subsection{About Errors in numerical appoaches}
+- see TUM dissertation \\
+
+- There are different sources for errors following the simulation from the line from the real problem down to the discrete solution \\
+
+- Idealization error: discrepancy between reality and the idealized reality and the idealized constitutive laws and boundary conditions -> Systems are often way more complex in reality, every patient is different \\
+
+- Modeling errors: discrepancy between mathematical formulation and physical model -> e.g. using dimensionally reduced approaches, like linear dependencies or even constant parameters  \\
+
+-  Discretization errors: discrepancy between the continous description and discrete discription of the model \\
+
+- Solution errors: using iterative approximation methods and rounding errors \\
+
+- It's basically a butterfly effect \\
+
+- Optimizing one error source often conflicts with another one -> e.g. handling nonlinearity can cause fatal numerical errors (at least that's what Kroeger said ...)
+
 \subsection{Theory of finite elements}
 
 - Elliptical problems \\
-- Using cylindirc domain \\
+- Using the cylindric domain \\
+- Axial symmetrie 
+- Torus elements
+
 - Rewrite the equations to zylindric coordinates \\
  
 
@@ -118,34 +139,41 @@ The inner domain:
 
 
 
+\section{Applied FEM-Simulation}
+
+\subsection{Grid generation / Triangulation}
+
+\subsection{Graphical output}
+
+\subsection{Numerical challenges}
+
+\subsection{Optimization}
+
+\subsection{MatLab vs C++}
+
+- Basically the performance advantages of using C++
+
+\subsection{Interpretation of numerical solutions}
+
 % part 3, Summary
 
 \section{Summary and Outlook}
+
+\subsection{Project Summary}
+
 
 \textcolor{blue}
 {
 This is the conclusion part
 }
 
+\subsection{Current Research}
+- Research in the simulation of medical therapy methods \\
+
+\subsection{Other FEM projects and software}
+
+
 \newpage
-
-
-\section{Style Test}
-
-\subsection{foo}
-
-\blindtext
-
-
-\subsection{bar}
-
-\subsubsection{git}
-
-\subsubsection{bash}
-
-\subsection{waldo}
-
-\Blindtext
 
 
 %% Literaturverzeichnis mit allen Einträgen der .bib-Datei
