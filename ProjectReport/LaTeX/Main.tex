@@ -47,8 +47,75 @@
 
 \textcolor{blue}
 {
-This is the main part
+Introduction
 }
+
+\subsection{Theory of finite elements}
+
+- Elliptical problems \\
+- Using cylindirc domain \\
+- Rewrite the equations to zylindric coordinates \\
+ 
+
+\subsection{This part is about the concrete PDEs itself}
+
+
+Laplace in kartesian coordinates:
+\begin{equation}
+    \nabla^2 := \Delta := \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}
+\end{equation}
+
+Laplace in cylindric coordinates:
+\begin{equation}
+    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2 f}{\partial \varphi^2} + \frac{\partial^2 f}{\partial z^2}
+\end{equation}
+
+Laplace in polar coordinates:
+\begin{equation}
+    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \varphi^2}
+\end{equation}
+
+
+
+
+\subsection{PDE for Electric potential}
+
+Three parts are interesting:
+- Inner domain \\
+- Fixed Potential of electrodes \\
+- Inner domain \\
+- Outer boundary -> Robin \\
+
+Constant material parameters: \\
+
+\subsubsection{Inner Domain}
+
+The PDE : 
+
+\begin{equation}
+    - \nabla \cdot (\sigma(x,y,z,t) \nabla \varphi(x,y,z,t)) = 0
+\end{equation}
+
+- Elliptical boundary problem \\
+- Assuming constant material parameters: Equation becomes Laplaces equation, phi becomes time independant
+
+\begin{equation}
+    \sigma \Delta \phi(x,y,z) = 0
+\end{equation}
+
+- Using zylindric domain, we can use cylindric coordinates
+
+
+
+\subsubsection{Electrodes}
+
+\subsubsection{Outer boundary}
+
+The inner domain: 
+\begin{equation}
+    
+\end{equation}
+
 
 
 % part 3, Summary
