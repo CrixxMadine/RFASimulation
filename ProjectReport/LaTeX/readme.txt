@@ -1,32 +1,34 @@
- Template zur Erstellung des Projektberichts mit LaTeX an der TH Nürnberg
 
- Kompilieren Sie das Dokument mit pdflatex => PDF
+Template zur Erstellung des Projektberichts mit LaTeX an der TH Nürnberg
 
- Für die Erzeugung des Literaturverzeichnisses bitte kompilieren mit 
-  pdflatex -> biber -> pdflatex -> pdflatex 
+Kompilieren Sie das Dokument mit pdflatex => PDF
 
- (alternativ processor auf bibtex umstellen, dann:
-  pdflatex -> bibtex -> pdflatex -> pdflatex )
+Für die Erzeugung des Literaturverzeichnisses bitte kompilieren mit 
+pdflatex -> biber -> pdflatex -> pdflatex 
+
+(alternativ processor auf bibtex umstellen, dann:
+ pdflatex -> bibtex -> pdflatex -> pdflatex )
 
 
 Das Template umfasst folgende Dokumente
 
- Anwendungsprojekt.tex:
+Main.tex:
   Hauptdokument, hier soll der eigentliche Inhalt rein
 
- FPraktikumPraeambel.tex
+Praeambel.tex
   Definitionen für das Dokumentenlayout und verwendete packages
 
- Anhang.tex
+Anhang.tex
   Dokument für sämtliche Anhänge
 
- FPraktikumTitel.sty
+Title.sty
   Style-Dokument für das Titelblatt
 
- Literatur.bib
+Literatur.bib
   Database für das Literaturverzeichnis
 
 
- Änderungen Vorbehalten
+Änderungen Vorbehalten
  Martin Michel, 18.03.2020
+ Rev. 12.05.2020
 

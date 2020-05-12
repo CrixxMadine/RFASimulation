@@ -23,7 +23,9 @@
 %% Titelblatt und Verzeichnisse
 \maketitle
 \tableofcontents
-%\clearpage
+
+\clearpage
+
 \listoffigures
 \listoftables
 \lstlistoflistings
@@ -34,53 +36,55 @@
 
 \section{Introduction}
 
-\textcolor{blue}{Lets talk about:\\
+Lets talk about:\\
 - Medical Treatment of Tumor\\
 - Radio frequency ablation\\
 - Why RFA Simulation is important \\
 - Motivation \\
 - This project in General\\
-}
 
 % part 2, Main
 
 \section{Computer-aided simulation of radio frequency ablation with finite elements}
 
-\textcolor{blue}
-{
-Introduction
-}
-
-\subsection{About Errors in numerical appoaches}
+\subsection{About Errors in simulations and numerical approaches}
 - see TUM dissertation \\
-
 - There are different sources for errors following the simulation from the line from the real problem down to the discrete solution \\
-
 - Idealization error: discrepancy between reality and the idealized reality and the idealized constitutive laws and boundary conditions -> Systems are often way more complex in reality, every patient is different \\
-
 - Modeling errors: discrepancy between mathematical formulation and physical model -> e.g. using dimensionally reduced approaches, like linear dependencies or even constant parameters  \\
-
 -  Discretization errors: discrepancy between the continous description and discrete discription of the model \\
-
 - Solution errors: using iterative approximation methods and rounding errors \\
-
 - It's basically a butterfly effect \\
-
 - Optimizing one error source often conflicts with another one -> e.g. handling nonlinearity can cause fatal numerical errors (at least that's what Kroeger said ...)
 
 \subsection{Theory of finite elements}
 
-- Elliptical problems \\
-- Using the cylindric domain \\
-- Axial symmetrie 
-- Torus elements
+\subsubsection{Elliptical problems}
+- Elliptical problems in general \\
+- build up system of PDE's to describe problem \\
+- Using the cylindric domain, different domains \\
 
-- Rewrite the equations to zylindric coordinates \\
- 
+\subsubsection{FEM for electrical fields}
+- special domain \\
+- boundary conditions \\
+
+\subsubsection{FEM for temperature fields}
+- boundary condition (heat source or sink) \\
+
+\subsubsection{Axial symmetrie}
+- Using axial symmetrie to simplify computations \\
+- reducing one dimension 3D -> 2D \\
+- significant savings calculations time and complexity \\
+- approach: fourier decomposition in angular direction to reduce dependency on the angular $\varphi$ \\
+- using static models, only dependency on space \\
+- maybe Torus elements \\
+
 
 \subsection{This part is about the concrete PDEs itself}
 
-
+\subsubsection{FEM in zylindric Coordinates}
+- Rewrite the equations to zylindric coordinates \\
+ 
 Laplace in kartesian coordinates:
 \begin{equation}
     \nabla^2 := \Delta := \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}
@@ -98,8 +102,7 @@ Laplace in polar coordinates:
 
 
 
-
-\subsection{PDE for Electric potential}
+\subsubsection{PDE for Electric potential}
 
 Three parts are interesting:
 - Inner domain \\
@@ -109,7 +112,7 @@ Three parts are interesting:
 
 Constant material parameters: \\
 
-\subsubsection{Inner Domain}
+\subsubsubsection{Inner Domain}
 
 The PDE : 
 
@@ -134,7 +137,7 @@ The PDE :
 
 The inner domain: 
 \begin{equation}
-    
+    TODO
 \end{equation}
 
 
@@ -143,9 +146,16 @@ The inner domain:
 
 \subsection{Grid generation / Triangulation}
 
-\subsection{Graphical output}
+\subsection{Get TestData}
 
-\subsection{Numerical challenges}
+\subsection{Solving the PDEs}
+\subsubsection{numerical challenges}
+\subsubsection{numerical integration}
+\subsubsection{solving the system of equations}
+
+\subsection{Interpretation of result numbers}
+
+\subsection{Graphical output}
 
 \subsection{Optimization}
 
@@ -153,21 +163,21 @@ The inner domain:
 
 - Basically the performance advantages of using C++
 
-\subsection{Interpretation of numerical solutions}
-
 % part 3, Summary
 
 \section{Summary and Outlook}
 
 \subsection{Project Summary}
 
-
 \textcolor{blue}
 {
 This is the conclusion part
 }
 
-\subsection{Current Research}
+\subsection{strengths and flaws}
+- why is it good, why is it bad
+
+\subsection{State of the current Research}
 - Research in the simulation of medical therapy methods \\
 
 \subsection{Other FEM projects and software}
