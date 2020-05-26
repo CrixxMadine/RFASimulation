@@ -33,7 +33,7 @@ t_vec   = t_start:t_step:t_end;
 % For the first run, everything should be absolutely const.
 
 % Constant material parameters 
-sigma = 0;  % electric conductivity
+sigma  = 0; % electric conductivity
 rho    = 0; % density
 c      = 0; % specific heat capacity
 lambda = 0; % thermal conductivty
@@ -62,7 +62,8 @@ F_coa = [ ]; % coagulation state
 nu = @(x) 0.01765;  % Constant in first try
 
 
-
+%% Grid Generation 
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_ExtraCoarse\');
 
 
 
