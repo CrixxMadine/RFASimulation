@@ -11,11 +11,13 @@ disp('MatLab ..... yeah :(')
 
 %% Space and time dimensions
 
-% cylindric domain
-%   ______ 
-%  /      \
-% |   ()   | 
-%  \______/
+% cylindric domain  
+%  ___   ___
+% |   | |   |
+% |   |_|   |
+% |         |
+% |_________|
+%
 
 % Transformation to zylindric coordinates 
 x = @(r,phi,z) r * cos(phi);
