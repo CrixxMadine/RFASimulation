@@ -92,12 +92,12 @@ Laplace in kartesian coordinates:
 
 Laplace in cylindric coordinates:
 \begin{equation}
-    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2 f}{\partial \varphi^2} + \frac{\partial^2 f}{\partial z^2}
+    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \phi^2} + \frac{\partial^2}{\partial z^2}
 \end{equation}
 
 Laplace in polar coordinates:
 \begin{equation}
-    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \varphi^2}
+    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \phi^2}
 \end{equation}
 
 
@@ -112,32 +112,54 @@ Three parts are interesting:
 
 Constant material parameters: \\
 
-\subsubsubsection{Inner Domain}
+\subsubsection{Inner Domain}
 
-The PDE : 
+- The electric potential of the inner domain is described as : 
 
 \begin{equation}
     - \nabla \cdot (\sigma(x,y,z,t) \nabla \varphi(x,y,z,t)) = 0
 \end{equation}
 
 - Elliptical boundary problem \\
-- Assuming constant material parameters: Equation becomes Laplaces equation, phi becomes time independant
+- Assuming constant material parameters: $\nabla \sigma = 0$ \\
+- Solution is independent from $\sigma$ so we can cut it out
+- Equation becomes Laplaces' equation, phi becomes time independent \\
 
 \begin{equation}
-    \sigma \Delta \phi(x,y,z) = 0
+    - \Delta \varphi(x,y,z) = 0
 \end{equation}
 
-- Using zylindric domain, we can use cylindric coordinates
+- Using a cylindric domain, we can use cylinder coordinates (see ref Laplace in cylinder)
 
+\begin{equation}
+    - \Delta \varphi(r,\phi,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{1}{r^2} \frac{\partial^2 \varphi}{\partial \phi^2} - - \frac{\partial^2 \varphi}{\partial z^2}  = 0
+\end{equation}
 
+- Since the domain has axis symmetry, the solution for $\varphi$ is independant from the angular $\phi$ \\
+- So equation simplifies to
+
+\begin{equation}
+    - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
+\end{equation}
+
+- PDE is now parabolic and no longer elliptic \\
+- We will care about a more complex formulation later 
 
 \subsubsection{Electrodes}
 
+- $\phi$ = \pm 1
+
 \subsubsection{Outer boundary}
 
-The inner domain: 
+- For first try, a simplification with natural boundary conditions
+
 \begin{equation}
-    TODO
+    n \cdot \nabla \varphi = 0
+\end{equation}
+
+- In cylindric domain, we 
+\begin{equation}
+    
 \end{equation}
 
 

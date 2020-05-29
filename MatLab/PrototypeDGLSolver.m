@@ -112,10 +112,13 @@ phi_electrode2 = -1;
 % q(x) = 0, so the mass matrix is empty
 
 % If sigma is constant, you can rewrite the problem
-% - sigma * LAPLACE ( phi(x,y,z) )
+% - sigma * LAPLACE ( phi(x,y,z) ) = 0
 % So it becomes type of Laplace's Equation
 
-k_inner_domain = sigma;  % Assuming sigma is constant
+% Equation in cylindric coordinates
+% - 1/r dphi/dr - d^2phi/r^2 - d^2phi/dz^2 = 0 
+
+k_inner_domain = 0;  % Assuming sigma is constant
 q_inner_domain = 0;
 f_inner_domain = 0;
 
