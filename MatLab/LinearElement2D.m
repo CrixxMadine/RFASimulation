@@ -15,8 +15,8 @@ function [K, f] = LinearElement2D(k, q, f_rhs, a1, a2, a3, intyp)
 % k, q  := coefficients of PDE    ->  arg is vector
 % f_rhs := right side of the PDE  ->  arg is vector
 %
-% a1 = (a_x, a_y) := coordinates of the left corner of the triangle
-% a2,a3           := other corners counted counterclockwise
+% a1 = (r, z) := coordinates of the left corner of the triangle
+% a2,a3       := other corners counted counterclockwise
 %
 % intyp = integration type
 % for reference see 'QuadratureTriangle2D'
@@ -57,6 +57,16 @@ phi1 = @(my, ny)  1 - my - ny;   % phi1
 phi2 = @(my, ny)  my;            % phi2
 phi3 = @(my, ny)  ny;            % phi3
 
+r_ref = 1 / (a2(1) - a1(1));
+z_ref = 1 / (a3(2) - a1(2));
+
+dr_phi1 = @(my,ny) -1;
+dr_phi2 = @(my,ny)  1;
+dr_phi3 = @(my,ny)  0;
+
+dz_phi1 = @(my,ny) -1;
+dz_phi2 = @(my,ny)  0;
+dz_phi3 = @(my,ny)  1;
 
 % note: gradient is defined as grad f(x,y) = [df/dx, df/dy]
 grad_phi1 = @(my, ny)  [-1 -1];  % grad phi1
@@ -68,6 +78,38 @@ grad_phi3 = @(my, ny)  [ 0  1];  % grad phi3
 
 % remember, this is an academic approach
 % optimized values are implemented in C++ algorithm
+
+%% Cylindrical LaPlace Equation
+
+% Equation: \integrate: (dr u * dr v + dz u * dz v ) * r * dr dz
+
+cyl_int_11 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi1(r,z) + ... 
+                              z_ref * dz_phi1(r,z) * z_ref * dr_phi1(r,z)) * r;
+cyl_int_12 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi2(r,z) + ... 
+                              z_ref * dz_phi1(r,z) * z_ref * dr_phi2(r,z)) * r; 
+cyl_int_13 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi3(r,z) + ... 
+                              z_ref * dz_phi1(r,z) * z_ref * dr_phi3(r,z)) * r; 
+
+cyl_int_21 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi1(r,z) + ... 
+                              z_ref * dz_phi2(r,z) * z_ref * dr_phi1(r,z)) * r;
+cyl_int_22 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi2(r,z) + ... 
+                              z_ref * dz_phi2(r,z) * z_ref * dr_phi2(r,z)) * r; 
+cyl_int_23 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi3(r,z) + ... 
+                              z_ref * dz_phi2(r,z) * z_ref * dr_phi3(r,z)) * r; 
+
+cyl_int_31 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi1(r,z) + ... 
+                              z_ref * dz_phi3(r,z) * z_ref * dr_phi1(r,z)) * r;
+cyl_int_32 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi2(r,z) + ... 
+                              z_ref * dz_phi3(r,z) * z_ref * dr_phi2(r,z)) * r; 
+cyl_int_33 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi3(r,z) + ... 
+                              z_ref * dz_phi3(r,z) * z_ref * dr_phi3(r,z)) * r; 
+                   
+cyl_int = {cyl_int_11, cyl_int_12, cyl_int_13;
+           cyl_int_21, cyl_int_22, cyl_int_23;
+           cyl_int_31, cyl_int_32, cyl_int_33};
+       
+       
+%% 2D FEM model problem from Numerik 3, Exercise 3
 
 integral_11 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi1(my,ny)') , (JT_inv * grad_phi1(my,ny)')) ...
                      + q(F(my,ny)) .* phi1(my,ny) .* phi1(my,ny) ) );
@@ -119,10 +161,18 @@ f = zeros(3,1);
 for alpha=1:3
     
     for beta=1:3
-        K(alpha, beta) = QuadratureTriangl2De(integrals{alpha, beta}, intyp, a, b, c);
+        % Old Version
+        % K(alpha, beta) = QuadratureTriangle2D(integrals{alpha, beta}, intyp, a, b, c);
+        
+        % Cyl LaPlace
+        K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, inty, a, b, c);
     end
     
-    f(alpha) = QuadratureTriangle2D(fk_int{alpha, 1}, intyp, a, b, c);
+    % Old Version
+    % f(alpha) = QuadratureTriangle2D(fk_int{alpha, 1}, intyp, a, b, c);
+    
+    % Cyl LaPlace
+    % Value is zero, so nothing o do here
     
 end
 

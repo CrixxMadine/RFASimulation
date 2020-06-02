@@ -145,9 +145,10 @@ Constant material parameters: \\
 - PDE is now parabolic and no longer elliptic \\
 - We will care about a more complex formulation later 
 
+
 \subsubsection{Electrodes}
 
-- $\phi$ = \pm 1
+- $\phi$ = $\pm$ 1
 
 \subsubsection{Outer boundary}
 
@@ -157,14 +158,44 @@ Constant material parameters: \\
     n \cdot \nabla \varphi = 0
 \end{equation}
 
-- In cylindric domain, we 
+- In cylindrical coordinates
 \begin{equation}
-    
+    TODO
 \end{equation}
 
 
 
 \section{Applied FEM-Simulation}
+\subsection{Weak solutions}
+
+- Laplace's equation in cylindrical domain:
+
+\begin{equation}
+    a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
+\end{equation}
+
+- $u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
+- $v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
+
+- User linear regression functions:
+
+
+- Linear regression functions on reference triangles:
+
+\begin{equation}
+    \phi_1(\xi, \eta) = 1 - \xi - \eta \\
+    \phi_2(\xi, \eta) = \xi \\
+    \phi_2(\xi, \eta) = \eta \\
+\end{equation}
+
+
+
+- Electric Potential, inner domain: \\
+
+\begin{equation}
+    a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = 0 
+\end{equation}
+
 
 \subsection{Grid generation / Triangulation}
 
