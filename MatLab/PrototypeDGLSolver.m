@@ -68,15 +68,35 @@ nu = @(x) 0.01765;  % Constant in first try
 
 % Grid Generation 
 [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+ bmesh = DefineBoundaryConditions(bedges);
+
+% Plot the mesh, for control
+figure(1);
+subplot(1,2,1);
+trimesh(tmesh', pmesh(1,:)', pmesh(2,:)');
+title('The used triangulation of the domain');
+
+subplot(1,2,2);
+scatter(pmesh(1,:), pmesh(2,:));
+title('All the points in the triangulation');
+
 
 % Assemble PDE for electric potential
 [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh);
 
 % Add boundary conditions
-[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bedges);
+[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bmesh);
 
-% TODO 
+% Solve the system of equations
+uh = Ah \ fh;
 
+
+figure(2);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh);
+% I think i have to sort pmesh ...
+title('Solution of the finite element method');
+
+thisIsJustForBrakePoint = 0;
 
 %% Information on solving the PDE's
 

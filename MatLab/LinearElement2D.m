@@ -57,8 +57,11 @@ phi1 = @(my, ny)  1 - my - ny;   % phi1
 phi2 = @(my, ny)  my;            % phi2
 phi3 = @(my, ny)  ny;            % phi3
 
-r_ref = 1 / (a2(1) - a1(1));
-z_ref = 1 / (a3(2) - a1(2));
+% r_ref = 1 / (a2(1) - a1(1));
+% z_ref = 1 / (a3(2) - a1(2));
+
+r_ref = (a2(1) - a1(1)) / det_J;
+z_ref = (a3(2) - a1(2)) / det_J;
 
 dr_phi1 = @(my,ny) -1;
 dr_phi2 = @(my,ny)  1;
@@ -84,73 +87,43 @@ grad_phi3 = @(my, ny)  [ 0  1];  % grad phi3
 % Equation: \integrate: (dr u * dr v + dz u * dz v ) * r * dr dz
 
 cyl_int_11 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi1(r,z) + ... 
-                              z_ref * dz_phi1(r,z) * z_ref * dr_phi1(r,z)) * r;
+                              z_ref * dz_phi1(r,z) * z_ref * dz_phi1(r,z)) * r;
 cyl_int_12 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi2(r,z) + ... 
-                              z_ref * dz_phi1(r,z) * z_ref * dr_phi2(r,z)) * r; 
+                              z_ref * dz_phi1(r,z) * z_ref * dz_phi2(r,z)) * r; 
 cyl_int_13 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi3(r,z) + ... 
-                              z_ref * dz_phi1(r,z) * z_ref * dr_phi3(r,z)) * r; 
-
+                              z_ref * dz_phi1(r,z) * z_ref * dz_phi3(r,z)) * r; 
+                          
 cyl_int_21 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi1(r,z) + ... 
-                              z_ref * dz_phi2(r,z) * z_ref * dr_phi1(r,z)) * r;
+                              z_ref * dz_phi2(r,z) * z_ref * dz_phi1(r,z)) * r;
 cyl_int_22 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi2(r,z) + ... 
-                              z_ref * dz_phi2(r,z) * z_ref * dr_phi2(r,z)) * r; 
+                              z_ref * dz_phi2(r,z) * z_ref * dz_phi2(r,z)) * r; 
 cyl_int_23 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi3(r,z) + ... 
-                              z_ref * dz_phi2(r,z) * z_ref * dr_phi3(r,z)) * r; 
+                              z_ref * dz_phi2(r,z) * z_ref * dz_phi3(r,z)) * r; 
 
 cyl_int_31 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi1(r,z) + ... 
-                              z_ref * dz_phi3(r,z) * z_ref * dr_phi1(r,z)) * r;
+                              z_ref * dz_phi3(r,z) * z_ref * dz_phi1(r,z)) * r;
 cyl_int_32 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi2(r,z) + ... 
-                              z_ref * dz_phi3(r,z) * z_ref * dr_phi2(r,z)) * r; 
+                              z_ref * dz_phi3(r,z) * z_ref * dz_phi2(r,z)) * r; 
 cyl_int_33 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi3(r,z) + ... 
-                              z_ref * dz_phi3(r,z) * z_ref * dr_phi3(r,z)) * r; 
+                              z_ref * dz_phi3(r,z) * z_ref * dz_phi3(r,z)) * r; 
                    
 cyl_int = {cyl_int_11, cyl_int_12, cyl_int_13;
            cyl_int_21, cyl_int_22, cyl_int_23;
            cyl_int_31, cyl_int_32, cyl_int_33};
-       
+
+cyl_fk_int1 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi1(r,z) .* r; 
+cyl_fk_int2 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi2(r,z) .* r;
+cyl_fk_int3 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi3(r,z) .* r;
+
+cyl_fk_int = {cyl_fk_int1 ; cyl_fk_int2 ; cyl_fk_int3};
+
        
 %% 2D FEM model problem from Numerik 3, Exercise 3
 
 integral_11 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi1(my,ny)') , (JT_inv * grad_phi1(my,ny)')) ...
                      + q(F(my,ny)) .* phi1(my,ny) .* phi1(my,ny) ) );
-                                                                                  
-integral_12 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi2(my,ny)') , (JT_inv * grad_phi1(my,ny)')) ...
-                     + q(F(my,ny)) .* phi2(my,ny) .* phi1(my,ny) ) );
-
-integral_13 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi3(my,ny)') , (JT_inv * grad_phi1(my,ny)')) ...
-                     + q(F(my,ny)) .* phi3(my,ny) .* phi1(my,ny) ) );
-
-
-integral_21 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi1(my,ny)') , (JT_inv * grad_phi2(my,ny)')) ...
-                     + q(F(my,ny)) .* phi1(my,ny) .* phi2(my,ny) ) );
-
-integral_22 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi2(my,ny)') , (JT_inv * grad_phi2(my,ny)')) ...
-                     + q(F(my,ny)) .* phi2(my,ny) .* phi2(my,ny) ) );
-
-integral_23 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi3(my,ny)') , (JT_inv * grad_phi2(my,ny)')) ...
-                     + q(F(my,ny)) .* phi3(my,ny) .* phi2(my,ny) ) );
-                 
-
-integral_31 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi1(my,ny)') , (JT_inv * grad_phi3(my,ny)')) ...
-                     + q(F(my,ny)) .* phi1(my,ny) .* phi3(my,ny) ) );
-
-integral_32 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi2(my,ny)') , (JT_inv * grad_phi3(my,ny)')) ...
-                     + q(F(my,ny)) .* phi2(my,ny) .* phi3(my,ny) ) );
-
-integral_33 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi3(my,ny)') , (JT_inv * grad_phi3(my,ny)')) ...
-                     + q(F(my,ny)) .* phi3(my,ny) .* phi3(my,ny) ) );             
-
-
-integrals = {integral_11, integral_12, integral_13;
-             integral_21, integral_22, integral_23;
-             integral_31, integral_32, integral_33};
-
          
 fk_int1 = @(my,ny) det_J .* f_rhs(F(my,ny)) .* phi1(my,ny); 
-fk_int2 = @(my,ny) det_J .* f_rhs(F(my,ny)) .* phi2(my,ny);
-fk_int3 = @(my,ny) det_J .* f_rhs(F(my,ny)) .* phi3(my,ny);
-
-fk_int = {fk_int1 ; fk_int2 ; fk_int3};
 
 
 %% Calculate the element matrix and associated right hand side
@@ -173,6 +146,7 @@ for alpha=1:3
     
     % Cyl LaPlace
     % Value is zero, so nothing o do here
+    f(alpha) = QuadratureTriangle2D(cyl_fk_int{alpha, 1}, intyp, a, b, c);
     
 end
 

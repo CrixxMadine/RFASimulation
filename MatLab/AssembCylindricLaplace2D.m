@@ -39,10 +39,10 @@ function [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh)
 %% Define specific Parameters for LaPlace PDE
 
 % TODO make more generic via input
-k     = @() 1;
-q     = @() 0;
-f_rhs =  @() 0;
-intyp = 2;
+k     = @(r,z) 1;
+q     = @(r,z) 0;
+f_rhs = @(r,z) 0;
+intyp = 1;
 
 
 %% Define helper parameters
