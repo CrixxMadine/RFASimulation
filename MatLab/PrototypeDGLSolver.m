@@ -67,13 +67,13 @@ nu = @(x) 0.01765;  % Constant in first try
 %% TRYING REGION SOLVE ELECTRIC POTENTIAL
 
 % Grid Generation 
-[pmesh, tmesh, bmesh] = ReadGridFromFile('Grid\Unstruc_Triang_ExtraCoarse\');
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 
 % Assemble PDE for electric potential
-[A_h, f_h] = AssembCylindricLaplace2D(pmesh, tmesh, bmesh);
+[Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh);
 
 % Add boundary conditions
-[A_h, f_h] = AddBoundaryConditionsToFEMatrix(A_h, f_h, pmesh, tmesh, bmesh);
+[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bedges);
 
 % TODO 
 

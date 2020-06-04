@@ -15,10 +15,10 @@ function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, t
 % tmesh  := triangle matrix of triangulation
 
 % bedges := edge matrix with boundary points
-%   -> First and second rows : pair of points of the boundary edge
-%   -> Third row  :  boundary number
+%   -> First and second row : points of the boundary edge
+%   -> Third row :   boundary number
 %   -> Fourth row :  boundary type (1 = dirichlet, 2 = neumann)
-%   -> Fifth row  :  right hand side value of the boundary condition
+%   -> Fifth row :   boundary v
  
 
 end

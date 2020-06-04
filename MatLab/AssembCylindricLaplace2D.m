@@ -1,4 +1,4 @@
-function [A_h, f_h] = AssembCylindricLaplace2D(pmesh, tmesh, bmesh)
+function [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh)
 
 %% Function summary and arguments description
 
@@ -6,7 +6,7 @@ function [A_h, f_h] = AssembCylindricLaplace2D(pmesh, tmesh, bmesh)
 % Assemble each element, no boundary conditions yet
 
 % returns:
-% Kh := FE-matrix (sum of stiffnessmatrix and massmatrix) 
+% Ah := FE-matrix (sum of stiffnessmatrix and massmatrix) 
 % fh := right hand side of the system of equations
 
 % Input args:
@@ -36,16 +36,21 @@ function [A_h, f_h] = AssembCylindricLaplace2D(pmesh, tmesh, bmesh)
 % bmesh:  boundray edge matrix : information on edges and its types 
 %         -> to be used for boundary conditions
 
+%% Define specific Parameters for LaPlace PDE
+
+% TODO make more generic via input
+k     = @() 1;
+q     = @() 0;
+f_rhs =  @() 0;
+intyp = 2;
+
+
 %% Define helper parameters
 
 Ng = length(pmesh);    % total number of points
 Me = length(tmesh);    % total number of triangle elements
 Ne = 3;    % number of points per element - (3 for triangle)
 
-
-%% TODO for boundaries conditions
-ME_Rand = 0;   % number of edges on the boundaries
-NE_Rand = 2;   % number of knots per edge
 
 
 %% Assemble the system of equations, elementwise

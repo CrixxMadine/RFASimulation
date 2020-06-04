@@ -165,7 +165,7 @@ for alpha=1:3
         % K(alpha, beta) = QuadratureTriangle2D(integrals{alpha, beta}, intyp, a, b, c);
         
         % Cyl LaPlace
-        K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, inty, a, b, c);
+        K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, intyp, a, b, c);
     end
     
     % Old Version
