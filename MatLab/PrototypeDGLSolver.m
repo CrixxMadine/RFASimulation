@@ -67,7 +67,13 @@ nu = @(x) 0.01765;  % Constant in first try
 %% TRYING REGION SOLVE ELECTRIC POTENTIAL
 
 % Grid Generation 
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+
+% Extra coarse grid 
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+% bmesh = DefineBoundaryConditions(bedges);
+ 
+% Extra fine grid
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
  bmesh = DefineBoundaryConditions(bedges);
 
 % Plot the mesh, for control
