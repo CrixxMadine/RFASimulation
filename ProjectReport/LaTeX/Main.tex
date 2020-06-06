@@ -199,6 +199,7 @@ $Q = Q_(rf) + Q_{perf}$
 
 \section{Applied FEM-Simulation}
 \subsection{Weak solutions}
+\subsubsection{Electric potential}
 
 Electric potential / Laplace's equation in cylindrical domain:
 
@@ -223,6 +224,36 @@ Specific PDE for electric potential, inner domain:
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = 0 
 \end{equation}
 
+\subsection{Temperature Distribution}
+
+This is basically the problem above but as a hyperbolic problem \\
+Using semidiscrete solution and iterate solution over time \\
+For reference see Jung, Langer : Methode der finiten Elemente für Ingenieure, chapter 7.1 \\
+
+Weak formulation for the problem: \\
+
+We are looking for $u(r,z,t) \in V_{g1}$ with $\Dot{u} \in L_2(\Omega)$ for almost every $t \in (0,T)$, so \\ \begin{equation}
+(\Dot{u},v)_0 + a(t;u,v) = \langle F(t),v \rangle \; for \; all \; v \in V_0    
+\end{equation}
+and for amost every $t \in (0, T)$ is the "Anfangsbedingung -> suche englische Formulierung"
+\begin{equation}
+    (u(r,z,0),v)_0 = (u_0,v)_0 \; for \; all \; v \in V_0
+\end{equation}
+
+The formal model above is given by 
+\begin{align*}
+    (\Dot{u},v)_0 &= \int_{\Omega} \Dot{u}(r,z,t)v(r,z) drdz = \int_{\Omega} \frac{\partial u(r,z,t)}{\partial t} v(r,z) drdz, \\
+    a(t;u,v) &= \int_{\Omega} \left[ \lambda_1(r,z,t) \frac{\partial u}{\partial r} \frac{\partial v}{\partial r} + \lambda_2(r,z,t) \frac{\partial u}{\partial z} \frac{\partial v}{\partial z} \right] \cdot r \cdot drdz + \int_{\Gamma_3} \alpha(r,z,t)u(r,z,t)v(r,z) ds, \\
+    \langle F(t),v \rangle &= \int_{\Omega} f(r,z,t)v(r,z) drdz + \int_{\Gamma_2} g_2(r,z,t)v(r,z) ds + \int_{\Gamma_3} \alpha(r,z,t)u_A(r,z,t)v(r,z) ds, \\
+    V_{g_1} &= TODO, \\
+    V_0 &= TODO
+\end{align*}
+
+Adapted for the temperature distribution, assuming $\lambda$ and all material parameters are constant: 
+
+\begin{equation}
+    a_w(t;u,v) := \int_{\Omega} \rho c (\partial_t u \cdot v) drdz + \int_{\Omega} \lambda (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
+\end{equation}
 
 \subsection{Grid generation / Triangulation}
 
