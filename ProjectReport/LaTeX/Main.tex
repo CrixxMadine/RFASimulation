@@ -82,10 +82,10 @@ Lets talk about:\\
 
 \subsection{This part is about the concrete PDEs itself}
 
-\subsubsection{FEM in zylindric Coordinates}
-- Rewrite the equations to zylindric coordinates \\
+\subsubsection{FEM in cylindric Coordinates}
+- Rewrite the equations to cylindric coordinates \\
  
-Laplace in kartesian coordinates:
+Laplace in cartesian coordinates:
 \begin{equation}
     \nabla^2 := \Delta := \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}
 \end{equation}
@@ -132,7 +132,7 @@ Constant material parameters: \\
 - Using a cylindric domain, we can use cylinder coordinates (see ref Laplace in cylinder)
 
 \begin{equation}
-    - \Delta \varphi(r,\phi,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{1}{r^2} \frac{\partial^2 \varphi}{\partial \phi^2} - - \frac{\partial^2 \varphi}{\partial z^2}  = 0
+    - \Delta \varphi(r,\phi,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{1}{r^2} \frac{\partial^2 \varphi}{\partial \phi^2} -      \frac{\partial^2 \varphi}{\partial z^2}  = 0
 \end{equation}
 
 - Since the domain has axis symmetry, the solution for $\varphi$ is independant from the angular $\phi$ \\
@@ -163,12 +163,44 @@ Constant material parameters: \\
     TODO
 \end{equation}
 
+\subsubsection{PDE for temperature Distribution}
 
+Following Kroeger, the temperature distribution is modeled by the heat equation: 
+
+\begin{equation}
+    \partial_t (\rho c T) - \nabla \cdot (\lambda \nabla T) = Q
+\end{equation}
+
+The heat equation is a well known parabolic partial differential equation. \\
+
+We are assuming $\rho$ and $c$ are constant \\
+$\rho$ = density \\
+$c$ = specific heat capacity \\
+$\lambda$ = thermal conductivity, which is depending on T \\
+T = T(r,z,t) = temperature \\
+Q = Q(r,z,t) = heat energy \\
+
+
+Cylindrical coordinates: see 'Transient Heat Transfer in a Partially Cooled Cylindrical Rod' from Lawrence Agbezuge
+
+\begin{equation}
+    \rho c \frac{\partial T}{\partial t} -  \frac{d\lambda}{dT} \left[ \left( \frac{\partial T}{\partial r} \right)^2 + \left( \frac{\partial T}{\partial z} \right)^2 \right] - \lambda \left( \frac{\partial^2 T}{\partial r^2} + \frac{1}{r} \frac{\partial T}{\partial r} + \frac{\partial^2 T}{\partial z^2} \right) = Q
+\end{equation}
+
+For the first run, we assume $lambda$ is also constant too, which greatly reduces the complexity of the problem to the form
+
+\begin{equation}
+    \rho c \frac{\partial T}{\partial t} - \lambda \left( \frac{\partial^2 T}{\partial r^2} + \frac{1}{r} \frac{\partial T}{\partial r} + \frac{\partial^2 T}{\partial z^2} \right) = Q
+\end{equation}
+
+\textcolor{red}{TODO: explain Q her}
+
+$Q = Q_(rf) + Q_{perf}$
 
 \section{Applied FEM-Simulation}
 \subsection{Weak solutions}
 
-- Laplace's equation in cylindrical domain:
+Electric potential / Laplace's equation in cylindrical domain:
 
 \begin{equation}
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
@@ -177,20 +209,15 @@ Constant material parameters: \\
 - $u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
 - $v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
 
-- User linear regression functions:
+Approximate with linear regression functions\\
+Linear regression functions for reference triangles:
+\begin{align}
+    \phi_1(\xi, \eta) &= 1 - \xi - \eta \\
+    \phi_2(\xi, \eta) &= \xi \\
+    \phi_2(\xi, \eta) &= \eta 
+\end{align}
 
-
-- Linear regression functions on reference triangles:
-
-\begin{equation}
-    \phi_1(\xi, \eta) = 1 - \xi - \eta \\
-    \phi_2(\xi, \eta) = \xi \\
-    \phi_2(\xi, \eta) = \eta \\
-\end{equation}
-
-
-
-- Electric Potential, inner domain: \\
+Specific PDE for electric potential, inner domain: 
 
 \begin{equation}
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = 0 
