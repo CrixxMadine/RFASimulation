@@ -99,7 +99,6 @@ uh = Ah \ fh;
 
 figure(2);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh);
-% I think i have to sort pmesh ...
 title('Solution of the finite element method');
 
 thisIsJustForBrakePoint = 0;

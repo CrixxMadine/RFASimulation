@@ -3,6 +3,7 @@ function [K, f] = LinearElement2D(k, q, f_rhs, a1, a2, a3, intyp)
 %% Function and input argument discription
 
 % Calculates a single linear 2D triangle element with linear basis function
+% Uses cylinder coordinates for calculation of integrals
 % This function is to be seen as a documentation of the algorithm
 % It is not optimized for complexity and runtime
 % For an optimized simulation see C++ Code
@@ -33,6 +34,10 @@ JT_inv = inv(J)';        % transposed of the inverted jacobi matrix
 det_J = abs(det(J));     % absolute value of determinant
                   
 
+r_ref = [JT_inv(1,1) JT_inv(1,2)];  % partial jacobi matrix dr
+z_ref = [JT_inv(2,1) JT_inv(2,2)];  % partial jacobi matrix dz
+
+
 if (intyp == 1 || intyp == 2)
     
     F = @(my,ny) mtimes(J, [my; ny]) + a1;  
@@ -57,12 +62,6 @@ phi1 = @(my, ny)  1 - my - ny;   % phi1
 phi2 = @(my, ny)  my;            % phi2
 phi3 = @(my, ny)  ny;            % phi3
 
-% r_ref = 1 / (a2(1) - a1(1));
-% z_ref = 1 / (a3(2) - a1(2));
-
-r_ref = (a2(1) - a1(1)) / det_J;
-z_ref = (a3(2) - a1(2)) / det_J;
-
 dr_phi1 = @(my,ny) -1;
 dr_phi2 = @(my,ny)  1;
 dr_phi3 = @(my,ny)  0;
@@ -86,26 +85,33 @@ grad_phi3 = @(my, ny)  [ 0  1];  % grad phi3
 
 % Equation: \integrate: (dr u * dr v + dz u * dz v ) * r * dr dz
 
-cyl_int_11 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi1(r,z) + ... 
-                              z_ref * dz_phi1(r,z) * z_ref * dz_phi1(r,z)) * r;
-cyl_int_12 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi2(r,z) + ... 
-                              z_ref * dz_phi1(r,z) * z_ref * dz_phi2(r,z)) * r; 
-cyl_int_13 = @(r,z) det_J .* (r_ref * dr_phi1(r,z) * r_ref * dr_phi3(r,z) + ... 
-                              z_ref * dz_phi1(r,z) * z_ref * dz_phi3(r,z)) * r; 
-                          
-cyl_int_21 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi1(r,z) + ... 
-                              z_ref * dz_phi2(r,z) * z_ref * dz_phi1(r,z)) * r;
-cyl_int_22 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi2(r,z) + ... 
-                              z_ref * dz_phi2(r,z) * z_ref * dz_phi2(r,z)) * r; 
-cyl_int_23 = @(r,z) det_J .* (r_ref * dr_phi2(r,z) * r_ref * dr_phi3(r,z) + ... 
-                              z_ref * dz_phi2(r,z) * z_ref * dz_phi3(r,z)) * r; 
+cyl_int_11 = @(r,z) det_J .* ( dot(r_ref .* dr_phi1(r,z) , r_ref .* dr_phi1(r,z)) + ... 
+                               dot(z_ref .* dz_phi1(r,z) , z_ref .* dz_phi1(r,z))) * r;
 
-cyl_int_31 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi1(r,z) + ... 
-                              z_ref * dz_phi3(r,z) * z_ref * dz_phi1(r,z)) * r;
-cyl_int_32 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi2(r,z) + ... 
-                              z_ref * dz_phi3(r,z) * z_ref * dz_phi2(r,z)) * r; 
-cyl_int_33 = @(r,z) det_J .* (r_ref * dr_phi3(r,z) * r_ref * dr_phi3(r,z) + ... 
-                              z_ref * dz_phi3(r,z) * z_ref * dz_phi3(r,z)) * r; 
+cyl_int_12 = @(r,z) det_J .* ( dot(r_ref .* dr_phi1(r,z) , r_ref .* dr_phi2(r,z)) + ... 
+                               dot(z_ref .* dz_phi1(r,z) , z_ref .* dz_phi2(r,z))) * r;
+                           
+cyl_int_13 = @(r,z) det_J .* ( dot(r_ref .* dr_phi1(r,z) , r_ref .* dr_phi3(r,z)) + ... 
+                               dot(z_ref .* dz_phi1(r,z) , z_ref .* dz_phi3(r,z))) * r;                           
+                           
+cyl_int_21 = @(r,z) det_J .* ( dot(r_ref .* dr_phi2(r,z) , r_ref .* dr_phi1(r,z)) + ... 
+                               dot(z_ref .* dz_phi2(r,z) , z_ref .* dz_phi1(r,z))) * r;
+
+cyl_int_22 = @(r,z) det_J .* ( dot(r_ref .* dr_phi2(r,z) , r_ref .* dr_phi2(r,z)) + ... 
+                               dot(z_ref .* dz_phi2(r,z) , z_ref .* dz_phi2(r,z))) * r;
+                           
+cyl_int_23 = @(r,z) det_J .* ( dot(r_ref .* dr_phi2(r,z) , r_ref .* dr_phi3(r,z)) + ... 
+                               dot(z_ref .* dz_phi2(r,z) , z_ref .* dz_phi3(r,z))) * r;                                
+                           
+cyl_int_31 = @(r,z) det_J .* ( dot(r_ref .* dr_phi3(r,z) , r_ref .* dr_phi1(r,z)) + ... 
+                               dot(z_ref .* dz_phi3(r,z) , z_ref .* dz_phi1(r,z))) * r;
+
+cyl_int_32 = @(r,z) det_J .* ( dot(r_ref .* dr_phi3(r,z) , r_ref .* dr_phi2(r,z)) + ... 
+                               dot(z_ref .* dz_phi3(r,z) , z_ref .* dz_phi2(r,z))) * r;
+                           
+cyl_int_33 = @(r,z) det_J .* ( dot(r_ref .* dr_phi3(r,z) , r_ref .* dr_phi3(r,z)) + ... 
+                               dot(z_ref .* dz_phi3(r,z) , z_ref .* dz_phi3(r,z))) * r;
+              
                    
 cyl_int = {cyl_int_11, cyl_int_12, cyl_int_13;
            cyl_int_21, cyl_int_22, cyl_int_23;
@@ -117,14 +123,6 @@ cyl_fk_int3 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi3(r,z) .* r;
 
 cyl_fk_int = {cyl_fk_int1 ; cyl_fk_int2 ; cyl_fk_int3};
 
-       
-%% 2D FEM model problem from Numerik 3, Exercise 3
-
-integral_11 = @(my,ny) ( det_J .* ( k(F(my,ny)) .* dot((JT_inv * grad_phi1(my,ny)') , (JT_inv * grad_phi1(my,ny)')) ...
-                     + q(F(my,ny)) .* phi1(my,ny) .* phi1(my,ny) ) );
-         
-fk_int1 = @(my,ny) det_J .* f_rhs(F(my,ny)) .* phi1(my,ny); 
-
 
 %% Calculate the element matrix and associated right hand side
 
@@ -133,19 +131,10 @@ f = zeros(3,1);
 
 for alpha=1:3
     
-    for beta=1:3
-        % Old Version
-        % K(alpha, beta) = QuadratureTriangle2D(integrals{alpha, beta}, intyp, a, b, c);
-        
-        % Cyl LaPlace
+    for beta=1:3      
         K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, intyp, a, b, c);
     end
     
-    % Old Version
-    % f(alpha) = QuadratureTriangle2D(fk_int{alpha, 1}, intyp, a, b, c);
-    
-    % Cyl LaPlace
-    % Value is zero, so nothing o do here
     f(alpha) = QuadratureTriangle2D(cyl_fk_int{alpha, 1}, intyp, a, b, c);
     
 end
