@@ -96,12 +96,29 @@ title('All the points in the triangulation');
 % Solve the system of equations
 uh = Ah \ fh;
 
+% Calculate the power from the electric potential
+
+power = zeros(size(uh,1),1);
+
+% Calclulate power(x,y) ...
+
+totalPower = 0;
+
+for i=1:size(power,1)
+    
+    
+end
+
+thisIsJustForBrakePoint = 0;
 
 figure(2);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh);
 title('Solution of the finite element method');
 
-thisIsJustForBrakePoint = 0;
+
+stopTheExecutionHereBreakpoint = 0;
+
+
 
 %% Information on solving the PDE's
 
