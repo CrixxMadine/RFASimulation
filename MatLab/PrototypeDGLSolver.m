@@ -69,12 +69,12 @@ nu = @(x) 0.01765;  % Constant in first try
 % Grid Generation 
 
 % Extra coarse grid 
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
- bmesh = DefineBoundaryConditions(bedges);
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+%  bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
-% bmesh = DefineBoundaryConditions(bedges);
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+ bmesh = DefineBoundaryConditions(bedges);
 
 % Plot the mesh, for control
 figure(1);
@@ -98,21 +98,22 @@ uh = Ah \ fh;
 
 % Calculate the power from the electric potential
 
+% Calclulate power(x,y) ...
 power = zeros(size(uh,1),1);
 
-% Calclulate power(x,y) ...
-
-totalPower = SurfaceIntegralTriangles(tmesh, pmesh, uh);
+[phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, uh);
 
 for i=1:size(power,1)
-    
-    
+    power(i) = sigma(1) * norm([phi_dx(i), phi_dy(i)])^2;   
 end
+
+% Calculate total power
+totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 
 thisIsJustForBrakePoint = 0;
 
 figure(2);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', power);
 title('Solution of the finite element method');
 
 
