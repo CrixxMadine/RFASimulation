@@ -55,7 +55,6 @@ a = [0; 0];
 b = [1; 0];
 c = [0; 1];
 
-ftype = 1; % f is a real function handle, so ftype = 1
 
 %% Define linear basis functions
 
@@ -133,10 +132,10 @@ f = zeros(3,1);
 for alpha=1:3
     
     for beta=1:3      
-        K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, ftype, intyp, a, b, c);
+        K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, intyp, a, b, c);
     end
     
-    f(alpha) = QuadratureTriangle2D(cyl_fk_int{alpha, 1}, ftype, intyp, a, b, c);
+    f(alpha) = QuadratureTriangle2D(cyl_fk_int{alpha, 1}, intyp, a, b, c);
     
 end
 

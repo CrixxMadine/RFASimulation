@@ -69,12 +69,12 @@ nu = @(x) 0.01765;  % Constant in first try
 % Grid Generation 
 
 % Extra coarse grid 
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-% bmesh = DefineBoundaryConditions(bedges);
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+ bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
- bmesh = DefineBoundaryConditions(bedges);
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+% bmesh = DefineBoundaryConditions(bedges);
 
 % Plot the mesh, for control
 figure(1);
@@ -102,7 +102,7 @@ power = zeros(size(uh,1),1);
 
 % Calclulate power(x,y) ...
 
-totalPower = 0;
+totalPower = SurfaceIntegralTriangles(tmesh, pmesh, uh);
 
 for i=1:size(power,1)
     
