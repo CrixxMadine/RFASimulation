@@ -74,7 +74,7 @@ nu = @(x) 0.01765;  % Constant in first try
  
 % Extra fine grid
 [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
- bmesh = DefineBoundaryConditions(bedges);
+ bmesh = DefineBoundaryConditions(bedges, 'phi');
 
 % Plot the mesh, for control
 figure(1);
@@ -159,6 +159,11 @@ Q_total = Q_rfa + Q_perf;
 [Ah_heat, Mh_heat, fh_heat] ...
     = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
 
+
+% define new boundary conditions for heat equation
+ bmesh = DefineBoundaryConditions(bedges, 'temp');
+ 
+ 
 stopTheExecutionHereBreakpoint = 0;
 
 

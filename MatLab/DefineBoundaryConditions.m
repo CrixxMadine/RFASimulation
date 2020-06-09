@@ -1,4 +1,4 @@
-function bmesh = DefineBoundaryConditions(bedges)
+function bmesh = DefineBoundaryConditions(bedges, type)
 
 % Define the boundary conditions for the current mesh grid
 % 
@@ -6,7 +6,13 @@ function bmesh = DefineBoundaryConditions(bedges)
 % bmesh -> third row is type (1=Dirichlet, 2=Neumann)
 %       -> fourth row is corresponding value
 % 
-% input args: 
+% input args:
+% type: the type of the boundary equation to be added
+% -> 'phi'  : add conditions for electrode 
+% -> 'temp' : add boundary conditions for heat equation
+% -> more will be added within time!
+
+% bedges: 
 % Third row in bedges explained:
 % Every boundary domain is represented by a number
 %    domain1   -> '100' : positive electrode
@@ -23,18 +29,39 @@ bmesh(1,:) = bedges(1,:);
 bmesh(2,:) = bedges(2,:);
 
 for i=1:n
-    if (bedges(3,i) == 100) % positive electrode
-        bmesh(3,i) = 1;     % Dirichlet
-        bmesh(4,i) = 1;
+    
+    if (strcmp(type, 'phi')) % Add boundary vlaues for phi 
+    
+        if (bedges(3,i) == 100) % positive electrode
+            bmesh(3,i) = 1;     % Dirichlet
+            bmesh(4,i) = 1;     % potential in Voltage
+
+        elseif (bedges(3,i) == 101) % negative electrode
+            bmesh(3,i) =  1;
+            bmesh(4,i) = -1;
+
+        else % blank needle or outer boundary
+            bmesh(3,i) = 2;     % Neumann 
+            bmesh(4,i) = 0;
+        end
+    
+    elseif strcmp(type, 'temp')
         
-    elseif (bedges(3,i) == 101) % negative electrode
-        bmesh(3,i) =  1;
-        bmesh(4,i) = -1;
+        if (bedges(3,i) == 300) % outer boundary
+            bmesh(3,i) = 2;     % Neumann 
+            bmesh(4,i) = 0;
+            
+        else     % anywhere on the needle, blank or electrode
+            bmesh(3,i) = 1;           % Dirichlet
+            bmesh(4,i) = 37 + 273.15; % body temperature in Kelvin
+        end
         
-    else % blank needle or outer boundary
-        bmesh(3,i) = 2;     % Neumann 
-        bmesh(4,i) = 0;
-    end
-end
+    else   
+        
+        error('You did not specify an allowed equation type!')
+        
+    end % if type
+     
+end % for
 end
 
