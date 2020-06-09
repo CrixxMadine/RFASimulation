@@ -1,4 +1,4 @@
-function [K, f] = LinearElement2D(k, q, f_rhs, a1, a2, a3, intyp)
+function [K, f, M] = LinearElement2D(k, q, f_rhs, a1, a2, a3, intyp, opt_M)
 
 %% Function and input argument discription
 
@@ -8,9 +8,12 @@ function [K, f] = LinearElement2D(k, q, f_rhs, a1, a2, a3, intyp)
 % It is not optimized for complexity and runtime
 % For an optimized simulation see C++ Code
 
+% Returns equation : M * du/dt - K * u = f
+
 % Returns
-% K := block matrix of the element
+% K := block matrix of the element (stiffness matrix + q_matrix)
 % f := right side of the element
+% M := block parabolic mass matrix of the element (optional)
 
 % Iput arguments
 % k, q  := coefficients of PDE    ->  arg is vector
@@ -21,6 +24,19 @@ function [K, f] = LinearElement2D(k, q, f_rhs, a1, a2, a3, intyp)
 %
 % intyp = integration type
 % for reference see 'QuadratureTriangle2D'
+% 
+% opt_M := optionally return prefactor matrix of du/dt in parabolic 
+
+if nargin==7      % you must specify if you want M for parabolic returned
+   opt_M = 'false';
+elseif nargin<7
+	error('You did not provide enough input arguments.')
+elseif nargin == 8
+    if ~ischar(opt_M)
+        error('Last input argument must be a string with value true or false')
+    end
+end
+
 
 
 %% Transformation on general reference triangle [(0,0), (0,1), (1,0)]
@@ -83,8 +99,7 @@ grad_phi3 = @(my, ny)  [ 0  1];  % grad phi3
 
 %% Cylindrical LaPlace Equation
 
-% Equation: \integrate: (dr u * dr v + dz u * dz v ) * r * dr dz
-
+% Equation: \integrate: (du/dr * dv/dr + du/dz * dv/dz) * r * dr dz
 cyl_int_11 = @(r,z) det_J .* ( dot(r_ref .* dr_phi1(r,z) , r_ref .* dr_phi1(r,z)) + ... 
                                dot(z_ref .* dz_phi1(r,z) , z_ref .* dz_phi1(r,z))) * r;
 
@@ -111,12 +126,12 @@ cyl_int_32 = @(r,z) det_J .* ( dot(r_ref .* dr_phi3(r,z) , r_ref .* dr_phi2(r,z)
                            
 cyl_int_33 = @(r,z) det_J .* ( dot(r_ref .* dr_phi3(r,z) , r_ref .* dr_phi3(r,z)) + ... 
                                dot(z_ref .* dz_phi3(r,z) , z_ref .* dz_phi3(r,z))) * r;
-              
-                   
+                             
 cyl_int = {cyl_int_11, cyl_int_12, cyl_int_13;
            cyl_int_21, cyl_int_22, cyl_int_23;
            cyl_int_31, cyl_int_32, cyl_int_33};
 
+% Equation: \integrate: f * v * r * dr dz    
 cyl_fk_int1 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi1(r,z) .* r; 
 cyl_fk_int2 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi2(r,z) .* r;
 cyl_fk_int3 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi3(r,z) .* r;
@@ -124,15 +139,38 @@ cyl_fk_int3 = @(r,z) det_J .* f_rhs(F(r,z)) .* phi3(r,z) .* r;
 cyl_fk_int = {cyl_fk_int1 ; cyl_fk_int2 ; cyl_fk_int3};
 
 
+%% Optional mass matrix for parabolic equations
+% Equation: \integrate: u * v * r * dr dz
+mass_int_11 = @(r,z) det_J .* phi1(r,z) .* phi1(r,z);
+mass_int_12 = @(r,z) det_J .* phi1(r,z) .* phi2(r,z);
+mass_int_13 = @(r,z) det_J .* phi1(r,z) .* phi3(r,z);
+
+mass_int_21 = @(r,z) det_J .* phi2(r,z) .* phi1(r,z);
+mass_int_22 = @(r,z) det_J .* phi2(r,z) .* phi2(r,z);
+mass_int_23 = @(r,z) det_J .* phi2(r,z) .* phi3(r,z);
+
+mass_int_31 = @(r,z) det_J .* phi3(r,z) .* phi1(r,z);
+mass_int_32 = @(r,z) det_J .* phi3(r,z) .* phi2(r,z);
+mass_int_33 = @(r,z) det_J .* phi3(r,z) .* phi3(r,z);
+
+mass_int = {mass_int_11, mass_int_12, mass_int_13;
+            mass_int_21, mass_int_22, mass_int_23;
+            mass_int_31, mass_int_32, mass_int_33};
+        
 %% Calculate the element matrix and associated right hand side
 
 K = zeros(3,3);
+M = zeros(3,3);
 f = zeros(3,1);
 
 for alpha=1:3
     
     for beta=1:3      
         K(alpha, beta) = QuadratureTriangle2D(cyl_int{alpha, beta}, intyp, a, b, c);
+        
+        if strcmp(opt_M, 'true')
+            M(alpha, beta) = QuadratureTriangle2D(mass_int{alpha, beta}, intyp, a, b, c);
+        end
     end
     
     f(alpha) = QuadratureTriangle2D(cyl_fk_int{alpha, 1}, intyp, a, b, c);
