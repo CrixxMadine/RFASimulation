@@ -102,7 +102,11 @@ intyp = 1;
 % Solve the system of equations
 uh = Ah \ fh;
 
-% Calculate the power from the electric potential
+figure(2);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh);
+title('Solution of the finite element method');
+
+%% Calculate the power from the electric potential
 
 % Calclulate power(x,y) ...
 power = zeros(size(uh,1),1);
@@ -116,11 +120,20 @@ end
 % Calculate total power
 totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 
-thisIsJustForBrakePoint = 0;
+power_setup = 200;   % power of the generator (in range 20-200 W)
+U_elec = 2;          % Potential difference of the two electrodes
 
-figure(2);
+R_setup = 1; % TODO  % inner resistance of the generator
+R_tis = U_elec * U_elec / totalPower; % tissue resistance
+
+effectivePower = (4 * power_setup * R_tis * R_setup) / ...
+    ((R_tis + R_setup)^2);  % effective power of the genrator
+
+%effectivePower = totalPower;
+
+figure(3);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', power);
-title('Solution of the finite element method');
+title('RFA power distribution at every point of mesh');
 
 
 %% TRYING Region solve Temperature Distribution 
@@ -137,7 +150,7 @@ T_body = 37 + 273.5; % body temperature in Kelvin
 uh0_Temp = zeros(size(power)) + T_body;
 uh_Temp  = uh0_Temp;
 
-Q_rfa   = power;
+Q_rfa   = power .* (effectivePower / totalPower);
 Q_perf  = nu .* rho(1) .* c(1) .* (uh_Temp - T_body);  
  
 Q_total = Q_rfa + Q_perf;
@@ -147,6 +160,8 @@ Q_total = Q_rfa + Q_perf;
     = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
 
 stopTheExecutionHereBreakpoint = 0;
+
+
 
 %% Information on solving the PDE's
 
