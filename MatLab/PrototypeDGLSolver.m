@@ -129,12 +129,22 @@ title('Solution of the finite element method');
 
 k_Temp = @(r,z) 1; 
 q_Temp = @(r,z) 0;
-f_rhs_Temp = @(r,z) 0;
 intyp = 1;
+
+nu = 0.01765;        % prefactor to Q_perf
+T_body = 37 + 273.5; % body temperature in Kelvin
+
+uh0_Temp = zeros(size(power)) + T_body;
+uh_Temp  = uh0_Temp;
+
+Q_rfa   = power;
+Q_perf  = nu .* rho(1) .* c(1) .* (uh_Temp - T_body);  
+ 
+Q_total = Q_rfa + Q_perf;
 
 % Assemble PDE for temperature distribution
 [Ah_heat, Mh_heat, fh_heat] ...
-    = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, f_rhs_Temp, intyp);
+    = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
 
 stopTheExecutionHereBreakpoint = 0;
 
