@@ -87,8 +87,14 @@ scatter(pmesh(1,:), pmesh(2,:));
 title('All the points in the triangulation');
 
 
+% Define specific Parameters for LaPlace PDE
+k_EPot  = @(r,z) 1;
+q_EPot  = @(r,z) 0;
+f_rhs_EPot = @(r,z) 0;
+intyp = 1;
+
 % Assemble PDE for electric potential
-[Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh);
+[Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k_EPot, q_EPot, f_rhs_EPot, intyp);
 
 % Add boundary conditions
 [Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bmesh);
@@ -117,9 +123,20 @@ trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', power);
 title('Solution of the finite element method');
 
 
+%% TRYING Region solve Temperature Distribution 
+
+% Define specific parameters for parabolic heat equation
+
+k_Temp = @(r,z) 1; 
+q_Temp = @(r,z) 0;
+f_rhs_Temp = @(r,z) 0;
+intyp = 1;
+
+% Assemble PDE for temperature distribution
+[Ah_heat, Mh_heat, fh_heat] ...
+    = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, f_rhs_Temp, intyp);
+
 stopTheExecutionHereBreakpoint = 0;
-
-
 
 %% Information on solving the PDE's
 

@@ -1,12 +1,13 @@
-function [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh)
+function [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k, q, f_rhs, intyp)
 
 %% Function summary and arguments description
 
 % Assemble the system of equations for cylindircal Laplace 2D
 % Assemble each element, no boundary conditions yet
+% Model equation: - div( k * grad(u) ) + q * u = f_rhs
 
 % returns:
-% Ah := FE-matrix (sum of stiffnessmatrix and massmatrix) 
+% Ah := FE-matrix (sum of stiffnessmatrix and q-massmatrix)
 % fh := right hand side of the system of equations
 
 % Input args:
@@ -35,14 +36,6 @@ function [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh)
 %
 % bmesh:  boundray edge matrix : information on edges and its types 
 %         -> to be used for boundary conditions
-
-%% Define specific Parameters for LaPlace PDE
-
-% TODO make more generic via input
-k     = @(r,z) 1;
-q     = @(r,z) 0;
-f_rhs = @(r,z) 0;
-intyp = 1;
 
 
 %% Define helper parameters
