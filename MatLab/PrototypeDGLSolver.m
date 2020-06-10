@@ -1,38 +1,59 @@
-% This Skript is for experimenting with the RFA DGLs
 
-% for reference see article of my advisor:
+%% General information about the script
+
+% The whole matlab code is part of an AMP application project
+% Project is about numeric simulation of radio frequency ablation
+
+% This skript is mainly for experimenting with the RFA PDEs
+% Also general documentation of the numeric approaches
+
+% THIS SCRIPT IS BY NO MEANS OPTIMIZED
+% It massively prefers intention telling over optimization
+% For an optimized simulation program, see the C++ source code
+
+% for model reference see article of my advisor:
 % Tim Kroeger et al. 
 % "Numerical Simulation of Radio Frequency
 %  Ablation with State Dependent Material
 %  Parameters in Three Space Dimensions"
+
+%  TODO: ADD PUBLISHER
 
 clear variables;
 disp('MatLab ..... yeah :(')
 
 %% Space and time dimensions
 
-% cylindric domain  
-%  ___   ___
-% |   | |   |
-% |   |_|   |
-% |         |
-% |_________|
+% This simulation models a needle inserted in a malignant tissue
+% Due to axis symmetrie, the whole simulation is reduced to a 2D-problem
+% All calculations are done in cylindrical coordinates
+
+% cylindrical domain for the simulation
+%  ____    ____
+% |    |  |    |
+% |    |  |    |
+% |    |  |    |
+% |     \/     |
+% |            |
+% |            |
+% |____________|
 %
 
-% Transformation to zylindric coordinates 
+% Transformation reference to cylindrical coordinates 
 x = @(r,phi,z) r * cos(phi);
 y = @(r,phi,z) r * sin(phi);
 z = @(r,phi,z) z;
 
-% time dimension
-t_start = 0.00;
+% Time discretization in seconds for time-dependant simulation 
+t_start = 0.00;  % Starting point -> t = 0 seconds
 t_step  = 0.01;
-t_end   = 5.00;   
+t_end   = 5.00;  
 t_vec   = t_start:t_step:t_end;
 
 
 %% Material parameters
-% For the first run, everything should be absolutely const.
+
+% For the first simulation run, everything should be absolutely const.
 
 % Alternative model for linear dependent material parameters
 % for ref. see books from Stein T. and Kröger T.
@@ -49,7 +70,7 @@ lambda    = lambda_stein(1); % thermal conductivty
 
 nu_blood  = 0.01765;         % blood perfusion coefficient
 
-% variable state parameters
+% Variable state parameters
 phi   = [ ]; % electric potential  
 temp  = [ ]; % temperature distribution
 F_wat = [ ]; % relative content of fluid water
@@ -85,9 +106,11 @@ title('All the points in the triangulation');
 
 %% Calculate electrical potential phi 
 
-%-> This is aLaplacian Equation, elliptic PDE second order 
+% In the inner domain, phi is quasistatic and modeled as follows
+% |   - div ( (sigma(x,y,z) * grad phi(x,y,z) ) = 0   |
+%  -> This is a Laplacian Equation, elliptical PDE second order
 
-% Add boundary conditions for model problem
+% Add boundary conditions for the elliptical problem
 bmesh = DefineBoundaryConditions(bedges, 'phi');
 
 % Define specific parameters for phi PDE
@@ -144,7 +167,7 @@ trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
 title('RFA power distribution at every point of mesh');
 
 
-%% TRYING Region solve Temperature Distribution 
+%% Calculate Temperature Distribution 
 
 % Define specific parameters for parabolic heat equation
 
@@ -179,98 +202,7 @@ stopTheExecutionHereBreakpoint = 0;
 
 
 
-%% Information on solving the PDE's
-
-% In Numerik 3 an elliptical PDE problem was discussed
-
-% We can solve the classic problem as 
-% -div( k(x)) grad u(x) ) + q(x) u(x) = f (x)
-
-% x can be a vector of any dimension up to 3 dimensions
-% every boundary condition is allowed, with a constraint on Robin
-
-% With the following constraints:
-% assuming k(x) ELEMENT OF C^1{OMEGA}
-% assuming q(x), f(x) ELEMENT OF C{OEMGA}
-% assuming k(x) >= k_0 > 0  (must be positive)
-% assuming q(x) >= 0        (can be positive or zero) 
-% -> In case of robin boundary conditions: 
-% assuming prefactor kappa(x) >= 0 
-
-
-%% Electric energy (EE)
-
-% TODO
-
-% We can use the elliptical approach above to compute phi(t,x)
-% Assuming phi(t,x) is quasistatic, we can model it as follows
-
-%% phi: Fixed potential on electrodes (I x OMEGA_elec)
-
-% -- First try only, this is very arbitrarily
-% -- Actually the potential is induced by a function
-phi_electrode1 = +1;
-phi_electrode2 = -1;
-
-
-%% phi: Inner domain (I x (OMEGA \ OMEGA_elec) )
-
-% In the inner domain, phi is modeled as follows
-% - div ( (sigma(x,y,z) * grad phi(x,y,z) ) = 0
-
-% this is an elliptic problem analogous to Numerik 3
-% q(x) = 0, so the mass matrix is empty
-
-% If sigma is constant, you can rewrite the problem
-% - sigma * LAPLACE ( phi(x,y,z) ) = 0
-% So it becomes type of Laplace's Equation
-
-% Equation in cylindric coordinates
-% - 1/r dphi/dr - d^2phi/r^2 - d^2phi/dz^2 = 0 
-
-k_inner_domain = 0;  % Assuming sigma is constant
-q_inner_domain = 0;
-f_inner_domain = 0;
-
-% TODO: this is phi, calculate it
-u_inner_domain = [];   
-
-
-%% phi: Robin boundary condition (I x GAMMA)
-% n * NABLA phi = ( (n * (s-x)) / ( |s-x|^2 ) ) * phi
-% s = barycenter of the union of all probes
-
-% TODO
-
-%% E: calculate the power
-
-% TODO
-
-% In case of constant material parameters:
-% Phi becomes linear and time independent
-% Since phi is time independent, we only have to solve it once
-
-% Q_rf(t,x) = p((t,x)) * (p_eff(t)/p_total(t))
-
-
-
-%% Temperature  
-Q_rf   = @(t,x) 1;     % 
-% TODO
-
-Q_perf = @(t,x) 1;     % Q_perfusion (~Durchströmung)
-% TODO    
-
-Q_pc   = @(t,x) 0;     % Q_phase_change
-% Is not considered in first simulation 
-% Cause its model not reliably (Kroeger)
-
-pde_phi = @(x) 1;
-pde_Q = @(t,x) Q_rf(t,x) + Q_perf(t,x) + Q_pc(t,x);
-
-
-
-%% Abbreviations
+%% Abbreviations TODO: UPDATE
 %
 % ----- Keywords ------
 % Keywords in comments are written in capital letters
