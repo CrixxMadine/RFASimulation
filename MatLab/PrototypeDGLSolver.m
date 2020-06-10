@@ -34,20 +34,20 @@ t_vec   = t_start:t_step:t_end;
 %% Material parameters
 % For the first run, everything should be absolutely const.
 
-% Constant material parameters 
-sigma  = 0; % electric conductivity
-rho    = 0; % density
-c      = 0; % specific heat capacity
-lambda = 0; % thermal conductivty
-
-% TODO
-
 % Alternative model for linear dependent material parameters
 % for ref. see books from Stein T. and Kröger T.
-sigma  = [ 0.21     0.013      -1     1.143 ]'; 
-rho    = [ 1080   -0.00056   -0.657     0   ]';
-c      = [ 3455       0      -0.376     0   ]'; 
-lambda = [ 0.437    0.0025      0       0   ]'; 
+sigma_stein  = [ 0.21     0.013      -1     1.143 ]'; 
+rho_stein    = [ 1080   -0.00056   -0.657     0   ]';
+c_stein      = [ 3455       0      -0.376     0   ]'; 
+lambda_stein = [ 0.437    0.0025      0       0   ]'; 
+
+% Constant material parameters 
+sigma_phi = sigma_stein(1);  % electric conductivity
+rho_blood = rho_stein(1);    % density
+c_blood   = c_stein(1);      % specific heat capacity
+lambda    = lambda_stein(1); % thermal conductivty
+
+nu_blood  = 0.01765;         % blood perfusion coefficient
 
 % variable state parameters
 phi   = [ ]; % electric potential  
@@ -61,7 +61,7 @@ F_coa = [ ]; % coagulation state
 % F_wat(t,x) + F_vap(t,x) <= 1;  -> this is more appropriate
 
 % Constant Prefactors for PDE
-nu = @(x) 0.01765;  % Constant in first try
+
 
 
 %% TRYING REGION SOLVE ELECTRIC POTENTIAL
@@ -114,7 +114,7 @@ power = zeros(size(uh,1),1);
 [phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, uh);
 
 for i=1:size(power,1)
-    power(i) = sigma(1) * norm([phi_dx(i), phi_dy(i)])^2;   
+    power(i) = sigma_phi * norm([phi_dx(i), phi_dy(i)])^2;   
 end
 
 % Calculate total power
@@ -144,14 +144,17 @@ k_Temp = @(r,z) 1;
 q_Temp = @(r,z) 0;
 intyp = 1;
 
-nu = 0.01765;        % prefactor to Q_perf
+nu  = nu_blood;    % perfusion coefficient, prefactor to Q_perf
+rho = rho_blood;   % density
+c   = c_blood;     % heat capacity    
+
 T_body = 37 + 273.5; % body temperature in Kelvin
 
 uh0_Temp = zeros(size(power)) + T_body;
 uh_Temp  = uh0_Temp;
 
 Q_rfa   = power .* (effectivePower / totalPower);
-Q_perf  = nu .* rho(1) .* c(1) .* (uh_Temp - T_body);  
+Q_perf  = nu .* rho .* c .* (uh_Temp - T_body);  
  
 Q_total = Q_rfa + Q_perf;
 
