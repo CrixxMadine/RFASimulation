@@ -167,10 +167,17 @@ trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
 title('RFA power distribution at every point of mesh');
 
 
-%% Calculate Temperature Distribution 
+%% Calculate Temperature Distribution T
 
-% Define specific parameters for parabolic heat equation
+% The temperature distribution is given by the heat equation
+% | dT(x,y,z,t)/dt - div ( (lambda(x,y,z,t) * grad T(x,y,z,t) ) = Q_heat |
+%  -> This is a second order parabolic equation
+% Problem is solved with a mixed finite element method
 
+% Define the new boundary conditions for the heat equation
+ bmesh = DefineBoundaryConditions(bedges, 'temp');
+ 
+% Define specific pde parameters for parabolic heat equation
 k_Temp = @(r,z) 1; 
 q_Temp = @(r,z) 0;
 intyp = 1;
@@ -181,22 +188,23 @@ c   = c_blood;     % heat capacity
 
 T_body = 37 + 273.5; % body temperature in Kelvin
 
+% Set initial temperature distribution for t = 0
+% (T = T_body on the entire domain)
 uh0_Temp = zeros(size(power)) + T_body;
 uh_Temp  = uh0_Temp;
 
-Q_rfa   = electricEnergy;
-Q_perf  = nu .* rho .* c .* (uh_Temp - T_body);  
+% Calculate the right hand side of the equation with discrete point
+Q_rfa   = electricEnergy;                       % heat of electrical power
+Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
  
 Q_total = Q_rfa + Q_perf;
 
-% Assemble PDE for temperature distribution
+% Assemble FEM systems of equation for temperature distribution
 [Ah_heat, Mh_heat, fh_heat] ...
     = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
 
-
-% define new boundary conditions for heat equation
- bmesh = DefineBoundaryConditions(bedges, 'temp');
- 
+ % Add boundary conditions
+[Ah_heat, fh_heat] = AddBoundaryConditionsToFEMatrix(Ah_heat, fh_heat, pmesh, tmesh, bmesh);
  
 stopTheExecutionHereBreakpoint = 0;
 
