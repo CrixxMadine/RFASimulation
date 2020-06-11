@@ -46,7 +46,7 @@ z = @(r,phi,z) z;
 
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
-t_step  = 0.01;
+t_step  = 0.50;
 t_end   = 5.00;  
 t_vec   = t_start:t_step:t_end;
 
@@ -59,7 +59,7 @@ t_vec   = t_start:t_step:t_end;
 % for ref. see books from Stein T. and Kröger T.
 sigma_stein  = [ 0.21     0.013      -1     1.143 ]'; 
 rho_stein    = [ 1080   -0.00056   -0.657     0   ]';
-c_stein      = [ 3455       0      -0.376     0   ]'; 
+c_stein      = [ 3455*0.001 0      -0.376     0   ]';   % Stein gives c in J/gK not in J/kg*K
 lambda_stein = [ 0.437    0.0025      0       0   ]'; 
 
 % Constant material parameters 
@@ -150,10 +150,10 @@ end
 totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 
 % Calculate effective power of the model 
-power_setup = 200;   % power of the generator (in range 20-200 W)
+power_setup = 20;   % power of the generator (in range 20-200 W)
 U_elec = 2;          % Potential difference of the two electrodes
 
-R_setup = 1; % TODO  % inner resistance of the generator
+R_setup = 100; % TODO find good value % inner resistance of the generator
 R_tis = U_elec * U_elec / totalPower; % tissue resistance
 
 effectivePower = (4 * power_setup * R_tis * R_setup) / ...
@@ -167,7 +167,7 @@ trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
 title('RFA power distribution at every point of mesh');
 
 
-%% Calculate Temperature Distribution T
+%% Calculate the Heat for the Temperature Distribution T
 
 % The temperature distribution is given by the heat equation
 % | dT(x,y,z,t)/dt - div ( (lambda(x,y,z,t) * grad T(x,y,z,t) ) = Q_heat |
@@ -178,13 +178,14 @@ title('RFA power distribution at every point of mesh');
  bmesh = DefineBoundaryConditions(bedges, 'temp');
  
 % Define specific pde parameters for parabolic heat equation
-k_Temp = @(r,z) 1; 
+k_Temp = @(r,z) lambda; 
 q_Temp = @(r,z) 0;
 intyp = 1;
 
 nu  = nu_blood;    % perfusion coefficient, prefactor to Q_perf
 rho = rho_blood;   % density
 c   = c_blood;     % heat capacity    
+lam = lambda;      % thermal conductivity 
 
 T_body = 37 + 273.5; % body temperature in Kelvin
 
@@ -197,16 +198,95 @@ uh_Temp  = uh0_Temp;
 Q_rfa   = electricEnergy;                       % heat of electrical power
 Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
  
-Q_total = Q_rfa + Q_perf;
+Q_total = 0;
 
-% Assemble FEM systems of equation for temperature distribution
-[Ah_heat, Mh_heat, fh_heat] ...
-    = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
+%% Calculate the temperatute distribution over time
 
- % Add boundary conditions
-[Ah_heat, fh_heat] = AddBoundaryConditionsToFEMatrix(Ah_heat, fh_heat, pmesh, tmesh, bmesh);
+for t_count=2:size(t_vec,2)
+
+    delta_t = t_vec(t_count) - t_vec(t_count-1); 
+        
+    % We will reduce the time dependency to a semi-discrete problem
+    %   Mh * du/dt + Ah * u = fh 
+    % 
+    % This is now practically an ODE we can solve over time 
+
+
+    % In theory, you could solve this ODE by inverting Mh
+    % TODO 
+
+
+    % To solve the system of ODE aborve, we use implicit Euler
+    % 
+    % Mh + delta_t * Ah * u(t_1) = u(t_0) + delta_t * f(t_1)
+    %
+
+    
+    Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
  
+    Q_total = Q_total + delta_t * (Q_rfa + Q_perf); % Update Q_total
+
+    % Assemble FEM systems of equation for temperature distribution
+    [Ah_heat, Mh_heat, fh_heat] ...
+        = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
+
+    Mh_heat = Mh_heat * c * rho;
+   
+
+    Ah_Temp = Mh_heat + delta_t * Ah_heat;
+    fh_Temp = uh0_Temp + delta_t * fh_heat;
+
+    % Add boundary conditions
+    [Ah_Temp, fh_Temp] = AddBoundaryConditionsToFEMatrix(Ah_Temp, fh_Temp, pmesh, tmesh, bmesh);
+
+    % This is just for visualization
+    uh_Temp = Ah_Temp \ fh_Temp; 
+
+    % use new solution as old solution for next iteration
+    uh0_Temp = uh_Temp;
+    
+    figure(4);
+    trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_Temp - 273.15);
+    title('Schematic Temperature Distribution in ° Celsius');
+
+end % for 
+
 stopTheExecutionHereBreakpoint = 0;
+
+%% Galerkin FEM - TRYING TODO maybe this is a bit to complicated ...
+%  For every time step, there will be a system of equations 
+%
+%    R1 S1     u0     F1
+%    R2 S2  *  u1  =  F2
+%
+%  which yields the solution u = u0 + u1
+% 
+%  with R1 = Mh + delta_t * Ah
+%       S1 = Mh + 0.5 * delta_t * Ah
+%       R2 = 0.5 * delta_t * Ah
+%       S2 = 0.5 * Mh + (delta_t/3) * Ah
+%       
+%       F1 = f_rhs
+%       F2 = 
+%
+% For reference, see 
+% Diskontinuierliche GALERKIN-Verfahren 
+% in Raum und Zeit zur Simulation von Transportprozessen
+
+
+
+% Calculate the system of equations for galerkin fem
+R1 = Mh + delta_t*A;
+S1 = Mh + 0.5 * delta_t * A;
+R2 = 0.5 * delta_t * Ah;
+S2 = 0.5 * Mh + (delta_t/3) * Ah;
+Ph = [R1, S1;   % full matrix
+      R2, S2];
+  
+
+
+uh_Temp = Ph \ fh_heat;
+ 
 
 
 
