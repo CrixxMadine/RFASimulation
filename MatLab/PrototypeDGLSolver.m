@@ -151,7 +151,7 @@ totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 
 % Calculate effective power of the model 
 power_setup = 20;   % power of the generator (in range 20-200 W)
-U_elec = 2;          % Potential difference of the two electrodes
+U_elec = 2;         % Potential difference of the two electrodes
 
 R_setup = 100; % TODO find good value % inner resistance of the generator
 R_tis = U_elec * U_elec / totalPower; % tissue resistance
@@ -226,6 +226,9 @@ for t_count=2:size(t_vec,2)
  
     Q_total = Q_total + delta_t * (Q_rfa + Q_perf); % Update Q_total
 
+    % Test
+    % Q_total = zeros(size(Q_total));
+    
     % Assemble FEM systems of equation for temperature distribution
     [Ah_heat, Mh_heat, fh_heat] ...
         = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
