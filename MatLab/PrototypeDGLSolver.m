@@ -94,15 +94,17 @@ F_coa = [ ]; % coagulation state
 % Extra fine grid
 [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
-% Plot the mesh, for control
-figure(1);
-subplot(1,2,1);
-trimesh(tmesh', pmesh(1,:)', pmesh(2,:)');
-title('The used triangulation of the domain');
 
-subplot(1,2,2);
-scatter(pmesh(1,:), pmesh(2,:));
-title('All the points in the triangulation');
+%% Plot the mesh, for control -> deactivated by comments
+%figure(1);
+%subplot(1,2,1);
+%trimesh(tmesh', pmesh(1,:)', pmesh(2,:)');
+%title('The used triangulation of the domain');
+
+%subplot(1,2,2);
+%scatter(pmesh(1,:), pmesh(2,:));
+%title('All the points in the triangulation');
+
 
 %% Calculate electrical potential phi 
 
@@ -162,9 +164,10 @@ effectivePower = (4 * power_setup * R_tis * R_setup) / ...
 % Calculate the electric energy at every vertex point
 electricEnergy = power .* (effectivePower / totalPower);
 
-figure(3);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
-title('RFA power distribution at every point of mesh');
+%% Plot the power distribution - deactivated by comments
+%figure(3);
+%trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
+%title('RFA power distribution at every point of mesh');
 
 
 %% Calculate the Heat for the Temperature Distribution T
