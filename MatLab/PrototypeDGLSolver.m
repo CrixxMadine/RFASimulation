@@ -233,29 +233,82 @@ for t_count=2:size(t_vec,2)
     % Q_total = zeros(size(Q_total));
     
     % Assemble FEM systems of equation for temperature distribution
-    [Ah_heat, Mh_heat, fh_heat] ...
+    [Kh_heat, Mh_heat, fh_heat] ...
         = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
 
-    Mh_heat = Mh_heat * c * rho;
-   
+    %% TRY SOLVE PDE SYSTEM OLD
+%     Mh_heat = Mh_heat * c * rho;
+%  
+%     Ah_Temp = Mh_heat + delta_t * Ah_heat;
+%     fh_Temp = uh0_Temp + delta_t * fh_heat;
+% 
+%     % Add boundary conditions
+%     [Ah_Temp, fh_Temp] = AddBoundaryConditionsToFEMatrix(Ah_Temp, fh_Temp, pmesh, tmesh, bmesh);
+% 
+%     % This is just for visualization
+%     uh_Temp = Ah_Temp \ fh_Temp; 
+% 
+%     % use new solution as old solution for next iteration
+%     uh0_Temp = uh_Temp;
+%     
+%     figure(4);
+%     trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_Temp - 273.15);
+%     title('Schematic Temperature Distribution in ° Celsius');
 
-    Ah_Temp = Mh_heat + delta_t * Ah_heat;
-    fh_Temp = uh0_Temp + delta_t * fh_heat;
-
-    % Add boundary conditions
-    [Ah_Temp, fh_Temp] = AddBoundaryConditionsToFEMatrix(Ah_Temp, fh_Temp, pmesh, tmesh, bmesh);
-
-    % This is just for visualization
-    uh_Temp = Ah_Temp \ fh_Temp; 
-
-    % use new solution as old solution for next iteration
-    uh0_Temp = uh_Temp;
+    %% TRY SOLVE PDE NEW
     
+    % Reduce this to a system of ODE 
+    % u'(t) = A * u(t) + g(t)
+    % u(0) = u_0
+    
+    % u(t) = u_h
+    % A    = - M_h^(-1) * Kh
+    % g(t) = M_h^(-1) * f_h(t)
+    % u_0  = M_h^(-1) * Anfangswerte
+    
+    % Calculate inverted mass matrix
+    Mh_heat = Mh_heat * c * rho;    
+    Mh_heat_inv = inv(Mh_heat); 
+    
+    % Calculate the parts for ODE above  
+    Ah_heat = - Mh_heat_inv * Kh_heat;
+    gh_heat = + Mh_heat_inv * fh_heat; 
+    uh_heat = uh0_Temp;
+    
+    gh_heat_neu = gh_heat;
+    
+    % Solve with sigma variant from Numerik 3
+    n = size(Ah_heat,1);    
+    sigma = 0.5;
+    tau = 0.01;
+
+    A_h = Ah_heat;
+
+    Ah_lhs = zeros(n) + 1  + tau * sigma * A_h;        % Ah auf linker Seite
+    Ah_rhs = zeros(n) + 1  - (tau * (1-sigma) * A_h);  % Ah auf rechter Seite
+
+    % Korrektur an den Eckstellen von Ah auf rechter Seite
+    %Ah_rhs(1,1) = 1;
+    %Ah_rhs(n,n) = 1;    
+
+    helper_links = Ah_rhs*uh0_Temp;
+    helper_rechts = tau * (sigma*gh_heat_neu' + (1-sigma)*gh_heat');
+
+    helper = helper_links + helper_rechts';
+
+    [Ah_lhs, helper] = AddBoundaryConditionsToFEMatrix(Ah_lhs, helper, pmesh, tmesh, bmesh);
+
+    uh_heat = Ah_lhs \ helper;
+    
+    % End solve with variant from Numerik 3
+
     figure(4);
-    trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_Temp - 273.15);
+    trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_heat - 273.15);
     title('Schematic Temperature Distribution in ° Celsius');
 
 end % for 
+
+
 
 stopTheExecutionHereBreakpoint = 0;
 
