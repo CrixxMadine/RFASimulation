@@ -46,8 +46,8 @@ z = @(r,phi,z) z;
 
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
-t_step  = 0.50;
-t_end   = 5.00;  
+t_step  = 0.25;
+t_end   = 300.00;  
 t_vec   = t_start:t_step:t_end;
 
 
@@ -152,10 +152,10 @@ end
 totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 
 % Calculate effective power of the model 
-power_setup = 20;   % power of the generator (in range 20-200 W)
-U_elec = 2;         % Potential difference of the two electrodes
+power_setup = 200;   % power of the generator (in range 20-200 W)
+U_elec = 2;          % Potential difference of the two electrodes
 
-R_setup = 100; % TODO find good value % inner resistance of the generator
+R_setup = 80;        % TODO find good value % inner resistance of the generator
 R_tis = U_elec * U_elec / totalPower; % tissue resistance
 
 effectivePower = (4 * power_setup * R_tis * R_setup) / ...
@@ -190,7 +190,7 @@ rho = rho_blood;   % density
 c   = c_blood;     % heat capacity    
 lam = lambda;      % thermal conductivity 
 
-T_body = 37 + 273.5; % body temperature in Kelvin
+T_body = 37 + 273.15; % body temperature in Kelvin
 
 % Set initial temperature distribution for t = 0
 % (T = T_body on the entire domain)
@@ -208,11 +208,11 @@ Q_total = 0;
 % Time looping
 
 t_next = t_vec(1);
-u_next = uh0_Temp;
+uh_next = uh0_Temp;
 
 for t_count=2:size(t_vec,2)
     
-    uh_old = u_next;
+    uh_old = uh_next;
     
     % Calculate DELTA t
     t_old  = t_next;
@@ -220,8 +220,8 @@ for t_count=2:size(t_vec,2)
     delta_t = t_next - t_old;
         
     % Calculate total energy
-    Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
-    Q_total = Q_total + delta_t * (Q_rfa + Q_perf); % Update Q_total  
+    Q_perf  = nu .* rho .* c .* (uh_next - T_body); % heat of blood perfusion
+    Q_total = delta_t * (Q_rfa + Q_perf);           % Update Q_total  
     % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
@@ -237,6 +237,20 @@ for t_count=2:size(t_vec,2)
     figure(4);
     trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - 273.15);
     title('Schematic Temperature Distribution in ° Celsius');
+    
+    if (t_count == 2)
+       merken1 = uh_next; 
+    elseif (t_count == 240)
+       merken2 = uh_next; 
+    elseif (t_count == 480)
+       merken3 = uh_next; 
+    elseif (t_count == 720)
+       merken4 = uh_next; 
+    elseif (t_count == 960)
+       merken5 = uh_next; 
+    end
+    
+    stopTheExecutionHereBreakpoint = 0;
     
     % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);
     
@@ -339,6 +353,26 @@ for t_count=2:size(t_vec,2)
 
 end % for 
 
+
+figure(5);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken2 - merken1);
+title('Difference between 1 minute and one second');
+
+figure(6);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken3 - merken1);
+title('Difference between 2 minutes and one second');
+
+figure(7);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken4 - merken1);
+title('Difference between 3 minutes and one second');
+
+figure(8);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
+title('Difference between 4 minutes and one second');
+
+figure(9);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - merken1);
+title('Difference between 5 minutes and one second');
 
 
 stopTheExecutionHereBreakpoint = 0;
