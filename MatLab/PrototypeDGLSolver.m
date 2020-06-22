@@ -106,12 +106,16 @@ simple_pmesh = [0 0 0;
             
 simple_tmesh = [1 2 3;
                 2 4 3];
-
-
-[refine_p, refine_t] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, 1);           
             
-[pmesh2, tmesh2] = TriangularMeshRefinement2D(pmesh', tmesh', 0);
-[pmesh3, tmesh3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1);
+simple_bedges = [1    1    2    3 ;
+                 2    3    4    4 ;
+                 200 200   0    0];
+
+
+[refine_p, refine_t, refine_b] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, 1, simple_bedges');           
+            
+%[pmesh2, tmesh2] = TriangularMeshRefinement2D(pmesh', tmesh', 0);
+%[pmesh3, tmesh3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1);
 
 figure(1);
 subplot(1,2,1);

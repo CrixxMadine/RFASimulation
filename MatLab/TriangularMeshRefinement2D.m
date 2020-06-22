@@ -1,4 +1,4 @@
-function [pmesh_new, tmesh_new] = TriangularMeshRefinement2D(pmesh, tmesh, test)
+function [pmesh_new, tmesh_new, bedges_new] = TriangularMeshRefinement2D(pmesh, tmesh, test, bedges)
 
 %% Function and parameter description
 % Helper function for unstructured grid refinement
@@ -29,6 +29,8 @@ function [pmesh_new, tmesh_new] = TriangularMeshRefinement2D(pmesh, tmesh, test)
 % pmesh, tmesh -> input mesh that shall be divided
 
 %% Function logic
+
+
 
 % function [W, G] = meshSubdivision(V, F)
 if (test == 0)
@@ -131,7 +133,46 @@ for n = 1 : nF
     tmesh_new(4*(n-1)+4,3) = nV + k(3);
 end
 
+
+%% TRY Adding new bedges -
+
+% Create new Midpoint and find that point in new pmesh
+% Then add old value to both edges
+
+if (test == 1)
+
+nEdges = size(bedges,1) ;
+ 
+bedges_new = zeros(nEdges, 3);
+
+          
+for i=1:nEdges      
+    p1 = bedges(i,1);
+    p2 = bedges(i,2);
+    b_val = bedges(i,3); % the value of boundary
+    
+    x1 = pmesh(p1,1);
+    x2 = pmesh(p2,1);
+    
+    y1 = pmesh(p1,2);
+    y2 = pmesh(p2,2);
+    
+    mx = (x1+x2)/2;
+    my = (y1+y2)/2;
+    
+    midPoint = [mx my 0];
+    
+    index = find(ismember(pmesh_new, midPoint, 'rows'));
+    
+    bedges_new(i,:) =        [p1, index, b_val];
+    bedges_new(i+nEdges,:) = [index, p2, b_val];
+    
+end % for
+end % if test == 1
+
 end
+
+%% Helper
 
 function k = findaRow(arr1, arr2)
 %find arr2 that is row vector in another vector arr1
