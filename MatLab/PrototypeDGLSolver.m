@@ -47,7 +47,7 @@ z = @(r,phi,z) z;
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
 t_step  = 0.25;
-t_end   = 300.00;  
+t_end   = 5.00;  
 t_vec   = t_start:t_step:t_end;
 
 
@@ -202,6 +202,7 @@ Q_rfa   = electricEnergy;                       % heat of electrical power
 Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
  
 Q_total = 0;
+Q_rfa   = 0;
 
 %% Calculate the temperatute distribution over time
 
@@ -220,8 +221,9 @@ for t_count=2:size(t_vec,2)
     delta_t = t_next - t_old;
         
     % Calculate total energy
-    Q_perf  = nu .* rho .* c .* (uh_next - T_body); % heat of blood perfusion
-    Q_total = delta_t * (Q_rfa + Q_perf);           % Update Q_total  
+    Q_rfa   = Q_rfa + delta_t * electricEnergy;
+    Q_perf  = delta_t .* nu .* rho .* c .* (uh_next - T_body); % heat of blood perfusion
+    Q_total = (Q_rfa + Q_perf);           % Update Q_total  
     % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
@@ -373,6 +375,12 @@ title('Difference between 4 minutes and one second');
 figure(9);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - merken1);
 title('Difference between 5 minutes and one second');
+
+
+stopTheExecutionHereBreakpoint = 0;
+
+test = uh_next - merken1;
+test = uh_next - merken4;
 
 
 stopTheExecutionHereBreakpoint = 0;
