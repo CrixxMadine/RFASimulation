@@ -1,9 +1,9 @@
-function [uh] = CalculateSingleTimeStep(Ah, Mh, fh_rhs, t0, tau)
+function [uh_new] = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t0, tau)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
 
-uh = 0;
+uh_new = 0;
 
 end
 
