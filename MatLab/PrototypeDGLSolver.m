@@ -98,13 +98,30 @@ F_coa = [ ]; % coagulation state
 
 %% TESTING, RefineGrid
 
+% Testing
+simple_pmesh = [0 0 0;
+                1 0 0;
+                0 1 0;
+                1 1 0];
+            
+simple_tmesh = [1 2 3;
+                2 4 3];
+
+
+[refine_p, refine_t] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, 1);           
+            
 [pmesh2, tmesh2] = TriangularMeshRefinement2D(pmesh', tmesh', 0);
 [pmesh3, tmesh3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1);
 
 figure(1);
 subplot(1,2,1);
+trimesh(refine_t, refine_p(:,1), refine_p(:,2));
+title('Triangulation after 2 Refinement later');
+
+figure(1);
+subplot(1,2,1);
 trimesh(tmesh3, pmesh3(:,1), pmesh3(:,2));
-title('Triangulation after 1 Refinement later');
+title('Triangulation after 2 Refinement later');
 
 
 %% Plot the mesh, for control -> deactivated by comments

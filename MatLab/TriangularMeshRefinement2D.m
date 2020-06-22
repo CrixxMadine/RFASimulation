@@ -1,8 +1,9 @@
 function [pmesh_new, tmesh_new] = TriangularMeshRefinement2D(pmesh, tmesh, test)
 
-% Helper function for structured grid refinement
-% This function takes a triangular mesh and refines it uniformly
-% The algorithm divides each triangle uniformly into 4 triangles
+%% Function and parameter description
+% Helper function for unstructured grid refinement
+% This function takes a triangular mesh and refines it
+% The algorithm divides each triangle into 4 new triangles
 %  ________             ________
 %  \      /             \  /\  /   
 %   \    /     ---->     \/__\/
@@ -20,7 +21,14 @@ function [pmesh_new, tmesh_new] = TriangularMeshRefinement2D(pmesh, tmesh, test)
 %  |/______________\|           |/_____\_/_____\|
 
 
-% TODO
+% Returns:
+% pmesh_new -> new point mesh with unique coordinates
+% tmesh_new -> new triangle mesh with unique coordinates
+
+% Input args:
+% pmesh, tmesh -> input mesh that shall be divided
+
+%% Function logic
 
 % function [W, G] = meshSubdivision(V, F)
 if (test == 0)
@@ -32,8 +40,6 @@ end
 
 F = double(tmesh);
 
-%function divides a triangular mesh represented by V, F
-%linearly. Output vertices W are unique
 %Output faces G are unique.
 % V is n by 3 array of input vertices  
 % F is m by 3 array of input faces
