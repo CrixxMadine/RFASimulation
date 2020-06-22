@@ -139,7 +139,6 @@ end
 % Create new Midpoint and find that point in new pmesh
 % Then add old value to both edges
 
-if (test == 1)
 
 nEdges = size(bedges,1) ;
  
@@ -168,7 +167,7 @@ for i=1:nEdges
     bedges_new(i+nEdges,:) = [index, p2, b_val];
     
 end % for
-end % if test == 1
+
 
 end
 

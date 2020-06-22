@@ -114,8 +114,8 @@ simple_bedges = [1    1    2    3 ;
 
 [refine_p, refine_t, refine_b] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, 1, simple_bedges');           
             
-%[pmesh2, tmesh2] = TriangularMeshRefinement2D(pmesh', tmesh', 0);
-%[pmesh3, tmesh3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1);
+[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh', tmesh', 0, bedges');
+[pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1, bedges2);
 
 figure(1);
 subplot(1,2,1);
@@ -126,6 +126,11 @@ figure(1);
 subplot(1,2,1);
 trimesh(tmesh3, pmesh3(:,1), pmesh3(:,2));
 title('Triangulation after 2 Refinement later');
+
+% Get testing data back to old format
+pmesh  = pmesh3(:,1:2)'; 
+tmesh  = tmesh3';
+bedges = bedges3';
 
 
 %% Plot the mesh, for control -> deactivated by comments
