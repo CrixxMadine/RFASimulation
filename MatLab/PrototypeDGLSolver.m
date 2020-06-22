@@ -88,11 +88,23 @@ F_coa = [ ]; % coagulation state
 %% Grid Generation 
 
 % Extra coarse grid 
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+ [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 %  bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+
+
+
+%% TESTING, RefineGrid
+
+[pmesh2, tmesh2] = TriangularMeshRefinement2D(pmesh', tmesh', 0);
+[pmesh3, tmesh3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1);
+
+figure(1);
+subplot(1,2,1);
+trimesh(tmesh3, pmesh3(:,1), pmesh3(:,2));
+title('Triangulation after 1 Refinement later');
 
 
 %% Plot the mesh, for control -> deactivated by comments
@@ -105,6 +117,7 @@ F_coa = [ ]; % coagulation state
 %scatter(pmesh(1,:), pmesh(2,:));
 %title('All the points in the triangulation');
 
+stopHereBreakPoint = 0;
 
 %% Calculate electrical potential phi 
 
@@ -164,12 +177,12 @@ power = zeros(size(phi,1),1);
 %     ((R_tis + R_setup)^2);  % effective power of the genrator
 
 % Calculate the electric energy at every vertex point
-electricEnergy = CalculatePowerDistribution(pmesh, tmesh, phi, sigma);
+electricEnergy = CalculateElectricEnergy(pmesh, tmesh, phi, sigma_phi);
 
 %% Plot the power distribution - deactivated by comments
-%figure(3);
-%trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
-%title('RFA power distribution at every point of mesh');
+figure(3);
+trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
+title('RFA power distribution at every point of mesh');
 
 
 %% Calculate the Heat for the Temperature Distribution T
