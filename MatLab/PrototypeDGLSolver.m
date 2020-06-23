@@ -87,61 +87,56 @@ F_coa = [ ]; % coagulation state
 
 %% Grid Generation 
 
-% Extra coarse grid 
+% Extra coarse grid of the 2D-cross-section
  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 %  bmesh = DefineBoundaryConditions(bedges);
  
-% Extra fine grid
+% Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
+% Very Simple triangulation to test mesh functions 
+% simple_pmesh = [0 0 ;
+%                 1 0 ;
+%                 0 1 ;
+%                 1 1 ];
+%             
+% simple_tmesh = [1 2 3;
+%                 2 4 3];
+%             
+% simple_bedges = [1    1    2    3 ;
+%                  2    3    4    4 ;
+%                  200 200   0    0];
 
+%% Refine the initial grid
 
-%% TESTING, RefineGrid
-
-% Testing
-simple_pmesh = [0 0 ;
-                1 0 ;
-                0 1 ;
-                1 1 ];
-            
-simple_tmesh = [1 2 3;
-                2 4 3];
-            
-simple_bedges = [1    1    2    3 ;
-                 2    3    4    4 ;
-                 200 200   0    0];
-
-
-[refine_p, refine_t, refine_b] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, simple_bedges');           
-            
-[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh', tmesh', bedges');
+[pmesh1, tmesh1, bedges1] = TriangularMeshRefinement2D(pmesh', tmesh', bedges');           
+[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
 [pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, bedges2);
 
-figure(1);
-subplot(1,2,1);
-trimesh(refine_t, refine_p(:,1), refine_p(:,2));
-title('Triangulation after 2 Refinement later');
+%% Plot the mesh, for control -> can be deactivated by comments
 
 figure(1);
-subplot(1,2,1);
+subplot(2,2,1);
+trimesh(tmesh', pmesh(1,:)', pmesh(2,:)');
+title('Triangulation without refinement');
+
+subplot(2,2,2);
 trimesh(tmesh3, pmesh3(:,1), pmesh3(:,2));
-title('Triangulation after 2 Refinement later');
+title('Triangulation after 3 Refinement later');
+
+subplot(2,2,3);
+scatter(pmesh(1,:)', pmesh(2,:)');
+title('Point vertices in the initial triangulation');
+
+subplot(2,2,4);
+scatter(pmesh3(:,1), pmesh3(:,2));
+title('Point vertices in the refined triangulation');
 
 % Get testing data back to old format
 pmesh  = pmesh3(:,1:2)'; 
 tmesh  = tmesh3';
 bedges = bedges3';
 
-
-%% Plot the mesh, for control -> deactivated by comments
-%figure(1);
-%subplot(1,2,1);
-%trimesh(tmesh', pmesh(1,:)', pmesh(2,:)');
-%title('The used triangulation of the domain');
-
-%subplot(1,2,2);
-%scatter(pmesh(1,:), pmesh(2,:));
-%title('All the points in the triangulation');
 
 stopHereBreakPoint = 0;
 
