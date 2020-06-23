@@ -1,24 +1,27 @@
-function [pmesh_new, tmesh_new, bedges_new] = TriangularMeshRefinement2D(pmesh, tmesh, test, bedges)
+function [pmesh_new, tmesh_new, bedges_new] = TriangularMeshRefinement2D(pmesh, tmesh, bedges)
 
 %% Function and parameter description
 % Helper function for unstructured grid refinement
 % This function takes a triangular mesh and refines it
+%
 % The algorithm divides each triangle into 4 new triangles
-%  ________             ________
-%  \      /             \  /\  /   
-%   \    /     ---->     \/__\/
-%    \  /                 \  /
-%     \/                   \/
-
-%   ________________             _______________
-%  |\              /|           |\     / \     /|
-%  |  \          /  |           |  \ /_____\ /  | 
-%  |     \    /     |           |  /|\     /|\  |
-%  |       \/       |  ----- >  |/  |  \_/  |  \|
-%  |       /\       |           |\  |  / \  |  /|
-%  |     /    \     |           |  \|/_____\|/  |
-%  |  /          \  |           |  / \     / \  |
-%  |/______________\|           |/_____\_/_____\|
+% Every boundary edge is splitted apart into 2 new edges
+%
+%  1-------3           1---6---3
+%   \     /             \ / \ /   
+%    \   /     ---->     4---5
+%     \ /                 \ /
+%      2                   2
+%      
+%   ______________             _______________
+%  |\            /|           |\     / \     /|
+%  |  \        /  |           |  \ /_____\ /  | 
+%  |    \    /    |           |  /|\     /|\  |
+%  |      \/      |  ----- >  |/  |  \_/  |  \|
+%  |      /\      |           |\  |  / \  |  /|
+%  |    /    \    |           |  \|/_____\|/  |
+%  |  /        \  |           |  / \     / \  |
+%  |/____________\|           |/_____\_/_____\|
 
 
 % Returns:
@@ -30,62 +33,57 @@ function [pmesh_new, tmesh_new, bedges_new] = TriangularMeshRefinement2D(pmesh, 
 
 %% Function logic
 
+% Convert to double for using triangulation
+tmesh = double(tmesh); 
 
+% Validate input arguments
 
-% function [W, G] = meshSubdivision(V, F)
-if (test == 0)
-extra = zeros(size(pmesh,1),1);
-V = [pmesh, extra];
-else 
-V = pmesh;
+if (nargin ~= 3)
+    error('Wrong number of arguments, put in pmesh, tmesh and bedges');
 end
 
-F = double(tmesh);
-
-%Output faces G are unique.
-% V is n by 3 array of input vertices  
-% F is m by 3 array of input faces
-% W is array of output vertices 
-% G is array of output faces
-%
-%      v1                   v1
-%     / \                  / \
-%    /   \      ->        a---c
-%   /     \              / \ / \
-% v2 ----- v3          v2-- b --v3
-%
-% start with checking input arguments
-
-% if nargin ~= 2
-%     error('wrong number of arguments');
-% end
-
-if (size(V, 2) ~= 3) 
-    error('vertices should contain 3 columns');
-elseif (size(F, 2) ~= 3)
-    error('faces should contain 3 columns');
+if (size(pmesh, 2) < 2) 
+    error('Vertices should contain at least 2 columns');
+elseif (size(tmesh, 2) < 3)
+    error('Triangles should contain at least 3 columns');
+elseif (size(bedges, 2) < 3)
+    error('BEdges should contain 3 columns, third column is a value that gets copied on new edge');
 end
-nV = size(V,1); %number of vertices
-nF = size(F,1); %number of faces
-Edges = zeros(3 * nF, 2); %assuming 3 edges on each face
-edgeMid = false(3 * nF,1);
+
+
+
+numP = size(pmesh,1); % number of points
+numT = size(tmesh,1); % number of triangles
+
+Edges = zeros(3 * numT, 2);  % every triangle has 3 edges
+edgeMid = false(3 * numT,1);
 e = [0 0;0 0;0 0];
 r = [0 0 0];
-triMesh = triangulation(F,V);
+
+% generate triMesh struct with triangulation
+triMesh = triangulation(tmesh,pmesh);
 Edges = edges(triMesh);
-MidPoints = (V(Edges(:,1),:) + V(Edges(:,2),:))/2; %mid points
-nMidPoints = size(MidPoints, 1);
-nW = nV + nMidPoints; %number of new vertices
-nG = 4 * nF; %number of new faces
-tmesh_new = zeros(nG, 3); %new faces array
-pmesh_new = zeros(nW, 3); %new vertices array
-pmesh_new(1:nV,:) = V;
-pmesh_new((nV+1):(nV+nMidPoints),:) = MidPoints;
-k = [1 1 1];
-ind = [1 1 1];
-for n = 1 : nF
-    aface = F(n,:);
-    %find and sort edged in a face
+
+midPoints = (pmesh(Edges(:,1),:) + pmesh(Edges(:,2),:))/2; % mid points
+numMidPoints = size(midPoints, 1);
+
+numNewP = numP + numMidPoints; % number of new points
+numNewT = 4 * numT;            % number of new triangles
+
+tmesh_new = zeros(numNewT, 3); 
+pmesh_new = zeros(numNewP, 2);
+
+pmesh_new(1:numP,:) = pmesh;
+pmesh_new((numP+1):(numP+numMidPoints),:) = midPoints;
+
+rowHelper = [1 1 1];
+oldPoints = [1 1 1];
+
+% Split every triangle into 4 new triangles
+for n = 1 : numT
+    aface = tmesh(n,:);
+    
+    %find and sort edge in a triangle
     if aface(1) < aface(2)
         e(1,1) = aface(1);
         e(1,2) = aface(2);
@@ -110,42 +108,40 @@ for n = 1 : nF
         e(3,1) = aface(3);
     end
     
-    k(1) = findaRow(Edges, e(1,:));
-    k(2) = findaRow(Edges, e(2,:));
-    k(3) = findaRow(Edges, e(3,:));
+    rowHelper(1) = findThisRow(Edges, e(1,:));
+    rowHelper(2) = findThisRow(Edges, e(2,:));
+    rowHelper(3) = findThisRow(Edges, e(3,:));
     
-    ind(1:3) = F(n,:);
+    oldPoints(1:3) = tmesh(n,:);
     
-    tmesh_new(4*(n-1)+1,1) = ind(1);
-    tmesh_new(4*(n-1)+1,2) = nV + k(1);
-    tmesh_new(4*(n-1)+1,3) = nV + k(3);
+    tmesh_new(4*(n-1)+1,1) = oldPoints(1);
+    tmesh_new(4*(n-1)+1,2) = numP + rowHelper(1);
+    tmesh_new(4*(n-1)+1,3) = numP + rowHelper(3);
     
-    tmesh_new(4*(n-1)+2,1) = nV + k(1);
-    tmesh_new(4*(n-1)+2,2) = ind(2);
-    tmesh_new(4*(n-1)+2,3) = nV + k(2);
+    tmesh_new(4*(n-1)+2,1) = numP + rowHelper(1);
+    tmesh_new(4*(n-1)+2,2) = oldPoints(2);
+    tmesh_new(4*(n-1)+2,3) = numP + rowHelper(2);
     
-    tmesh_new(4*(n-1)+3,1) = nV + k(2);
-    tmesh_new(4*(n-1)+3,2) = ind(3);
-    tmesh_new(4*(n-1)+3,3) = nV + k(3);
+    tmesh_new(4*(n-1)+3,1) = numP + rowHelper(2);
+    tmesh_new(4*(n-1)+3,2) = oldPoints(3);
+    tmesh_new(4*(n-1)+3,3) = numP + rowHelper(3);
     
-    tmesh_new(4*(n-1)+4,1) = nV + k(1);
-    tmesh_new(4*(n-1)+4,2) = nV + k(2);
-    tmesh_new(4*(n-1)+4,3) = nV + k(3);
+    tmesh_new(4*(n-1)+4,1) = numP + rowHelper(1);
+    tmesh_new(4*(n-1)+4,2) = numP + rowHelper(2);
+    tmesh_new(4*(n-1)+4,3) = numP + rowHelper(3);
 end
 
 
-%% TRY Adding new bedges -
+%% Adding new boundary edges
 
-% Create new Midpoint and find that point in new pmesh
-% Then add old value to both edges
+% Create new Midpoint and find that point in newly generated pmesh
+% Then add the old bcondition value to the new and old edge
 
-
-nEdges = size(bedges,1) ;
- 
-bedges_new = zeros(nEdges, 3);
+numEdges = size(bedges,1) ;
+bedges_new = zeros(numEdges, 3);
 
           
-for i=1:nEdges      
+for i=1:numEdges      
     p1 = bedges(i,1);
     p2 = bedges(i,2);
     b_val = bedges(i,3); % the value of boundary
@@ -159,32 +155,36 @@ for i=1:nEdges
     mx = (x1+x2)/2;
     my = (y1+y2)/2;
     
-    midPoint = [mx my 0];
+    midPoint = [mx my];
     
     index = find(ismember(pmesh_new, midPoint, 'rows'));
     
     bedges_new(i,:) =        [p1, index, b_val];
-    bedges_new(i+nEdges,:) = [index, p2, b_val];
+    bedges_new(i+numEdges,:) = [index, p2, b_val];
     
 end % for
 
 
 end
 
-%% Helper
+%% Helper function to find a specific row in a matrix
 
-function k = findaRow(arr1, arr2)
-%find arr2 that is row vector in another vector arr1
-rows = size(arr1, 1);
-k = 1;
+function idx = findThisRow(matrixToSearch, rowToFind)
+
+% find index of specific row in a matrix
+
+numRows = size(matrixToSearch, 1);
+idx = 1;
+
 indexFound = false;
-n = 1;
-while (n <= rows) && (indexFound == false)
-    if (arr1(n,1) == arr2(1)) && (arr1(n,2) == arr2(2))
-        k = n;
+count = 1;
+
+while (count <= numRows) && (indexFound == false)
+    if (matrixToSearch(count,1) == rowToFind(1)) && (matrixToSearch(count,2) == rowToFind(2))
+        idx = count;
         indexFound = true;
     end
-    n = n + 1;
+    count = count + 1;
 end
 
 end

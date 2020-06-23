@@ -99,10 +99,10 @@ F_coa = [ ]; % coagulation state
 %% TESTING, RefineGrid
 
 % Testing
-simple_pmesh = [0 0 0;
-                1 0 0;
-                0 1 0;
-                1 1 0];
+simple_pmesh = [0 0 ;
+                1 0 ;
+                0 1 ;
+                1 1 ];
             
 simple_tmesh = [1 2 3;
                 2 4 3];
@@ -112,10 +112,10 @@ simple_bedges = [1    1    2    3 ;
                  200 200   0    0];
 
 
-[refine_p, refine_t, refine_b] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, 1, simple_bedges');           
+[refine_p, refine_t, refine_b] = TriangularMeshRefinement2D(simple_pmesh, simple_tmesh, simple_bedges');           
             
-[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh', tmesh', 0, bedges');
-[pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, 1, bedges2);
+[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh', tmesh', bedges');
+[pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, bedges2);
 
 figure(1);
 subplot(1,2,1);
