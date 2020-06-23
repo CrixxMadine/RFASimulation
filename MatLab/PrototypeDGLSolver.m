@@ -47,7 +47,7 @@ z = @(r,phi,z) z;
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
 t_step  = 0.25;
-t_end   = 5.00;  
+t_end   = 2.00;  
 t_vec   = t_start:t_step:t_end;
 
 
@@ -172,32 +172,8 @@ title('Solution of the finite element method for phi');
 %% Calculate electric power from the electric potential
 
 % -> is now subroutine
-
 power = zeros(size(phi,1),1);
 
-% Get the numerical gradient of every vertex
-[phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, phi);
-
-% Calclulate power(r,z) for every vertex
-
-% for i=1:size(power,1)
-%     power(i) = sigma_phi * norm([phi_dx(i), phi_dy(i)])^2;   
-% end
-% 
-% % Calculate total power of the domain
-% totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
-% 
-% % Calculate effective power of the model 
-% power_setup = 200;   % power of the generator (in range 20-200 W)
-% U_elec = 2;          % Potential difference of the two electrodes
-% 
-% R_setup = 80;        % TODO find good value % inner resistance of the generator
-% R_tis = U_elec * U_elec / totalPower; % tissue resistance
-% 
-% effectivePower = (4 * power_setup * R_tis * R_setup) / ...
-%     ((R_tis + R_setup)^2);  % effective power of the genrator
-
-% Calculate the electric energy at every vertex point
 electricEnergy = CalculateElectricEnergy(pmesh, tmesh, phi, sigma_phi);
 
 %% Plot the power distribution - deactivated by comments
@@ -230,7 +206,7 @@ T_body = 37 + 273.15; % body temperature in Kelvin
 
 % Set initial temperature distribution for t = 0
 % (T = T_body on the entire domain)
-uh0_Temp = zeros(size(power)) + T_body;
+uh0_Temp = zeros(size(electricEnergy)) + T_body;
 uh_Temp  = uh0_Temp;
 
 % Calculate the right hand side of the equation with discrete point
@@ -276,6 +252,11 @@ for t_count=2:size(t_vec,2)
     trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - 273.15);
     title('Schematic Temperature Distribution in ° Celsius');
     
+    if (t_vec(t_count) == 1.00)
+        breakPointAfter1Second = 0;
+    end
+    
+    
     if (t_count == 2)
        merken1 = uh_next; 
     elseif (t_count == 240)
@@ -285,7 +266,7 @@ for t_count=2:size(t_vec,2)
     elseif (t_count == 720)
        merken4 = uh_next; 
     elseif (t_count == 960)
-       merken5 = uh_next; 
+      merken5 = uh_next; 
     end
     
     stopTheExecutionHereBreakpoint = 0;
@@ -404,9 +385,9 @@ figure(7);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken4 - merken1);
 title('Difference between 3 minutes and one second');
 
-figure(8);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
-title('Difference between 4 minutes and one second');
+% figure(8);
+% trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
+% title('Difference between 4 minutes and one second');
 
 figure(9);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - merken1);
