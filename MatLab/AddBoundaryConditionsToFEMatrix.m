@@ -1,4 +1,4 @@
-function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bmesh, opt)
+function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, bmesh)
 
 %% Function summary and arguments description
 
@@ -24,9 +24,10 @@ boundaryNodes = unique([bmesh(1,:), bmesh(2,:)]);
 boundaryNodesNumber = size(boundaryNodes,2);
 
 totalNodesNumber = size(pmesh,2);
-innerNodesNumber = totalNodesNumber - boundaryNodesNumber;
 
-innerNodes = setdiff(1:totalNodesNumber, boundaryNodes);
+% Not important by now -> TODO
+%innerNodesNumber = totalNodesNumber - boundaryNodesNumber;
+%innerNodes = setdiff(1:totalNodesNumber, boundaryNodes);
 
 % Inlcude boundary condition
 
@@ -61,20 +62,6 @@ for i=1:boundaryNodesNumber
 end
 
 
-%% Old implementation  -> Assuming only dirichlet conditions
-% Transform matrix and load vector with dirichlet conditions
-%fh_bound = fh - Ah * dirichletValues;
-% fh_bound(boundaryNodes) = dirichletValues(boundaryNodes);
-% 
-% Ah_bound = Ah;
-% 
-% Ah_bound(boundaryNodes, 1:totalNodesNumber) = 0;
-% Ah_bound(1:totalNodesNumber, boundaryNodes) = 0;
-% for s=1:boundaryNodesNumber
-%    Ah_bound(boundaryNodes(s),boundaryNodes(s)) = 1;
-% end
-
-
 %% New Implementation -> Combine dirich and neumann values
 
 % Calculate right hand side with substraction for dirichlet values
@@ -99,6 +86,19 @@ for j=1:boundaryNodesNumber
          fh_bound(node) = fh(node) + neumannValues(node);   
     end
 end
+
+%% Old implementation  -> Assuming only dirichlet conditions
+% Transform matrix and load vector with dirichlet conditions
+%fh_bound = fh - Ah * dirichletValues;
+% fh_bound(boundaryNodes) = dirichletValues(boundaryNodes);
+% 
+% Ah_bound = Ah;
+% 
+% Ah_bound(boundaryNodes, 1:totalNodesNumber) = 0;
+% Ah_bound(1:totalNodesNumber, boundaryNodes) = 0;
+% for s=1:boundaryNodesNumber
+%    Ah_bound(boundaryNodes(s),boundaryNodes(s)) = 1;
+% end
 
 
 

@@ -160,7 +160,7 @@ intyp = 1;
 [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k_EPot, q_EPot, f_rhs_EPot, intyp);
 
 % Add boundary conditions
-[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bmesh, 99999);
+[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, bmesh);
 
 % Solve the system of equations
 phi = Ah \ fh;
@@ -244,7 +244,7 @@ for t_count=2:size(t_vec,2)
     left  = Mh_heat + delta_t * Kh_heat;
     right = Mh_heat * uh_old + delta_t * fh_heat;
     
-    [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh, tmesh, bmesh, 1);      
+    [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh, bmesh);      
      
     uh_next = left \ right;
 
