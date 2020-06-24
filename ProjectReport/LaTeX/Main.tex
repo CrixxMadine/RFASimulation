@@ -34,7 +34,7 @@
 
 % part 1, Introduction 
 
-\section{Introduction}
+\section{Introduction to radio frequency ablation}
 
 Lets talk about:\\
 - Medical Treatment of Tumor\\
@@ -45,7 +45,7 @@ Lets talk about:\\
 
 % part 2, Main
 
-\section{Computer-aided simulation of radio frequency ablation with finite elements}
+\section{Computer-aided simulation of radio frequency ablation}
 
 \subsection{About Errors in simulations and numerical approaches}
 - see TUM dissertation \\
@@ -57,10 +57,15 @@ Lets talk about:\\
 - It's basically a butterfly effect \\
 - Optimizing one error source often conflicts with another one -> e.g. handling nonlinearity can cause fatal numerical errors (at least that's what Kroeger said ...)
 
+\subsection{The physics behind radio frequency ablation}
+
+\section{Mathematical aspects of discrete simulation}
+
 \subsection{Theory of finite elements}
 
 \subsubsection{Elliptical problems}
 - Elliptical problems in general \\
+- Parabolic / time-dependent problems \\
 - build up system of PDE's to describe problem \\
 - Using the cylindric domain, different domains \\
 
@@ -71,7 +76,11 @@ Lets talk about:\\
 \subsubsection{FEM for temperature fields}
 - boundary condition (heat source or sink) \\
 
-\subsubsection{Axial symmetrie}
+
+\subsection{Solving systems of ODE over time}
+- This is for temperature distribution
+
+\subsection{Axial symmetrie}
 - Using axial symmetrie to simplify computations \\
 - reducing one dimension 3D -> 2D \\
 - significant savings calculations time and complexity \\
@@ -80,9 +89,7 @@ Lets talk about:\\
 - maybe Torus elements \\
 
 
-\subsection{This part is about the concrete PDEs itself}
-
-\subsubsection{FEM in cylindric Coordinates}
+\subsection{FEM in cylindric Coordinates}
 - Rewrite the equations to cylindric coordinates \\
  
 Laplace in cartesian coordinates:
@@ -102,8 +109,11 @@ Laplace in polar coordinates:
 
 
 
-\subsubsection{PDE for Electric potential}
+\section{Discretization of PDEs}
 
+\subsection{PDE for Electric potential}
+
+\subsubsection{Weak formulation of the problem}
 Three parts are interesting:
 - Inner domain \\
 - Fixed Potential of electrodes \\
@@ -163,7 +173,9 @@ Constant material parameters: \\
     TODO
 \end{equation}
 
-\subsubsection{PDE for temperature Distribution}
+\subsection{PDE for temperature Distribution}
+
+\subsubsection{Weak formulation}
 
 Following Kroeger, the temperature distribution is modeled by the heat equation: 
 
@@ -197,7 +209,8 @@ For the first run, we assume $lambda$ is also constant too, which greatly reduce
 
 $Q = Q_(rf) + Q_{perf}$
 
-\section{Applied FEM-Simulation}
+\section{Applied FEM technologies}
+
 \subsection{Weak solutions}
 \subsubsection{Electric potential}
 
@@ -224,11 +237,14 @@ Specific PDE for electric potential, inner domain:
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = 0 
 \end{equation}
 
-\subsection{Temperature Distribution}
+\subsubsection{Temperature Distribution}
 
 This is basically the problem above but as a hyperbolic problem \\
 Using semidiscrete solution and iterate solution over time \\
+We are applying method of the discontinuous galerkein fem \\
 For reference see Jung, Langer : Methode der finiten Elemente für Ingenieure, chapter 7.1 \\
+
+
 
 Weak formulation for the problem: \\
 
@@ -255,24 +271,46 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
     a_w(t;u,v) := \int_{\Omega} \rho c (\partial_t u \cdot v) drdz + \int_{\Omega} \lambda (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
 \end{equation}
 
-\subsection{Grid generation / Triangulation}
+\subsection{Discretization / Triangulation}
 
-\subsection{Get TestData}
+\subsubsection{Grid generation}
 
+\subsubsection{Grid refinement}
+
+
+\subsection{Assembling system of equation}
+
+\subsubsection{Assemble elementwise}
+\subsubsection{Add boundary Conditions}
+
+\subsection{Error estimations}
+\subsubsection{H1-Norm}
+\subsubsection{L2-Norm}
+\subsubsection{Evtl energy norm}
+
+\section{Numerical challenges / Numerical aspects in general}
+\subsubsection{Numerical integration}
+\subsubsection{Numerical gradient on discrete points}
+\subsubsection{Surface integral}
+\subsubsection{Solving the system of equations}
+
+\section{Applied simulation}
+\subsection{Generating TestData / Get reference data}
 \subsection{Solving the PDEs}
-\subsubsection{numerical challenges}
-\subsubsection{numerical integration}
-\subsubsection{solving the system of equations}
-
+\subsection{Combine everything to continous time dependent simulation}
 \subsection{Interpretation of result numbers}
+- Interprete numbers \\
+- Compare with data from experiment or other simulations \\
+
+\section{Programming technologies}
+
+\subsection{Performance Optimization}
+\subsection{MatLab vs C++}
+- Basically the performance advantages of using C++ \\
+- Combine advantages if both languages \\
+- MatLab as documentation of the simulation \\
 
 \subsection{Graphical output}
-
-\subsection{Optimization}
-
-\subsection{MatLab vs C++}
-
-- Basically the performance advantages of using C++
 
 % part 3, Summary
 
@@ -280,19 +318,17 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 
 \subsection{Project Summary}
 
-\textcolor{blue}
-{
-This is the conclusion part
-}
-
-\subsection{strengths and flaws}
+\subsubsection{strengths and flaws}
 - why is it good, why is it bad
+\subsubsection{future modifications}
 
 \subsection{State of the current Research}
 - Research in the simulation of medical therapy methods \\
 
 \subsection{Other FEM projects and software}
-
+- FENICS \\
+- COMSOL \\
+- ANSYS \\
 
 \newpage
 
