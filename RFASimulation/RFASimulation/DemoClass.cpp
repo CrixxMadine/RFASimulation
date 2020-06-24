@@ -1,7 +1,7 @@
 
 #include "DemoClass.h";
 
-using namespace Demo;
+using namespace RFASimulation;
 
 
 DemoClass::DemoClass(int myInt)

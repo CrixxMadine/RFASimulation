@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Demo
+namespace RFASimulation
 {
 
 	class DemoClass

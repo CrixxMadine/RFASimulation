@@ -6,7 +6,7 @@
 #include "DemoClass.h";
 #include <iostream>
 
-using namespace Demo;
+using namespace RFASimulation;
 
 int main()
 {

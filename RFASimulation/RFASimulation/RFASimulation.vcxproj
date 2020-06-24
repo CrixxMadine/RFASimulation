@@ -148,10 +148,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DemoClass.cpp" />
+    <ClCompile Include="ElementBuilder.cpp" />
+    <ClCompile Include="LinearElement2D.cpp" />
+    <ClCompile Include="MatrixAssemble.cpp" />
     <ClCompile Include="RFASimulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DemoClass.h" />
+    <ClInclude Include="ElementBuilder.h" />
+    <ClInclude Include="LinearElement2D.h" />
+    <ClInclude Include="MatrixAssemble.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
