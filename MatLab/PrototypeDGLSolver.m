@@ -47,7 +47,7 @@ z = @(r,phi,z) z;
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
 t_step  = 0.25;
-t_end   = 2.00;  
+t_end   = 5.00;  
 t_vec   = t_start:t_step:t_end;
 
 
@@ -250,9 +250,9 @@ for t_count=2:size(t_vec,2)
 
     figure(4);
     trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - 273.15);
-    title('Schematic Temperature Distribution in ° Celsius');
+    title(['Temperature Distribution in ° Celsius after ', num2str(t_next), ' seconds']);
     
-    if (t_vec(t_count) == 1.00)
+    if (t_count == 2)
         breakPointAfter1Second = 0;
     end
     

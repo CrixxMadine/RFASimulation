@@ -47,8 +47,8 @@ for i=1:n
     
     elseif strcmp(type, 'temp')
         
-        %if (2 < 1)  %% TODO TESTING
-        if (bedges(3,i) == 300) % outer boundary
+        if (2 < 1)  %% TODO TESTING
+        %if (bedges(3,i) == 300) % outer boundary
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
             

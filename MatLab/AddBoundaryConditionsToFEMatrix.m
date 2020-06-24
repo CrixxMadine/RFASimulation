@@ -93,7 +93,7 @@ end
 
 
 %% TODO TESTING!!
-fh_bound = fh - Ah * dirichletValues;
+% fh_bound = fh - Ah * dirichletValues;
 
 
 % Test with for
