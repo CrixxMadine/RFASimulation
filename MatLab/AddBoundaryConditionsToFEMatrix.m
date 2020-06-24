@@ -1,4 +1,4 @@
-function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bmesh)
+function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, tmesh, bmesh, opt)
 
 %% Function summary and arguments description
 
@@ -36,7 +36,8 @@ sorted_bmesh = bmesh(:,idx);  % sort the whole matrix using the sort indices
 
 % First: Only dirichlet
 dirichletValues = zeros(totalNodesNumber,1);
-%isRealDirich = zeros(totalNodesNumber,1);
+isRealDirich = zeros(totalNodesNumber,1);
+neumannValues = zeros(totalNodesNumber,1);
 
 for i=1:boundaryNodesNumber 
     type = sorted_bmesh(3,i);
@@ -46,28 +47,66 @@ for i=1:boundaryNodesNumber
         dirichletValues(node) = sorted_bmesh(4,i); 
         
         % Testing with flag
-        %isRealDirich(node) = 1;
+        isRealDirich(node) = 1;
     
         % TODO TRYING
-%         Ah(node,node) = 1;
 %         fh(node) = sorted_bmesh(4,i);
 %         
-%         Ah(node, node+1) = 0; 
-%         Ah(node, node+2) = 0; 
+% %         Ah(node, node+1) = 0; 
+% %         Ah(node, node+2) = 0; 
+% %         
+% %         Ah(node+1, node) = 0; 
+% %         Ah(node+2, node) = 0; 
+%         Ah(node, 1) = 0; 
+%         Ah(node, 2) = 0; 
+%         Ah(node, 3) = 0; 
 %         
-%         Ah(node+1, node) = 0; 
-%         Ah(node+2, node) = 0; 
+%         Ah(1, node) = 0; 
+%         Ah(2, node) = 0;  
+%         Ah(3, node) = 0; 
 %         
-%         fh(node+1) = fh(node+1) - Ah(node+1,node) * sorted_bmesh(4,i);
-%         fh(node+2) = fh(node+2) - Ah(node+2,node) * sorted_bmesh(4,i);
+%         %fh(node+1) = fh(node+1) - Ah(node,node+1) * sorted_bmesh(4,i);
+%         %fh(node+2) = fh(node+2) - Ah(node,node+2) * sorted_bmesh(4,i);
+%         
+%         Ah(node,node) = 1;
         % END TODO
         
     elseif (type == 2) % Neumann
         % TODO This is wrong! -> Does Dirichlet conditions with value = 0
-%         node = boundaryNodes(i);
-%         dirichletValues(node) = 37 + 273.15;
-%         isRealDirich(node) = 1;
         
+%         node = boundaryNodes(i);
+% %         dirichletValues(node) = 37 + 273.15;
+          %isRealDirich(node) = 0;
+%           
+%         % Testing with other dirichlet
+         node = boundaryNodes(i);
+%         if (opt == 1)
+%         bCond = 37 + 273.15;
+%         else
+%         bCond = 0;
+%         end
+%         
+%         dirichletValues(node) = bCond; 
+        
+        % Testing with flag
+        isRealDirich(node) = 2;
+    
+        % TODO TRYING
+         bcond = sorted_bmesh(4,i);
+         neumannValues(node) = bcond; %fh(node) + bCond;
+%         
+%         Ah(node, 1) = 0;
+%         Ah(node, 2) = 0;
+%         Ah(node, 3) = 0;
+%         
+%         Ah(1, node) = 0;
+%         Ah(2, node) = 0;
+%         Ah(3, node) = 0;
+%         
+        %fh(node+1) = fh(node+1) - Ah(node,node+1) * bCond;
+%         %fh(node+2) = fh(node+2) - Ah(node,node+1) * bCond;
+%         
+%         Ah(node,node) = 1;
         test = 0;
         
     else 
@@ -76,36 +115,44 @@ for i=1:boundaryNodesNumber
     end
 end
 
-% Ah_bound = Ah;
-% fh_bound = fh;
+Ah_bound = Ah;
+fh_bound = fh;
 
 % Transform matrix and load vector with dirichlet conditions
 fh_bound = fh - Ah * dirichletValues;
-fh_bound(boundaryNodes) = dirichletValues(boundaryNodes);
-
+% fh_bound(boundaryNodes) = dirichletValues(boundaryNodes);
+% 
 Ah_bound = Ah;
-
-Ah_bound(boundaryNodes, 1:totalNodesNumber) = 0;
-Ah_bound(1:totalNodesNumber, boundaryNodes) = 0;
-for s=1:boundaryNodesNumber
-   Ah_bound(boundaryNodes(s),boundaryNodes(s)) = 1;
-end
+% 
+% Ah_bound(boundaryNodes, 1:totalNodesNumber) = 0;
+% Ah_bound(1:totalNodesNumber, boundaryNodes) = 0;
+% for s=1:boundaryNodesNumber
+%    Ah_bound(boundaryNodes(s),boundaryNodes(s)) = 1;
+% end
 
 
 %% TODO TESTING!!
 % fh_bound = fh - Ah * dirichletValues;
 
 
-% Test with for
-% for j=1:boundaryNodesNumber
-%     node = boundaryNodes(j);
-%     
-%     if (isRealDirich(node) == 1)
-%         fh_bound(boundaryNodes) = dirichletValues(boundaryNodes);
-%     end
-% end
-%
-% Ah_bound = Ah;
+%Test with for
+for j=1:boundaryNodesNumber
+    node = boundaryNodes(j);
+    
+    if (isRealDirich(node) == 1)
+        Ah_bound(node, 1:totalNodesNumber) = 0;
+        Ah_bound(1:totalNodesNumber, node) = 0;
+        
+        Ah_bound(node,node) = 1;
+        
+        fh_bound(node) = dirichletValues(node);
+        
+    elseif (isRealDirich(node) == 2)
+         fh_bound(node) = fh(node) + neumannValues(node);   
+    end
+end
+
+%Ah_bound = Ah;
 
 % for zz=1:boundaryNodesNumber
 %     node = boundaryNodes(zz);

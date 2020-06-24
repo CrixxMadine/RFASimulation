@@ -43,12 +43,16 @@ for i=1:n
         else % blank needle or outer boundary
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
+            
+            % Testing
+%             bmesh(3,i) = 1;     % Dirich
+%             bmesh(4,i) = 0;
         end
     
     elseif strcmp(type, 'temp')
         
-        if (2 < 1)  %% TODO TESTING
-        %if (bedges(3,i) == 300) % outer boundary
+        %if (2 < 1)  %% TODO TESTING
+        if (bedges(3,i) == 300) % outer boundary
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
             
