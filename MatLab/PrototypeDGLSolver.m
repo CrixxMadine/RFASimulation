@@ -109,7 +109,15 @@ F_coa = [ ]; % coagulation state
 
 %% Refine the initial grid
 
-[pmesh1, tmesh1, bedges1] = TriangularMeshRefinement2D(pmesh', tmesh', bedges');           
+
+[pmesh1, tmesh1, bedges1] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
+
+% Try more refinements -> This is to much ...
+%[pmesh11, tmesh11, bedges11] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
+%[pmesh22, tmesh22, bedges22] = TriangularMeshRefinement2D(pmesh11, tmesh11, bedges11);    
+%[pmesh111, tmesh111, bedges111] = TriangularMeshRefinement2D(pmesh11, tmesh11, bedges11);    
+%[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh111, tmesh111, bedges111);
+
 [pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
 [pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, bedges2);
 
@@ -256,7 +264,33 @@ for t_count=2:size(t_vec,2)
         breakPointAfter1Second = 0;
     end
     
+    % Try rotate data
+%     figure(100);
+%     surf(pmesh(2,:)',pmesh(1,:)', pmesh(1,:)', uh0_Temp);
+%     for i = 1:360
+%         rotate(h,[0 1 0], i);
+%         drawnow;
+%     end
     
+
+% see: https://www.mathworks.com/matlabcentral/answers/506492-how-do-i-plot
+%      -animation-of-temperature-data-for-a-3d-object-with-time
+% for video idea 
+% 
+% maxt = max(t);
+% mint = min(t);
+% N = 100;
+% cmap = jet(N);                % generate N colors for temperature
+% plot3(x,y,z)
+% hold on
+% for i = 1:length(x)
+%     itemp = round((t(i)-mint)/(maxt-mint)*(N-1))+1;
+%     h = plot3(x(i),y(i),z(i),'.','color',cmap(itemp,:));
+%     pause(0.1)
+%     delete(h)
+% end
+% hold off
+
     if (t_count == 2)
        merken1 = uh_next; 
     elseif (t_count == 240)
