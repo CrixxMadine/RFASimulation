@@ -21,6 +21,7 @@ function [pmesh, tmesh, bedges] = ReadGridFromFile(folderPath)
 %    domain2   -> '101' : negative electrode
 %    domain3   -> '200' : blank needle
 %    domain4   -> '300' : outer boundary
+%    domain5   -> '400' : rotation axis
 
 pmesh = load(append(folderPath, 'pmesh.txt'))';
 % If you use MatLab 2018b or older version: use strcat instead of append

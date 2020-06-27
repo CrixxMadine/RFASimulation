@@ -89,13 +89,14 @@ F_coa = [ ]; % coagulation state
 %% Grid Generation 
 
 % Extra coarse grid of the 2D-cross-section
- [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 %  bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
-
+% Halved grid, coarse withe prerefinement for region around electrodes
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
 
 %% Refine the initial grid
 

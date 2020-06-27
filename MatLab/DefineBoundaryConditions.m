@@ -19,6 +19,7 @@ function bmesh = DefineBoundaryConditions(bedges, type)
 %    domain2   -> '101' : negative electrode
 %    domain3   -> '200' : blank needle
 %    domain4   -> '300' : outer boundary
+%    domain5   -> '400' : rotation axis
 % 
 %  TODO : will define robin and needle in time
 
@@ -40,7 +41,7 @@ for i=1:n
             bmesh(3,i) =  1;
             bmesh(4,i) = -1;
 
-        else % blank needle or outer boundary
+        else % blank needle or outer boundary or rotation axis
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
             
@@ -53,6 +54,10 @@ for i=1:n
         
         %if (2 < 1)  %% TODO TESTING
         if (bedges(3,i) == 300) % outer boundary
+            bmesh(3,i) = 2;     % Neumann 
+            bmesh(4,i) = 0;
+            
+        elseif (bedges(3,i) == 400) % rotation axis
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
             
