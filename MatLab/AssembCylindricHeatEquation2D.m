@@ -8,8 +8,8 @@ function [Ah, Mh, fh] = AssembCylindricHeatEquation2D(pmesh, tmesh, k, q, Q_val,
 % Assemble each element, no boundary conditions yet
 
 % returns:
-% Ah := FE-matrix (sum of stiffnessmatrix and q-massmatrix)
-% Mh := M-Matrix (the prefactor matrix of du/dt)
+% Ah := sparse FE-matrix (sum of stiffnessmatrix and q-massmatrix)
+% Mh := sparse M-Matrix (the prefactor matrix of du/dt)
 % fh := right hand side of the system of equations
 
 % -- Inout args are very similar to AssembleCylindricLaPlace --
@@ -25,9 +25,21 @@ Ne = 3;    % number of points per element - (3 for triangle)
 
 %% Assemble the system of equations, elementwise
 
-Ah = zeros(Ng,Ng);
-Mh = zeros(Ng,Ng);
+Ah_row = zeros(3*Ng,1);
+Ah_col = Ah_row;
+Ah_val = Ah_row;
+
+Mh_row = zeros(3*Ng,1);
+Mh_col = Mh_row;
+Mh_val = Mh_row;
+
 fh = zeros(Ng,1);
+
+count = 0;
+
+% OLD -> Using full matrix
+% Ah = zeros(Ng,Ng);
+% Mh = zeros(Ng,Ng);
 
 for i=1:Me
     
@@ -51,15 +63,29 @@ for i=1:Me
        fh(a(m)) = fh(a(m)) + f_elem(m);  
       
        for n = 1:Ne
+
+           count = count + 1;
+                      
+           Ah_row(count) = a(m);
+           Ah_col(count) = a(n);
+           Ah_val(count) = K_elem(m,n); 
            
-           Ah(a(m),a(n)) = Ah(a(m),a(n)) + K_elem(m,n);
+           Mh_row(count) = a(m);
+           Mh_col(count) = a(n);
+           Mh_val(count) = M_elem(m,n); 
            
-           Mh(a(m),a(n)) = Mh(a(m),a(n)) + M_elem(m,n);
+           % OLD -> Using full matrix
+           % Ah(a(m),a(n)) = Ah(a(m),a(n)) + K_elem(m,n);          
+           % Mh(a(m),a(n)) = Mh(a(m),a(n)) + M_elem(m,n);
+           
        end 
        
     end 
     
 end 
+
+Ah = sparse(Ah_row, Ah_col, Ah_val);
+Mh = sparse(Mh_row, Mh_col, Mh_val);
 
 end
 

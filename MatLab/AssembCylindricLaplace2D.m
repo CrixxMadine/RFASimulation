@@ -7,7 +7,7 @@ function [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k, q, f_rhs, intyp)
 % Model equation: - div( k * grad(u) ) + q * u = f_rhs
 
 % returns:
-% Ah := FE-matrix (sum of stiffnessmatrix and q-massmatrix)
+% Ah := sparse FE-matrix (sum of stiffnessmatrix and q-massmatrix)
 % fh := right hand side of the system of equations
 
 % Input args:
@@ -48,8 +48,15 @@ Ne = 3;    % number of points per element - (3 for triangle)
 
 %% Assemble the system of equations, elementwise
 
-Ah = sparse(Ng,Ng);
+Ah_row = zeros(3*Ng,1);
+Ah_col = Ah_row;
+Ah_val = Ah_row;
+
 fh = zeros(Ng,1);
+count = 0;
+
+% OLD -> Using no sparse matrix
+% Ah = zeros(Ng,Ng);
 
 for i=1:Me
     
@@ -70,14 +77,22 @@ for i=1:Me
        fh(a(m)) = fh(a(m)) + f_elem(m);  
       
        for n = 1:Ne
+                     
+           count = count + 1;
+                      
+           Ah_row(count) = a(m);
+           Ah_col(count) = a(n);
+           Ah_val(count) = K_elem(m,n); 
            
-           Ah(a(m),a(n)) = Ah(a(m),a(n)) + K_elem(m,n);
-           
+           % OLD -> Using no sparse matrix
+           % Ah(a(m),a(n)) = Ah(a(m),a(n)) + K_elem(m,n);
        end 
        
     end 
     
 end 
+
+Ah = sparse(Ah_row, Ah_col, Ah_val);
 
 end
 

@@ -20,7 +20,8 @@
 %  TODO: ADD PUBLISHER
 
 clear variables;
-disp('MatLab ..... yeah :(')
+disp('This script runs a simulation of radio frequency ablation');
+
 
 %% Space and time dimensions
 
@@ -114,12 +115,13 @@ F_coa = [ ]; % coagulation state
 
 % Try more refinements -> This is to much ...
 %[pmesh11, tmesh11, bedges11] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
-%[pmesh22, tmesh22, bedges22] = TriangularMeshRefinement2D(pmesh11, tmesh11, bedges11);    
-%[pmesh111, tmesh111, bedges111] = TriangularMeshRefinement2D(pmesh11, tmesh11, bedges11);    
+%[pmesh22, tmesh22, bedges22] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);    
+%[pmesh111, tmesh111, bedges111] = TriangularMeshRefinement2D(pmesh22, tmesh22, bedges22);    
 %[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh111, tmesh111, bedges111);
 
 [pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
 [pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, bedges2);
+
 
 %% Plot the mesh, for control -> can be deactivated by comments
 
