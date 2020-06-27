@@ -48,7 +48,7 @@ Ne = 3;    % number of points per element - (3 for triangle)
 
 %% Assemble the system of equations, elementwise
 
-Ah = zeros(Ng,Ng);
+Ah = sparse(Ng,Ng);
 fh = zeros(Ng,1);
 
 for i=1:Me

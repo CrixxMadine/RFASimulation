@@ -187,7 +187,7 @@ electricEnergy = CalculateElectricEnergy(pmesh, tmesh, phi, sigma_phi);
 %% Plot the power distribution - deactivated by comments
 figure(3);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
-title('RFA power distribution at every point of mesh');
+title('RFA electric energy at every point of mesh');
 
 
 %% Calculate the Heat for the Temperature Distribution T
@@ -241,9 +241,13 @@ for t_count=2:size(t_vec,2)
     delta_t = t_next - t_old;
         
     % Calculate total energy
-    Q_rfa   = Q_rfa + delta_t * electricEnergy;
+    if (t_count == 2)
+        Q_rfa = electricEnergy; % time independent by now  
+        Q_total = Q_rfa;
+    end
+    
     Q_perf  = delta_t .* nu .* rho .* c .* (uh_next - T_body); % heat of blood perfusion
-    Q_total = (Q_rfa + Q_perf);           % Update Q_total  
+    Q_total = (Q_total + Q_perf);           % Update Q_total  
     % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
