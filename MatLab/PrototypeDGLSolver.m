@@ -95,18 +95,7 @@ F_coa = [ ]; % coagulation state
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
-% Very Simple triangulation to test mesh functions 
-% simple_pmesh = [0 0 ;
-%                 1 0 ;
-%                 0 1 ;
-%                 1 1 ];
-%             
-% simple_tmesh = [1 2 3;
-%                 2 4 3];
-%             
-% simple_bedges = [1    1    2    3 ;
-%                  2    3    4    4 ;
-%                  200 200   0    0];
+
 
 %% Refine the initial grid
 
