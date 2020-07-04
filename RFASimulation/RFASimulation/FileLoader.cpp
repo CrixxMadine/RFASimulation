@@ -6,8 +6,14 @@
 
 using namespace std;
 
-RFASimulation::TriangleMesh RFASimulation::FileLoader::LoadMeshFromFilePath(string path)
+
+RFASimulation::TriangleMesh RFASimulation::FileLoader::LoadMeshFromFilePath(string folderPath)
 {
+    string fileName = ("pmesh.txt");
+    string fullPath = folderPath + fileName;
+
+    auto pmesh = FileLoader::LoadMatrixFromFile(fullPath);
+
     return TriangleMesh();
 
     //int x, y;
@@ -28,7 +34,7 @@ RFASimulation::TriangleMesh RFASimulation::FileLoader::LoadMeshFromFilePath(stri
     //inStream.close();
 }
 
-static vector<vector<double>> LoadMatrixFromFile(string &filename)
+vector<vector<double>> RFASimulation::FileLoader::LoadMatrixFromFile(string filename)
 {
     ifstream file;
     file.open(filename, ios::in | ios::out);
@@ -50,7 +56,12 @@ static vector<vector<double>> LoadMatrixFromFile(string &filename)
         string::const_iterator i = line.begin();
 
         while (!reader.eof()) {
-            double val;
+
+            // TODO
+            double val = 0;
+
+            // TODO
+
             reader << val;
 
             if (reader.fail())

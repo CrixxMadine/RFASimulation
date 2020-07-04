@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DemoClass.h";
+#include "FileLoader.h";
 #include <iostream>
 
 using namespace RFASimulation;
@@ -17,6 +18,9 @@ int main()
     auto var = dem.GetMyInt();
 
     std::cout << var;
+
+    auto mesh = FileLoader::LoadMeshFromFilePath("C:/Users/marti/source/repos/RFASimulation/MatLab/Grid/Unstruc_Triang_Halved_Needle/");
+
 }
 
 

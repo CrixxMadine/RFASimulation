@@ -5,14 +5,20 @@
 
 namespace RFASimulation
 {
+	using namespace std;
+
 	static class FileLoader
 	{
 
 	public:
 
-		TriangleMesh LoadMeshFromFilePath(string path);
+		static TriangleMesh LoadMeshFromFilePath(string path);
 
 
+	private:
+
+		static vector<vector<double>> LoadMatrixFromFile(string filename);
+		
 	};
 
 }
