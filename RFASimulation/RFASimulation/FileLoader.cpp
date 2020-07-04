@@ -14,24 +14,27 @@ RFASimulation::TriangleMesh RFASimulation::FileLoader::LoadMeshFromFilePath(stri
 
     auto pmesh = FileLoader::LoadMatrixFromFile(fullPath);
 
-    return TriangleMesh();
+    fileName = ("tmesh.txt");
+    fullPath = folderPath + fileName;
 
-    //int x, y;
+    auto tmesh_double = FileLoader::LoadMatrixFromFile(fullPath);
 
-    //ifstream inStream(path, ifstream::in);
+    // Convert double 2dvector to integer 2dvector
+    vector<vector<int>> tmesh_int;
+    tmesh_int.reserve(tmesh_double.size());
 
-    //if (!inStream) {
-    //    cout << "Cannot open file.\n";
-    //    return;
-    //}
+    for (auto&& v : tmesh_double)
+    {
+        tmesh_int.emplace_back(std::begin(v), std::end(v));
+    }
 
-    //for (y = 0; y < 15; y++) {
-    //    for (x = 0; x < 15; x++) {
-    //        inStream >> distances[x][y];
-    //    }
-    //}
+    fileName = ("bedges.txt");
+    fullPath = folderPath + fileName;
 
-    //inStream.close();
+    auto bedges = FileLoader::LoadMatrixFromFile(fullPath);
+
+    return TriangleMesh(tmesh_int, pmesh, bedges);
+
 }
 
 vector<vector<double>> RFASimulation::FileLoader::LoadMatrixFromFile(string filename)
@@ -53,16 +56,15 @@ vector<vector<double>> RFASimulation::FileLoader::LoadMatrixFromFile(string file
 
         vector<double> lineData;
 
+
+
         string::const_iterator i = line.begin();
 
         while (!reader.eof()) {
 
-            // TODO
-            double val = 0;
+            double val;
 
-            // TODO
-
-            reader << val;
+            reader >> val;
 
             if (reader.fail())
                 break;
@@ -72,5 +74,7 @@ vector<vector<double>> RFASimulation::FileLoader::LoadMatrixFromFile(string file
 
         data.push_back(lineData);
     }
+
+    return data;
 }
 
