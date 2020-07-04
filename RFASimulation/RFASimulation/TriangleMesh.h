@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
 
-using namespace std;
 
 namespace RFASimulation
 {
+	using namespace std;
+
 	class TriangleMesh
 	{
 
@@ -16,6 +17,7 @@ namespace RFASimulation
 
 		vector<vector<double>> m_bedges;
 
+		TriangleMesh();
 
 		TriangleMesh(vector<vector<int>> tmesh, vector<vector<double>> pmesh, vector<vector<double>> bedges);
 

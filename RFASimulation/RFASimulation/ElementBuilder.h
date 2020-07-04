@@ -5,13 +5,14 @@ namespace RFASimulation
 {
 	static class ElementBuilder
 	{
+
 		public:
 
 			LinearElement2D GetElement(void);
 
 		private:
 
-			vector<vector<int>,vector<int>> GetStiffnessMatrix(void);
+			std::vector<std::vector<int>,std::vector<int>> GetStiffnessMatrix(void);
 
 			void GetMassMatrix(void);
 	};

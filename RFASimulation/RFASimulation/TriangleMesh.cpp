@@ -3,6 +3,13 @@
 using namespace RFASimulation;
 
 
+TriangleMesh::TriangleMesh() 
+{
+    TriangleMesh::m_tmesh = vector<vector<int>>();
+    TriangleMesh::m_pmesh = vector<vector<double>>();
+    TriangleMesh::m_bedges = vector<vector<double>>();
+}
+
 TriangleMesh::TriangleMesh(vector<vector<int>> tmesh, vector<vector<double>> pmesh, vector<vector<double>> bedges)
 {
     TriangleMesh::m_tmesh = tmesh;

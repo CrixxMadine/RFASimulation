@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 
-using namespace std;
 
 namespace RFASimulation
 {
@@ -9,11 +8,11 @@ namespace RFASimulation
 	{
 		public: 
 			
-			vector<vector<int>> StiffnessMatrix;
+			std::vector<std::vector<int>> StiffnessMatrix;
 
-			vector<vector<int>> MassMatrix;
+			std::vector<std::vector<int>> MassMatrix;
 
-			vector<int> RightHandSide;
+			std::vector<int> RightHandSide;
 			
 			
 			LinearElement2D(void);

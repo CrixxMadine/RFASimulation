@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
-
-using namespace std;
+#include <string>
+#include <iostream>
+#include "TriangleMesh.h"
 
 namespace RFASimulation
 {
@@ -10,7 +10,7 @@ namespace RFASimulation
 
 	public:
 
-		static TriangleMesh LoadFiles();
+		TriangleMesh LoadMeshFromFilePath(string path);
 
 
 	};
