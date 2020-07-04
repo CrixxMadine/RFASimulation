@@ -7,19 +7,24 @@ namespace RFASimulation
 {
 	class TriangleMesh
 	{
+
 	public:
 
-		vector<vector<double>> pmesh;
+		vector<vector<int>> m_tmesh;
 
-		vector<vector<int>> tmesh;
+		vector<vector<double>> m_pmesh;
 
-		vector<int> bedges;
+		vector<vector<double>> m_bedges;
 
 
-		TriangleMesh(void);
+		TriangleMesh(vector<vector<int>> tmesh, vector<vector<double>> pmesh, vector<vector<double>> bedges);
 
 		~TriangleMesh(void);
 
+
+		int GetPointNumber(void);
+
+		int GetTriangleNumber(void);
 
 	};
 

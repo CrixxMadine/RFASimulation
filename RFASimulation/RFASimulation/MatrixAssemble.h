@@ -9,10 +9,10 @@ namespace RFASimulation
 	{
 		public:
 
-			vector<vector<int>> AssembleStiffnessMatrix;
+			vector<vector<int>> AssembleStiffnessMatrix(void);
 
-			vector<vector<int>> AssembleMassMatrix;
+			vector<vector<int>> AssembleMassMatrix(void);
 
-			vector<vector<int>> AssembleRightHandSide;
+			vector<vector<int>> AssembleRightHandSide(void);
 	};
 }
