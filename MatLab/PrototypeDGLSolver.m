@@ -23,6 +23,7 @@ clear variables;
 disp('This script runs a simulation of radio frequency ablation');
 
 
+
 %% Space and time dimensions
 
 % This simulation models a needle inserted in a malignant tissue
@@ -97,6 +98,30 @@ F_coa = [ ]; % coagulation state
 
 % Halved grid, coarse withe prerefinement for region around electrodes
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+
+
+%% Testing 3d mesh reconstruction
+% Domain is rotation symmetric
+% We can use value for every point of 3d domain
+
+numPoints = size(pmesh,2);
+
+pmesh3DCylinder = zeros(numPoints * 36 , 3);
+
+for angle=0:10:350
+    
+    angleVec = zeros(numPoints,1) + angle;
+    
+    area = (angle/10) * numPoints + 1;
+    pmesh3DCylinder(area:area+numPoints-1, :) = [pmesh(1,:)', angleVec, pmesh(2,:)'];
+
+end
+
+[s,t,u] = pol2cart(pmesh3DCylinder(:,2)', pmesh3DCylinder(:,1)', pmesh3DCylinder(:,3)');
+plot3(s(:), t(:), u(:), '.');
+% scatter3(s(:), t(:), u(:), '.');
+% d = pmesh3DCylinder;
+% plot3(d(:,1), d(:,2), d(:,3);
 
 %% Refine the initial grid
 
@@ -434,6 +459,11 @@ test = uh_next - merken4;
 
 
 stopTheExecutionHereBreakpoint = 0;
+
+%% Create 3D-Data from 2D slice
+
+
+
 
 %% Galerkin FEM - TRYING TODO maybe this is a bit to complicated ...
 %  For every time step, there will be a system of equations 
