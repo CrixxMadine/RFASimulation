@@ -99,19 +99,27 @@ Lets talk about:\\
 
 \subsubsection{Elliptical problems}
 - Elliptical problems in general \\
-- Parabolic / time-dependent problems \\
 - build up system of PDE's to describe problem \\
 - Using the cylindric domain, different domains \\
 
 \subsubsection{Parabolic problems}
-- Solving systems of ODE over discrete time intervalls
+- Parabolic / time-dependent problems \\
+- Ignoring time dependency first and calculate the resulting elliptical problem
+- Build system of equations for elliptical problem \\
+- Describe the parabolic PDE as an ODE with matrices from elliptical PDE \\
+- Solving the system of ODE equations over discrete time intervalls \\
+- Runge-Kutta \\
+- For this simulation, backward euler / implicit euler formula does the job \\
 
 \subsubsection{FEM in Electrostatics}
+- General info \\
 - special domain \\
 - boundary conditions \\
 
 \subsubsection{FEM in Temperature Fields / perhaps Fluid Dynamics}
+- General info \\
 - boundary condition (heat source or sink) \\
+- In this simulation, heat source is from electrical energy \\
 
 \subsection{Numerical solution of system of ODE's}
 
@@ -368,7 +376,7 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 \subsection{Error estimations}
 \subsubsection{H1-Norm}
 \subsubsection{L2-Norm}
-\subsubsection{Evtl energy norm}
+\subsubsection{Maybe energy norm???}
 
 \newpage
 
@@ -380,13 +388,20 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 \subsection{Grid refinement}
 \subsection{Solving the system of equations}
 
+
+
+
 \section{Applied simulation}
 \subsection{Generating TestData / Get reference data}
+- Material parameters see Stein TODO \\
+- Using specification data from electrical generator \\
+
 \subsection{Solving the PDEs}
 \subsection{Combine everything to continous time dependent simulation}
 \subsection{Interpretation of result numbers}
 - Interprete numbers \\
 - Compare with data from experiment or other simulations \\
+- TODO compare with other simulations \\
 
 \section{Programming technologies}
 
