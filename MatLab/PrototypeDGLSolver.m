@@ -89,14 +89,14 @@ F_coa = [ ]; % coagulation state
 %% Grid Generation 
 
 % Extra coarse grid of the 2D-cross-section
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-%  bmesh = DefineBoundaryConditions(bedges);
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+% bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
 % Halved grid, coarse withe prerefinement for region around electrodes
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
 
 %% Refine the initial grid
 
@@ -402,6 +402,9 @@ for t_count=2:size(t_vec,2)
 
 end % for 
 
+figure(500);
+trisurf(tmesh', pmesh(1,:)', pmesh(2,:)', uh_next);
+title('Difference between 1 minute and one second');
 
 figure(5);
 trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken2 - merken1);

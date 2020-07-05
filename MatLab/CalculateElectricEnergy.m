@@ -17,7 +17,7 @@ end
 
 % TODO testing
 figure(200);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', power);
+trisurf(tmesh', pmesh(1,:)', pmesh(2,:)', power);
 title('Constant power at every point of mesh');
 
 % Calculate total power of the domain
