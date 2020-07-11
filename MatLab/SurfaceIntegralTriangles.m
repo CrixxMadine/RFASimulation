@@ -8,18 +8,18 @@ function [sum] = SurfaceIntegralTriangles(tmesh, pmesh, z_val)
 % tmesh := triangle matrix of triangulation
 % z_val := discrete values for every point of the triangulation
 
-n = size(tmesh,1);
+n = size(tmesh,2);
 sum = 0;
 
 for i=1:n
    
     % get the global point numbers of the current triangle
-    p = [tmesh(1,i),  tmesh(2,i), tmesh(3,i)];
+    p = [tmesh(i,1),  tmesh(i,2), tmesh(i,3)];
     
     % get the coordinates of each point
-    a = pmesh(:,p(1));
-    b = pmesh(:,p(2));
-    c = pmesh(:,p(3));
+    a = pmesh(p(1),:);
+    b = pmesh(p(2),:);
+    c = pmesh(p(3),:);
     
     % Area of triangle with given coordinates 
     % See Wikipedia ...    

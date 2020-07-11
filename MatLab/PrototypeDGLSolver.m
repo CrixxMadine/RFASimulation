@@ -197,7 +197,7 @@ electricEnergy = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
 
 %% Plot the power distribution - deactivated by comments
 figure(3);
-trisurf(tmesh, pmesh(:,2), pmesh(:,2), electricEnergy);
+trisurf(tmesh, pmesh(:,1), pmesh(:,2), electricEnergy);
 title('RFA electric energy at every point of mesh');
 
 % TODO crawler for column vectors
