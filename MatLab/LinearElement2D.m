@@ -57,12 +57,7 @@ z_ref = [JT_inv(2,1) JT_inv(2,2)];  % partial jacobi matrix dz
 if (intyp == 1 || intyp == 2)
     
     F = @(my,ny) mtimes(J, [my; ny]) + a1;  
-
-else
-    
-    % matlab library integration uses scalar operations
-    % function F_scalar is defined at the end of this script
-    F = @F_scalar;    
+  
     
 end
 
@@ -86,16 +81,8 @@ dz_phi1 = @(my,ny) -1;
 dz_phi2 = @(my,ny)  0;
 dz_phi3 = @(my,ny)  1;
 
-% note: gradient is defined as grad f(x,y) = [df/dx, df/dy]
-grad_phi1 = @(my, ny)  [-1 -1];  % grad phi1
-grad_phi2 = @(my, ny)  [ 1  0];  % grad phi2 
-grad_phi3 = @(my, ny)  [ 0  1];  % grad phi3 
-
 
 %% Define integrals for quadrature and associated right hand side
-
-% remember, this is an academic approach
-% optimized values are implemented in C++ algorithm
 
 %% Cylindrical LaPlace Equation
 
@@ -178,19 +165,6 @@ for alpha=1:3
 end
 
 
-
-function res = F_scalar(my,ny)
-
-    % helper function to make F(x) scalar
-    % mandatory for using matlab library function integral12 
-    
-    x = J(1,1) .* my + J(1,2) .* ny + a1(1);
-    
-    y = J(2,1) .* my + J(2,2) .* ny + a1(2);
-    
-    res = [x ; y];
-    
-end
 
 end
 

@@ -43,10 +43,9 @@ elseif (intyp == 2)  % quadrature on 7 points
                       8*f(a(1),m1) + 8*f(m2,a(2)) + 8*f(m2,m1) + 27*f(d1,d2));
 
 
-else  % matlab library function  -> 
-      % actually very slow and inaccurate
+else  
 
-    res = integral2(f, a(1), b(1), a(2), c(2));
+    error('Your integration type is not defined');
 
 end  
 
