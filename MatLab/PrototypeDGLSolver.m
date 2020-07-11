@@ -104,21 +104,7 @@ F_coa = [ ]; % coagulation state
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
-numPoints = size(pmesh,2);
 
-pmesh3DCylinder = zeros(numPoints * 36 , 3);
-
-for angle=0:10:350
-    
-    angleVec = zeros(numPoints,1) + angle;
-    
-    area = (angle/10) * numPoints + 1;
-    pmesh3DCylinder(area:area+numPoints-1, :) = [pmesh(1,:)', angleVec, pmesh(2,:)'];
-
-end
-
-[s,t,u] = pol2cart(pmesh3DCylinder(:,2)', pmesh3DCylinder(:,1)', pmesh3DCylinder(:,3)');
-plot3(s(:), t(:), u(:), '.');
 % scatter3(s(:), t(:), u(:), '.');
 % d = pmesh3DCylinder;
 % plot3(d(:,1), d(:,2), d(:,3);
