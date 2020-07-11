@@ -25,25 +25,25 @@ function bmesh = DefineBoundaryConditions(bedges, type)
 
 n = size(bedges, 1);
 
-bmesh(4,n) = 0;
-bmesh(1,:) = bedges(:,1);
-bmesh(2,:) = bedges(:,2);
+bmesh(n,4) = 0;
+bmesh(:,1) = bedges(:,1);
+bmesh(:,2) = bedges(:,2);
 
 for i=1:n
     
     if (strcmp(type, 'phi')) % Add boundary vlaues for phi 
     
         if (bedges(i,3) == 100) % positive electrode
-            bmesh(3,i) = 1;     % Dirichlet
-            bmesh(4,i) = 1;     % potential in Voltage
+            bmesh(i,3) = 1;     % Dirichlet
+            bmesh(i,4) = 1;     % potential in Voltage
 
         elseif (bedges(i,3) == 101) % negative electrode
-            bmesh(3,i) =  1;
-            bmesh(4,i) = -1;
+            bmesh(i,3) =  1;
+            bmesh(i,4) = -1;
 
         else % blank needle or outer boundary or rotation axis
-            bmesh(3,i) = 2;     % Neumann 
-            bmesh(4,i) = 0;
+            bmesh(i,3) = 2;     % Neumann 
+            bmesh(i,4) = 0;
             
             % Testing
 %             bmesh(3,i) = 1;     % Dirich
@@ -54,16 +54,16 @@ for i=1:n
         
         %if (2 < 1)  %% TODO TESTING
         if (bedges(i,3) == 300) % outer boundary
-            bmesh(3,i) = 2;     % Neumann 
-            bmesh(4,i) = 0;
+            bmesh(i,3) = 2;     % Neumann 
+            bmesh(i,4) = 0;
             
         elseif (bedges(i,3) == 400) % rotation axis
-            bmesh(3,i) = 2;     % Neumann 
-            bmesh(4,i) = 0;
+            bmesh(i,3) = 2;     % Neumann 
+            bmesh(i,4) = 0;
             
         else     % anywhere on the needle, blank or electrode
-            bmesh(3,i) = 1;           % Dirichlet
-            bmesh(4,i) = 37 + 273.15; % body temperature in Kelvin
+            bmesh(i,3) = 1;           % Dirichlet
+            bmesh(i,4) = 37 + 273.15; % body temperature in Kelvin
         end
         
     else   
