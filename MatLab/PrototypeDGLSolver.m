@@ -237,9 +237,7 @@ Q_rfa   = 0;
 
 
 % TODO crawler for column vectors
-pmesh = pmesh';
-tmesh = tmesh';
-bedges = bedges';
+
 
 %% Calculate the temperatute distribution over time
 
@@ -268,17 +266,17 @@ for t_count=2:size(t_vec,2)
     % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
-          = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
+          = AssembCylindricHeatEquation2D(pmesh', tmesh', k_Temp, q_Temp, Q_total, intyp);
           
     left  = Mh_heat + delta_t * Kh_heat;
     right = Mh_heat * uh_old + delta_t * fh_heat;
     
-    [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh', bmesh);      
+    [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh, bmesh);      
      
     uh_next = left \ right;
 
     figure(4);
-    trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - 273.15);
+    trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - 273.15);
     title(['Temperature Distribution in ° Celsius after ', num2str(t_next), ' seconds']);
     
     if (t_count == 2)
@@ -427,20 +425,21 @@ for t_count=2:size(t_vec,2)
 
 end % for 
 
+
 figure(500);
-trisurf(tmesh', pmesh(1,:)', pmesh(2,:)', uh_next);
+trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next);
 title('Difference between 1 minute and one second');
 
 figure(5);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken2 - merken1);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken2 - merken1);
 title('Difference between 1 minute and one second');
 
 figure(6);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken3 - merken1);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken3 - merken1);
 title('Difference between 2 minutes and one second');
 
 figure(7);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken4 - merken1);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken4 - merken1);
 title('Difference between 3 minutes and one second');
 
 % figure(8);
@@ -448,7 +447,7 @@ title('Difference between 3 minutes and one second');
 % title('Difference between 4 minutes and one second');
 
 figure(9);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_next - merken1);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - merken1);
 title('Difference between 5 minutes and one second');
 
 
