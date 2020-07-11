@@ -29,7 +29,7 @@ title('Constant power at every point of mesh');
 totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 
 % Calculate effective power of the model 
-power_setup = 20;   % power of the generator (in range 20-200 W)
+power_setup = 200;   % power of the generator (in range 20-200 W)
 U_elec = 2;          % Potential difference of the two electrodes
 
 R_setup = 80;        % TODO find good value % inner resistance of the generator
