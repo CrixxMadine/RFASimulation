@@ -24,7 +24,7 @@ disp('This script runs a simulation of radio frequency ablation');
 
 
 
-%% Space and time dimensions
+%% Explanantion of space and time dimensions
 
 % This simulation models a needle inserted in a malignant tissue
 % Due to axis symmetrie, the whole simulation is reduced to a 2D-problem
@@ -42,9 +42,12 @@ disp('This script runs a simulation of radio frequency ablation');
 %
 
 % Transformation reference to cylindrical coordinates 
-x = @(r,phi,z) r * cos(phi);
-y = @(r,phi,z) r * sin(phi);
-z = @(r,phi,z) z;
+% x = r * cos(phi);
+% y = r * sin(phi);
+% z = z;
+
+
+%% Time discretization
 
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
@@ -94,10 +97,10 @@ F_coa = [ ]; % coagulation state
 % bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid of the 2D-cross-section
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
 % Halved grid, coarse withe prerefinement for region around electrodes
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
 
 
 %% Testing 3d mesh reconstruction
@@ -112,12 +115,11 @@ uh = zeros(size(pmesh,1),1);
 
 %% Refine the initial grid
 
-
 pmeshFiner = pmesh;
 tmeshFiner = tmesh;
 bedgesFiner = bedges;
 
-numRefinements = 2;
+numRefinements = 0;
 
 for i=1:numRefinements
 
@@ -134,7 +136,7 @@ title('Triangulation without refinement');
 
 subplot(2,2,2);
 trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
-title('Triangulation after 3 Refinement later');
+title('Triangulation after 3 refinements');
 
 subplot(2,2,3);
 scatter(pmesh(:,1), pmesh(:,2));
@@ -145,12 +147,7 @@ scatter(pmeshFiner(:,1), pmeshFiner(:,2));
 title('Point vertices in the refined triangulation');
 
 % Get testing data back to old format
-
-%OLD
-% pmesh  = pmesh3(:,1:2)'; 
-% tmesh  = tmesh3';
-% bedges = bedges3';
-
+% TODO
 % new
 pmesh = pmeshFiner';
 tmesh = tmeshFiner';
