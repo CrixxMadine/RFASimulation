@@ -1,4 +1,4 @@
-function electricEnergy = CalculateElectricEnergy(pmesh, tmesh, phi, sigma)
+function electricEnergy = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma)
 
 %% Calculate electric power from the electric potential
 
@@ -8,6 +8,11 @@ power = zeros(size(phi,1),1);
 %[phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, phi);
 
 [phi_dx, phi_dy] = TriGradient(pmesh(1,:)',pmesh(2,:)', phi);
+
+% Eliminate gradient on boundary nodes -> is not defined in weak form
+%boundaryNodes = unique([bedges(1,:), bedges(2,:)]);
+%phi_dx(boundaryNodes) = 0;
+%phi_dy(boundaryNodes) = 0;
 
 % Calclulate power(r,z) for every vertex
 

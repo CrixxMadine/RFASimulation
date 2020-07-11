@@ -49,7 +49,7 @@ z = @(r,phi,z) z;
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
 t_step  = 0.25;
-t_end   = 5.00;  
+t_end   = 60.00;  
 t_vec   = t_start:t_step:t_end;
 
 
@@ -97,10 +97,10 @@ F_coa = [ ]; % coagulation state
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
 % Halved grid, coarse withe prerefinement for region around electrodes
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
 
 
-%% Testing 3d mesh reconstruction
+%% Testing 3d mesh reconstruction TODO move to function
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
@@ -131,11 +131,11 @@ plot3(s(:), t(:), u(:), '.');
 % Try more refinements -> This is to much ...
 %[pmesh11, tmesh11, bedges11] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
 %[pmesh22, tmesh22, bedges22] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);    
-%[pmesh111, tmesh111, bedges111] = TriangularMeshRefinement2D(pmesh22, tmesh22, bedges22);    
+%[pmesh111, tmesh111, bedges111] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);    
 %[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh111, tmesh111, bedges111);
 
-[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
-[pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh2, tmesh2, bedges2);
+%[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
+[pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
 
 
 %% Plot the mesh, for control -> can be deactivated by comments
@@ -199,7 +199,7 @@ title('Solution of the finite element method for phi');
 % -> is now subroutine
 power = zeros(size(phi,1),1);
 
-electricEnergy = CalculateElectricEnergy(pmesh, tmesh, phi, sigma_phi);
+electricEnergy = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
 
 %% Plot the power distribution - deactivated by comments
 figure(3);
@@ -258,13 +258,13 @@ for t_count=2:size(t_vec,2)
     delta_t = t_next - t_old;
         
     % Calculate total energy
-    if (t_count == 2)
-        Q_rfa = electricEnergy; % time independent by now  
-        Q_total = Q_rfa;
-    end
-    
-    Q_perf  = delta_t .* nu .* rho .* c .* (uh_next - T_body); % heat of blood perfusion
-    Q_total = (Q_total + Q_perf);           % Update Q_total  
+%     if (t_count == 2)
+%         Q_rfa = electricEnergy; % time independent by now  
+%         Q_total = Q_rfa;
+%     end
+    Q_rfa = delta_t .* electricEnergy;
+    Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_next); % cooling of blood perfusion
+    Q_total = Q_total + Q_rfa + Q_perf;           % Update Q_total  
     % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
@@ -454,8 +454,8 @@ title('Difference between 5 minutes and one second');
 
 stopTheExecutionHereBreakpoint = 0;
 
-test = uh_next - merken1;
-test = uh_next - merken4;
+test11 = uh_next - merken1;
+test22 = uh_next - merken4;
 
 
 stopTheExecutionHereBreakpoint = 0;
