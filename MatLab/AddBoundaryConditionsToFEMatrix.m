@@ -20,7 +20,7 @@ function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, b
 %   -> Fourth row :  right hand side value of the boundary condition
 
 
-boundaryNodes = unique([bmesh(:,1), bmesh(:,1)]);
+boundaryNodes = unique([bmesh(:,1), bmesh(:,2)]);
 boundaryNodesNumber = size(boundaryNodes,1);
 
 totalNodesNumber = size(pmesh,1);
