@@ -126,12 +126,18 @@ Lets talk about:\\
 \subsection{Axial symmetrie}
 - Using axial symmetrie to simplify computations \\
 - reducing one dimension 3D -> 2D \\
-- problems are qsuivalent \\
+- problems are aquivalent \\
 - significant savings calculations time and complexity \\
 - approach: fourier decomposition in angular direction to reduce dependency on the angular $\varphi$ \\
 - using static models, only dependency on space \\
 - maybe Torus elements \\
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{projection_2D_general.PNG}
+    \caption{Schematic projection on 2D half section}
+    \label{projection_2D_general}
+\end{figure}
 
 
 
@@ -207,13 +213,13 @@ Constant material parameters: \\
 - So equation simplifies to 
 
 \begin{equation}
-    - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
+    - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
 \end{equation}
 
 
 \subsubsection{Electrodes}
 
-- Potential difference on the electrodes is fixed bx definition \\
+- Potential difference on the electrodes is fixed by definition \\
 - For calculations, potential will be defined as $\pm 1$ \\
 
 \begin{equation}
@@ -223,7 +229,7 @@ Constant material parameters: \\
 
 \subsubsection{Outer boundary}
 
-- For first try, a simplification with natural boundary conditions
+- one approach is a simplification with natural boundary conditions \\
 
 \begin{equation}
     n \cdot \nabla \varphi = 0
@@ -234,9 +240,25 @@ Constant material parameters: \\
     TODO
 \end{equation}
 
+
+- In actual RFA treatment, there is a mass to nullify the potential in the outer region \\
+- For the lower boundary, this behaviour can be easily modeled with dirichlet conditions \\
+
+\begin{equation}
+    \varphi = 0
+\end{equation}
+
+
 \subsubsection{Rotation axis}
 
-- Axis symmetry, so here apply natural neumann bundary conditions TODO \\
+- this is an artificial boundary \\
+- To keep the axis symmetry, here must apply natural neumann bundary conditions \\
+- Othe conditions would break the symmetrie \\
+- \begin{equation}
+    n \cdot \nabla \varphi = 0
+\end{equation}
+
+- Use input from article \\
 
 
 \subsection{Calculation of electrical energy}
@@ -363,30 +385,58 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 
 \subsection{Discretization / Triangulation}
 
-\subsubsection{Grid generation}
+- Grid generation and refinement \\
+- 2D domain \\
+- initial coarse grid trinagulation can be done by hand \\
+- coarse grid can be refined by algorithm \\
 
-\subsubsection{Grid refinement}
-
+- refinement of triangle into 4 new pieces \\
+- \textcolor{blue}{insert picture here}
 
 \subsection{Assembling system of equation}
 
-\subsubsection{Assemble elementwise}
-\subsubsection{Add boundary Conditions}
+- assemble elementwise \\
+- use symmetrie of elements if koefficients are constant or allow it \\
+- Add boundary conditions afterwards \\
+- grouping of similar calculations allow more vectorized operations \\ 
+
+\subsection{Solving the system of equations}
 
 \subsection{Error estimations}
-\subsubsection{H1-Norm}
-\subsubsection{L2-Norm}
-\subsubsection{Maybe energy norm???}
+
+\subsubsection{Element Error on 2D geometry}
+- H1-Norm \\
+- L2-Norm \\
+
+- The analytical solution of the problem is unknown, but we can estimate it by calculating different element sizes on different fine grids \\
+
+Idea: Define geometric some geometric coordinates on triangle and look for best matching or choose some points on different geometrical entities \\
+
+Refine triangles around that point and see whether the error is smaller on the finer grid \\
+
+\subsubsection{Time step error on discrete intervalls}
+
+See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step and compare the difference of results, use the smaller steps for calculation \\
+
 
 \newpage
 
 
-\section{Numerical challenges / Numerical aspects in general}
+\section{Other numerical aspects }
 \subsection{Numerical integration}
+- quadrature on discrete points \\
+
 \subsection{Numerical gradient on discrete points}
+
+- "Testfunction nähern Ersatzlösung an " \\
+- gradient is constant on every triangle \\
+- however, gradient is needed on discrete points \\
+
 \subsection{Surface integral}
+- sum of integral of every single triangle \\
+
 \subsection{Grid refinement}
-\subsection{Solving the system of equations}
+- refine triangle uniformly into 4 new ones \\
 
 
 
