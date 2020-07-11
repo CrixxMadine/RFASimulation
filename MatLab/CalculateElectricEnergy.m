@@ -9,6 +9,14 @@ power = zeros(size(phi,1),1);
 
 [phi_dx, phi_dy] = TriGradient(pmesh(:,1),pmesh(:,2), phi);
 
+x = -2:0.2:2;
+y = x';
+z = x .* exp(-x.^2 - y.^2);
+[px,py] = gradient(z);
+
+[test_dx, test_dy] = gradient(phi');
+
+
 % Eliminate gradient on boundary nodes -> is not defined in weak form
 boundaryNodes = unique([bedges(1,:), bedges(2,:)]);
 phi_dx(boundaryNodes) = 0;
