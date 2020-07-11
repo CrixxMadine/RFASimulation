@@ -174,7 +174,7 @@ f_rhs_EPot = @(r,z) 0;
 intyp = 1;
 
 % Assemble FEM system of equations 
-[Ah, fh] = AssembCylindricLaplace2D(pmesh', tmesh', k_EPot, q_EPot, f_rhs_EPot, intyp);
+[Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k_EPot, q_EPot, f_rhs_EPot, intyp);
 
 % Add boundary conditions
 [Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh', bmesh);

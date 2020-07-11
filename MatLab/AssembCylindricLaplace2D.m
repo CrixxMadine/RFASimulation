@@ -61,12 +61,12 @@ count = 0;
 for i=1:Me
     
     % get the global point numbers of the current triangle
-    a = [tmesh(1,i),  tmesh(2,i), tmesh(3,i)];
+    a = [tmesh(i,1),  tmesh(i,2), tmesh(i,3)];
     
     % get the coordinates of each point
-    p1 = pmesh(:,a(1));
-    p2 = pmesh(:,a(2));
-    p3 = pmesh(:,a(3));
+    p1 = pmesh(a(1),:)';
+    p2 = pmesh(a(2),:)';
+    p3 = pmesh(a(3),:)';
     
     % assemble matrix and right hand sand for the current element
     [K_elem, f_elem] = LinearElement2D(k, q, f_rhs, p1, p2, p3, intyp);
