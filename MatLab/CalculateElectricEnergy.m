@@ -9,12 +9,30 @@ power = zeros(size(phi,1),1);
 
 [phi_dx, phi_dy] = TriGradient(pmesh(:,1),pmesh(:,2), phi);
 
-x = -2:0.2:2;
-y = x';
-z = x .* exp(-x.^2 - y.^2);
-[px,py] = gradient(z);
+% x = -2:0.2:2;
+% y = x';
+% z = x .* exp(-x.^2 - y.^2);
+% [px,py] = gradient(z);
+% 
+% [test_dx, test_dy] = gradient(phi');
 
-[test_dx, test_dy] = gradient(phi');
+
+
+%% Testing 2
+
+%[gradx,grady] = pdegrad(phi,pmesh(:,1),pmesh(:,2));
+
+[p,e,t] = initmesh(@lshapeg);
+u = assempde(@lshapeb,p,e,t,1,0,1);
+[ux,uy] = pdegrad(p,t,u);
+pdeplot(p,e,t,'xydata',ux,'zdata',uy)
+
+% add fourth column
+tmesh_test = [tmesh, zeros(size(tmesh,1),1)];
+
+figure(300);
+[ux,uy] = pdegrad(pmesh',tmesh',phi);
+pdeplot(pmesh',bedges',tmesh_test','xydata',ux,'zdata',uy)
 
 
 % Eliminate gradient on boundary nodes -> is not defined in weak form
