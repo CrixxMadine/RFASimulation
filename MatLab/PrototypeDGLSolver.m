@@ -113,7 +113,7 @@ uh = zeros(size(pmesh,1),1);
 %% Refine the initial grid
 
 
-[pmesh1, tmesh1, bedges1] = TriangularMeshRefinement2D(pmesh, tmesh, bedges); 
+[pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmesh, tmesh, bedges); 
 
 % Try more refinements -> This is to much ...
 %[pmesh11, tmesh11, bedges11] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
@@ -122,7 +122,7 @@ uh = zeros(size(pmesh,1),1);
 %[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh111, tmesh111, bedges111);
 
 %[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
-[pmesh3, tmesh3, bedges3] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
+[pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
 
 
 %% Plot the mesh, for control -> can be deactivated by comments
@@ -133,21 +133,28 @@ trimesh(tmesh, pmesh(:,1), pmesh(:,2)');
 title('Triangulation without refinement');
 
 subplot(2,2,2);
-trimesh(tmesh3, pmesh3(:,1), pmesh3(:,2));
+trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
 title('Triangulation after 3 Refinement later');
 
 subplot(2,2,3);
-scatter(pmesh(1,:)', pmesh(2,:)');
+scatter(pmesh(:,1), pmesh(:,2));
 title('Point vertices in the initial triangulation');
 
 subplot(2,2,4);
-scatter(pmesh3(:,1), pmesh3(:,2));
+scatter(pmeshFiner(:,1), pmeshFiner(:,2));
 title('Point vertices in the refined triangulation');
 
 % Get testing data back to old format
-pmesh  = pmesh3(:,1:2)'; 
-tmesh  = tmesh3';
-bedges = bedges3';
+
+%OLD
+% pmesh  = pmesh3(:,1:2)'; 
+% tmesh  = tmesh3';
+% bedges = bedges3';
+
+% new
+pmesh = pmeshFiner';
+tmesh = tmeshFiner';
+bedges = bedgesFiner';
 
 
 stopHereBreakPoint = 0;
