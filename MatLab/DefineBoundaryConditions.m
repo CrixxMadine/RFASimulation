@@ -23,21 +23,21 @@ function bmesh = DefineBoundaryConditions(bedges, type)
 % 
 %  TODO : will define robin and needle in time
 
-n = size(bedges, 2);
+n = size(bedges, 1);
 
 bmesh(4,n) = 0;
-bmesh(1,:) = bedges(1,:);
-bmesh(2,:) = bedges(2,:);
+bmesh(1,:) = bedges(:,1);
+bmesh(2,:) = bedges(:,2);
 
 for i=1:n
     
     if (strcmp(type, 'phi')) % Add boundary vlaues for phi 
     
-        if (bedges(3,i) == 100) % positive electrode
+        if (bedges(i,3) == 100) % positive electrode
             bmesh(3,i) = 1;     % Dirichlet
             bmesh(4,i) = 1;     % potential in Voltage
 
-        elseif (bedges(3,i) == 101) % negative electrode
+        elseif (bedges(i,3) == 101) % negative electrode
             bmesh(3,i) =  1;
             bmesh(4,i) = -1;
 
@@ -53,11 +53,11 @@ for i=1:n
     elseif strcmp(type, 'temp')
         
         %if (2 < 1)  %% TODO TESTING
-        if (bedges(3,i) == 300) % outer boundary
+        if (bedges(i,3) == 300) % outer boundary
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
             
-        elseif (bedges(3,i) == 400) % rotation axis
+        elseif (bedges(i,3) == 400) % rotation axis
             bmesh(3,i) = 2;     % Neumann 
             bmesh(4,i) = 0;
             

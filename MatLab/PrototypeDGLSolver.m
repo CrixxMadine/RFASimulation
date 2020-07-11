@@ -164,7 +164,7 @@ stopHereBreakPoint = 0;
 %  -> This is a Laplacian Equation, elliptical PDE second order
 
 % Add boundary conditions for the elliptical problem
-bmesh = DefineBoundaryConditions(bedges', 'phi');
+bmesh = DefineBoundaryConditions(bedges, 'phi');
 
 % Define specific parameters for phi PDE
 
@@ -212,7 +212,7 @@ title('RFA electric energy at every point of mesh');
 % Problem is solved with a mixed finite element method
 
 % Define the new boundary conditions for the heat equation
- bmesh = DefineBoundaryConditions(bedges, 'temp');
+ bmesh = DefineBoundaryConditions(bedges', 'temp');
  
 % Define specific pde parameters for parabolic heat equation
 k_Temp = @(r,z) lambda; 
