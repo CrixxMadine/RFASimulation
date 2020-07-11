@@ -9,14 +9,10 @@ function [sum] = SurfaceIntegralTriangles(tmesh, pmesh, z_val)
 % z_val := discrete values for every point of the triangulation
 
 
-%% TODO this is wrong dimension
-% -> however, changes result in bullshit solutions for heat simulation
-% TODO correct this
 n = size(tmesh,1);
 sum = 0;
 
-
-checksum = 0;
+tic;
 for i=1:n
    
     % get the global point numbers of the current triangle
@@ -27,28 +23,20 @@ for i=1:n
     b = pmesh(p(2),:);
     c = pmesh(p(3),:);
     
-    % Area of triangle with given coordinates 
-    % See Wikipedia ...    
+    % Area of triangle with given coordinates     
     A = [  1   ,  1   ,  1   ;
           a(1) , b(2) , c(2) ; 
           a(2) , b(2) , c(2) ];    
-
-    checkArea = a(1)*(b(2)-c(2))+b(1)*(c(2)-a(2))+c(1)*(a(2)-b(2));
     
     area = 0.5 * abs(det(A));
 
-    % Ref: https://uk.mathworks.com/matlabcentral/answers/498300
-    %      -how-to-integrate-discrete-values-over-a-surface#comment_781700
     res = 0.5 * (z_val(p(1)) + z_val(p(2)) + z_val(p(3))) * area;
 
     sum = sum + abs(res);
-    
-    checkres = (z_val(p(1)) + z_val(p(2)) + z_val(p(3))) * abs(checkArea / 2);
-    checksum = checksum + abs(checkres);
 
 end
 
-sum = checksum;
+
 
 end
 
