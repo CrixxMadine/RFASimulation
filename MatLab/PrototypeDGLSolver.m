@@ -90,22 +90,23 @@ F_coa = [ ]; % coagulation state
 %% Grid Generation 
 
 % Extra coarse grid of the 2D-cross-section
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 % bmesh = DefineBoundaryConditions(bedges);
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 
 % Halved grid, coarse withe prerefinement for region around electrodes
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
 
 
-%% Testing 3d mesh reconstruction TODO move to function
+%% Testing 3d mesh reconstruction
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
 
-% scatter3(s(:), t(:), u(:), '.');
+uh = zeros(size(pmesh,2),1);
+[pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
 % d = pmesh3DCylinder;
 % plot3(d(:,1), d(:,2), d(:,3);
 
