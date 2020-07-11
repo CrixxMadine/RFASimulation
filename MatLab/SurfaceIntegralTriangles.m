@@ -8,6 +8,10 @@ function [sum] = SurfaceIntegralTriangles(tmesh, pmesh, z_val)
 % tmesh := triangle matrix of triangulation
 % z_val := discrete values for every point of the triangulation
 
+
+%% TODO this is wrong dimension
+% -> however, changes result in bullshit solutions for heat simulation
+% TODO correct this
 n = size(tmesh,2);
 sum = 0;
 
