@@ -49,7 +49,7 @@ z = @(r,phi,z) z;
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
 t_step  = 0.25;
-t_end   = 60.00;  
+t_end   = 240.00;  
 t_vec   = t_start:t_step:t_end;
 
 
