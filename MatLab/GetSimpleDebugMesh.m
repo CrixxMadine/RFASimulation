@@ -16,7 +16,7 @@ simple_bedges = [1    1    2    3 ;
              
 pmesh  = simple_pmesh;
 tmesh  = simple_tmesh;
-bedges = simple_bedges;
+bedges = simple_bedges';
 
 end
 

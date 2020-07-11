@@ -98,10 +98,13 @@ F_coa = [ ]; % coagulation state
 % Or perhaps point coordinates are not accurate enough ?
 % Seems to be a of the one error on the grid
 
+% DEBUG Mesh
+[pmesh, tmesh, bedges] = GetSimpleDebugMesh();
+ numAdditionalGridRefinements = 1;
 
 % Extra coarse grid of the 2D-cross-section
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
- numAdditionalGridRefinements = 3;
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+% numAdditionalGridRefinements = 3;
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
@@ -116,8 +119,8 @@ F_coa = [ ]; % coagulation state
 % We can use value for every point of 3d domain
 
 
-uh = zeros(size(pmesh,1),1);
-[pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
+%uh = zeros(size(pmesh,1),1);
+%[pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
 % d = pmesh3DCylinder;
 % plot3(d(:,1), d(:,2), d(:,3);
 
