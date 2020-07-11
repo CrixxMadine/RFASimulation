@@ -20,10 +20,10 @@ function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, b
 %   -> Fourth row :  right hand side value of the boundary condition
 
 
-boundaryNodes = unique([bmesh(1,:), bmesh(2,:)]);
-boundaryNodesNumber = size(boundaryNodes,2);
+boundaryNodes = unique([bmesh(:,1), bmesh(:,1)]);
+boundaryNodesNumber = size(boundaryNodes,1);
 
-totalNodesNumber = size(pmesh,2);
+totalNodesNumber = size(pmesh,1);
 
 % Not important by now -> TODO
 %innerNodesNumber = totalNodesNumber - boundaryNodesNumber;
@@ -32,8 +32,8 @@ totalNodesNumber = size(pmesh,2);
 % Inlcude boundary condition
 
 % Sorting bmesh
-[~,idx] = sort(bmesh(1,:));   % sort just the first row
-sorted_bmesh = bmesh(:,idx);  % sort the whole matrix using the sort indices
+[~,idx] = sort(bmesh(:,1));   % sort just the first column
+sorted_bmesh = bmesh(idx,:);  % sort the whole matrix using the sort indices
 
 % First: Only dirichlet
 dirichletValues = zeros(totalNodesNumber,1);
@@ -41,19 +41,19 @@ isRealDirich = zeros(totalNodesNumber,1);
 neumannValues = zeros(totalNodesNumber,1);
 
 for i=1:boundaryNodesNumber 
-    type = sorted_bmesh(3,i);
+    type = sorted_bmesh(i,3);
     node = boundaryNodes(i);
     
     if (type == 1) % Dirichlet
 
-        dirichletValues(node) = sorted_bmesh(4,i);       
+        dirichletValues(node) = sorted_bmesh(i,4);       
         isRealDirich(node) = 1;
    
         
     elseif (type == 2) % Neumann
 
         isRealDirich(node) = 2;  
-        neumannValues(node) = sorted_bmesh(4,i);
+        neumannValues(node) = sorted_bmesh(i,4);
         
     else 
         % TODO
