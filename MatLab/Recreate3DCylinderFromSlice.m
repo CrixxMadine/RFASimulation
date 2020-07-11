@@ -9,7 +9,7 @@ function [pmesh3D,uh3D] = Recreate3DCylinderFromSlice(pmesh, uh, rotType)
 % rotType = 5 : 72 points
 % rotType = 6 : 108 points
 
-numPoints = size(pmesh,2);
+numPoints = size(pmesh,1);
 
 pmesh3DCylinder = zeros(numPoints * 36 , 3);
 
@@ -20,7 +20,7 @@ for angle=0:10:350
     angleVec = zeros(numPoints,1) + angle;
     
     area = (angle/10) * numPoints + 1;
-    pmesh3DCylinder(area:area+numPoints-1, :) = [pmesh(1,:)', angleVec, pmesh(2,:)'];
+    pmesh3DCylinder(area:area+numPoints-1, :) = [pmesh(:,1), angleVec, pmesh(:,2)];
     
     uh3D(area:area+numPoints-1) = uh;
 
@@ -31,6 +31,6 @@ end
 plot3(s(:), t(:), u(:), '.');
 % scatter3(s(:), t(:), u(:), '.');
 
-pmesh3D = [s,t,u];
+pmesh3D = [s',t',u'];
 end
 

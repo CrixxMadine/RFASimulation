@@ -23,16 +23,16 @@ function [pmesh, tmesh, bedges] = ReadGridFromFile(folderPath)
 %    domain4   -> '300' : outer boundary
 %    domain5   -> '400' : rotation axis
 
-pmesh = load(append(folderPath, 'pmesh.txt'))';
+pmeshTransp = load(append(folderPath, 'pmesh.txt'))';
 % If you use MatLab 2018b or older version: use strcat instead of append
 % e.g. pmesh = load(strcat(folderPath, 'pmesh.txt'))';
 
-tmesh = load(append(folderPath, 'tmesh.txt'));
-tmesh = int32(tmesh)';
+tmeshTransp = load(append(folderPath, 'tmesh.txt'));
+tmeshTransp = int32(tmeshTransp)';
 
 % MatLab counts indizes from one
 % Grid Data counts indizes from zero
-tmesh  = ShiftAllPointsByOne(tmesh);
+tmeshTransp  = ShiftAllPointsByOne(tmeshTransp);
 
 bpoints = load(append(folderPath, 'bedges.txt'));
 bpoints = ShiftAllPointsByOne(bpoints);
@@ -48,22 +48,27 @@ end
 
 btype = ConvertBoundaryType(bnumbers, bconverter(:,2))';
 
-bedges = int32([bpoints btype])';
 
-    function matrix = ShiftAllPointsByOne(matrix)        
-        matrix = matrix + 1;
+pmesh = pmeshTransp';
+tmesh = tmeshTransp';
+bedges = int32([bpoints btype]);
+
+%% Helper functions
+
+function matrix = ShiftAllPointsByOne(matrix)        
+    matrix = matrix + 1;
+end
+
+function newInfo = ConvertBoundaryType(boundaries, conversion)
+    n = size(boundaries);
+    newInfo(n) = 0;
+
+    for i=1:n
+        number = boundaries(i);
+        newInfo(i) = conversion(number); 
     end
 
-    function newInfo = ConvertBoundaryType(boundaries, conversion)
-        n = size(boundaries);
-        newInfo(n) = 0;
-        
-        for i=1:n
-            number = boundaries(i);
-            newInfo(i) = conversion(number); 
-        end
-        
-    end
+end
 
 end
 

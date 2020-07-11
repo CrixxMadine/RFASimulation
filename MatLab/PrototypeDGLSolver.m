@@ -105,7 +105,7 @@ F_coa = [ ]; % coagulation state
 % We can use value for every point of 3d domain
 
 
-uh = zeros(size(pmesh,2),1);
+uh = zeros(size(pmesh,1),1);
 [pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
 % d = pmesh3DCylinder;
 % plot3(d(:,1), d(:,2), d(:,3);
@@ -113,7 +113,7 @@ uh = zeros(size(pmesh,2),1);
 %% Refine the initial grid
 
 
-[pmesh1, tmesh1, bedges1] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
+[pmesh1, tmesh1, bedges1] = TriangularMeshRefinement2D(pmesh, tmesh, bedges); 
 
 % Try more refinements -> This is to much ...
 %[pmesh11, tmesh11, bedges11] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
@@ -129,7 +129,7 @@ uh = zeros(size(pmesh,2),1);
 
 figure(1);
 subplot(2,2,1);
-trimesh(tmesh', pmesh(1,:)', pmesh(2,:)');
+trimesh(tmesh, pmesh(:,1), pmesh(:,2)');
 title('Triangulation without refinement');
 
 subplot(2,2,2);
