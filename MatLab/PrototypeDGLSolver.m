@@ -187,9 +187,6 @@ trisurf(tmesh, pmesh(:,2), pmesh(:,1), phi);
 title('Solution of the finite element method for phi');
 
 
-pmesh = pmesh';
-tmesh = tmesh';
-bedges = bedges';
 
 %% Calculate electric power from the electric potential
 
@@ -200,8 +197,13 @@ electricEnergy = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
 
 %% Plot the power distribution - deactivated by comments
 figure(3);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', electricEnergy);
+trisurf(tmesh, pmesh(:,2), pmesh(:,2), electricEnergy);
 title('RFA electric energy at every point of mesh');
+
+% TODO crawler for column vectors
+pmesh = pmesh';
+tmesh = tmesh';
+bedges = bedges';
 
 
 %% Calculate the Heat for the Temperature Distribution T

@@ -7,7 +7,7 @@ power = zeros(size(phi,1),1);
 % Get the numerical gradient of every vertex
 %[phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, phi);
 
-[phi_dx, phi_dy] = TriGradient(pmesh(1,:)',pmesh(2,:)', phi);
+[phi_dx, phi_dy] = TriGradient(pmesh(:,1),pmesh(:,2), phi);
 
 % Eliminate gradient on boundary nodes -> is not defined in weak form
 %boundaryNodes = unique([bedges(1,:), bedges(2,:)]);
@@ -22,11 +22,11 @@ end
 
 % TODO testing
 figure(200);
-trisurf(tmesh', pmesh(1,:)', pmesh(2,:)', power);
+trisurf(tmesh, pmesh(:,1)', pmesh(:,2), power);
 title('Constant power at every point of mesh');
 
 % Calculate total power of the domain
-totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
+totalPower = SurfaceIntegralTriangles(tmesh', pmesh', power);
 
 % Calculate effective power of the model 
 power_setup = 20;   % power of the generator (in range 20-200 W)
