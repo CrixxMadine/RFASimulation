@@ -147,9 +147,7 @@ subplot(2,2,4);
 scatter(pmeshFiner(:,1), pmeshFiner(:,2));
 title('Point vertices in the refined triangulation');
 
-% Get testing data back to old format
-% TODO
-% new
+% Rebase refined grid to be the used grid
 pmesh = pmeshFiner;
 tmesh = tmeshFiner;
 bedges = bedgesFiner;
