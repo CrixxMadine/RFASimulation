@@ -200,11 +200,6 @@ figure(3);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), electricEnergy);
 title('RFA electric energy at every point of mesh');
 
-% TODO crawler for column vectors
-pmesh = pmesh';
-tmesh = tmesh';
-bedges = bedges';
-
 
 %% Calculate the Heat for the Temperature Distribution T
 
@@ -214,7 +209,7 @@ bedges = bedges';
 % Problem is solved with a mixed finite element method
 
 % Define the new boundary conditions for the heat equation
- bmesh = DefineBoundaryConditions(bedges', 'temp');
+ bmesh = DefineBoundaryConditions(bedges, 'temp');
  
 % Define specific pde parameters for parabolic heat equation
 k_Temp = @(r,z) lambda; 
@@ -239,6 +234,12 @@ Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
  
 Q_total = 0;
 Q_rfa   = 0;
+
+
+% TODO crawler for column vectors
+pmesh = pmesh';
+tmesh = tmesh';
+bedges = bedges';
 
 %% Calculate the temperatute distribution over time
 
