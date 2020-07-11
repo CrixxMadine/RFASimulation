@@ -150,9 +150,9 @@ title('Point vertices in the refined triangulation');
 % Get testing data back to old format
 % TODO
 % new
-pmesh = pmeshFiner';
-tmesh = tmeshFiner';
-bedges = bedgesFiner';
+pmesh = pmeshFiner;
+tmesh = tmeshFiner;
+bedges = bedgesFiner;
 
 
 stopHereBreakPoint = 0;
@@ -164,7 +164,7 @@ stopHereBreakPoint = 0;
 %  -> This is a Laplacian Equation, elliptical PDE second order
 
 % Add boundary conditions for the elliptical problem
-bmesh = DefineBoundaryConditions(bedges, 'phi');
+bmesh = DefineBoundaryConditions(bedges', 'phi');
 
 % Define specific parameters for phi PDE
 
@@ -174,17 +174,22 @@ f_rhs_EPot = @(r,z) 0;
 intyp = 1;
 
 % Assemble FEM system of equations 
-[Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k_EPot, q_EPot, f_rhs_EPot, intyp);
+[Ah, fh] = AssembCylindricLaplace2D(pmesh', tmesh', k_EPot, q_EPot, f_rhs_EPot, intyp);
 
 % Add boundary conditions
-[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, bmesh);
+[Ah, fh] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh', bmesh);
 
 % Solve the system of equations
 phi = Ah \ fh;
 
 figure(2);
-trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', phi);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), phi);
 title('Solution of the finite element method for phi');
+
+
+pmesh = pmesh';
+tmesh = tmesh';
+bedges = bedges';
 
 %% Calculate electric power from the electric potential
 
