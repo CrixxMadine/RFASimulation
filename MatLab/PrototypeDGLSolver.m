@@ -113,17 +113,17 @@ uh = zeros(size(pmesh,1),1);
 %% Refine the initial grid
 
 
-[pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmesh, tmesh, bedges); 
+pmeshFiner = pmesh;
+tmeshFiner = tmesh;
+bedgesFiner = bedges;
 
-% Try more refinements -> This is to much ...
-%[pmesh11, tmesh11, bedges11] = TriangularMeshRefinement2D(pmesh', tmesh', bedges'); 
-%[pmesh22, tmesh22, bedges22] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);    
-%[pmesh111, tmesh111, bedges111] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);    
-%[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh111, tmesh111, bedges111);
+numRefinements = 2;
 
-%[pmesh2, tmesh2, bedges2] = TriangularMeshRefinement2D(pmesh1, tmesh1, bedges1);
+for i=1:numRefinements
+
 [pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
 
+end 
 
 %% Plot the mesh, for control -> can be deactivated by comments
 
