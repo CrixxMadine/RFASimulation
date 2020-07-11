@@ -28,6 +28,7 @@ end
 
 [s,t,u] = pol2cart(pmesh3DCylinder(:,2)', pmesh3DCylinder(:,1)', pmesh3DCylinder(:,3)');
 
+figure(90);
 plot3(s(:), t(:), u(:), '.');
 % scatter3(s(:), t(:), u(:), '.');
 

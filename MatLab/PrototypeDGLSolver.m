@@ -90,14 +90,15 @@ F_coa = [ ]; % coagulation state
 
 
 
-%% Grid Generation 
+%% Grid Generation - Choose grid for calculation
 
 % Extra coarse grid of the 2D-cross-section
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-% bmesh = DefineBoundaryConditions(bedges);
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+ numAdditionalGridRefinements = 1;
  
 % Extra fine grid of the 2D-cross-section
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+% numAdditionalGridRefinements = 0;
 
 % Halved grid, coarse withe prerefinement for region around electrodes
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
@@ -119,9 +120,9 @@ pmeshFiner = pmesh;
 tmeshFiner = tmesh;
 bedgesFiner = bedges;
 
-numRefinements = 0;
 
-for i=1:numRefinements
+
+for i=1:numAdditionalGridRefinements
 
 [pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
 
@@ -136,7 +137,7 @@ title('Triangulation without refinement');
 
 subplot(2,2,2);
 trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
-title('Triangulation after 3 refinements');
+title("Triangulation after " + num2str(numAdditionalGridRefinements) + " refinements");
 
 subplot(2,2,3);
 scatter(pmesh(:,1), pmesh(:,2));
