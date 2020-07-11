@@ -92,9 +92,15 @@ F_coa = [ ]; % coagulation state
 
 %% Grid Generation - Choose grid for calculation
 
+
+%% TODO THERE IS SOME ASYMMETRIE BUG by calculating ohi
+% Maybe bug is in the boundary values???
+% Or perhaps point coordinates are not accurate enough ?
+
+
 % Extra coarse grid of the 2D-cross-section
 [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
- numAdditionalGridRefinements = 1;
+ numAdditionalGridRefinements = 2;
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
