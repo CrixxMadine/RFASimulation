@@ -266,7 +266,7 @@ for t_count=2:size(t_vec,2)
     % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
-          = AssembCylindricHeatEquation2D(pmesh', tmesh', k_Temp, q_Temp, Q_total, intyp);
+          = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
           
     left  = Mh_heat + delta_t * Kh_heat;
     right = Mh_heat * uh_old + delta_t * fh_heat;
