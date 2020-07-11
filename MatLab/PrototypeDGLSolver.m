@@ -93,16 +93,16 @@ F_coa = [ ]; % coagulation state
 %% Grid Generation - Choose grid for calculation
 
 % Extra coarse grid of the 2D-cross-section
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
- numAdditionalGridRefinements = 1;
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+% numAdditionalGridRefinements = 1;
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 % numAdditionalGridRefinements = 0;
 
 % Halved grid, coarse withe prerefinement for region around electrodes
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-
+ [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+  numAdditionalGridRefinements = 2;
 
 %% Testing 3d mesh reconstruction
 % Domain is rotation symmetric
