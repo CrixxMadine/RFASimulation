@@ -64,8 +64,27 @@ for i=1:boundaryNodesNumber
     if (ismember(node, theseAreDirichNodes))
         
          % THIS IS PROBLEM -> sets wrong number to dirich
-         dirichletValues(node) = sorted_bmesh(i,4);       
+         
          isRealDirich(node) = 1;
+         
+
+         
+         % Is correct dirich value for node
+         if (sorted_bmesh(i,3) == 1)
+            dirichletValues(node) = sorted_bmesh(i,4);  
+         
+         else
+             row = find(sorted_bmesh(:,1) == node);
+             if ((sorted_bmesh(row,3) == 1))
+              dirichletValues(node) = sorted_bmesh(row,4);
+             else
+         
+         % Need to find correct dirich vale
+            row = find(sorted_bmesh(:,2) == node);
+            dirichletValues(node) = sorted_bmesh(row,4);
+             end
+         end
+         
     
     % No dirich Value
     else
@@ -118,6 +137,9 @@ for j=1:boundaryNodesNumber
         
     elseif (isRealDirich(node) == 2) % Neumann value
          fh_bound(node) = fh(node) + neumannValues(node);   
+         
+    else 
+        % TODO
     end
 end
 
