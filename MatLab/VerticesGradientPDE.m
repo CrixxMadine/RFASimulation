@@ -10,9 +10,10 @@ uy = zeros(size(pmesh,1),1);
 
 
 numTriangs = size(tmesh,1);
+numNodes = size(pmesh,1);
 
 
-allNodes = unique([tmesh(:,1), tmesh(:,2), tmesh(:,3)]);
+allNodes = (1:numNodes);
 boundNodes = unique([bedges(:,1), bedges(:,2)]);
 innerNodes = setdiff(allNodes, boundNodes);
 
