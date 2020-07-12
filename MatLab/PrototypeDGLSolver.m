@@ -99,12 +99,12 @@ F_coa = [ ]; % coagulation state
 % Seems to be a of the one error on the grid
 
 % DEBUG Mesh
-%[pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-% numAdditionalGridRefinements = 1;
+[pmesh, tmesh, bedges] = GetSimpleDebugMesh();
+ numAdditionalGridRefinements = 1;
 
 % Extra coarse grid of the 2D-cross-section
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
- numAdditionalGridRefinements = 0;
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+% numAdditionalGridRefinements = 0;
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
@@ -164,6 +164,14 @@ bedges = bedgesFiner;
 
 
 stopHereBreakPoint = 0;
+
+
+%% TESTING FIND ERROR IN ASYMMETRIE
+
+bmesh = DefineBoundaryConditions(bedges, 'phi');
+
+stopHere = 0;
+
 
 %% Calculate electrical potential phi 
 
