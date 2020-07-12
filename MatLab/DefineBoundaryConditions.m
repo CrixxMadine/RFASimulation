@@ -21,7 +21,7 @@ function bmesh = DefineBoundaryConditions(bedges, type)
 %    domain4   -> '300' : outer boundary
 %    domain5   -> '400' : rotation axis
 % 
-%  TODO : will define robin and needle in time
+%  TODO : will define robin and needle in time 
 
 n = size(bedges, 1);
 
