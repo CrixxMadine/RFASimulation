@@ -39,7 +39,16 @@ Lets talk about:\\
 - Medical Treatment of Tumor\\
 - Radio frequency ablation\\
 - Why RFA Simulation is important \\
-- {Motivation / This project in General}\\
+- Motivation / This project in General\\
+
+- TODO \\
+
+
+- Study approach to study finite elements and behaviour of convergence \\
+- FEM simulation for RFA in 2D space domain with discrete time solutions \\
+- The modeled problem is a 3D problem \\
+- By modeling one needle there, is a axis symmetrie in the domain \\
+- 3D axis symmetric cylindrical domain can be described with 2D torus elements \\ 
 
 
 % part 2, Main
@@ -47,11 +56,25 @@ Lets talk about:\\
 \section{Computer-aided simulation of radio frequency ablation}
 
 \subsection{Discrete Numerical Simulation}
-- In real world physics models are often bounded by reality \\
-- Geometrical boundary conditions are often vague \\
-- In most cases there is no reasonable analytical approach to solve these problems \\
+- Physical relationships can be described by physical laws which are described by mathematical relationships \\
+- Usually highly complex systems that are described by ODEs, PDEs and statistics \\
+- Phxsic can be approximated by simplified models \\
+- In real world physics these models are usually bounded by reality \\
+- In most physic fields excluding quantum mechanics and modern theoretical physics, "grobe" models are determinated, definite mathematical solutions can be found \\ 
+- Since the physics is determinated, simulations can be done instead of experiment and measurement  \\
+- In practise, geometrical dimensions of points of interest are often usually vague \\
+- In many cases there is no reasonable analytical approach to solve these problems, especially in the field of engineering  \\
 - Modern numerical approaches are very flexible in this regard \\
+- "Statt glatter analytischer lösung gibt es ein beliebig genaue Näherung" \\ 
 - Simulations done right can be easily modified and adapted to different models and boundaries \\
+- These models are usually discribed by PDEs \\ 
+- TODO: most frequently used methods \\
+
+- Finite difference method \\
+- Finite element method \\
+- Find more \\
+- In this approach we will model radio frequency ablations with simple finite element techniques \\
+
 
 \subsection{About Errors in simulations and numerical approaches}
 - see TUM dissertation \\
@@ -65,33 +88,97 @@ Lets talk about:\\
 
 
 \subsection{The physics behind radio frequency ablation}
-- Generating electrical energy with a generator \\
-- Generated heat is distributed on the tissue \\
-- Temperature rises do to constant electrical energy input \\
-- Interesting is: - Temperature distribution over time \\
+- Needles stuck in tissue have electrodes with generate a potential \\
+- Generating electrical energy by power of an extern generator \\
+- Energy does not get lost \\
+- Heats the tissue, temperature rises do to continuing energy input \\
+- Generated heat is distributed on the tissue,  \\
+- Thus additionaly there is a cooling effect by the perfusion of blood \\
+- Heated tissue can kill harmful cells \\
+- The whole process is regulated from outside \\
+
+- Interesting for our simuation is: \\
+- Temperature distribution over time \\
 - What else? TODO \\
-- Electrical energy can be approximated by the potential of the electrodes on the probes \\
+
+- For the simulation, we will use a RFA model as described following kroeger \\
+- For simplicity, material parameters are seen constant \\
+- In real world, material parameters are highly dependant on body conditions, temperature and vary heavily with different patients \\
+- For some "Untersuchungen hierzu" , see Stein \\
+
+- Electrical energy depends on the electrical power \\
+- Power is defined by potential of the domain \\
 
 \begin{equation}
-    \varphi: TODO 
+    - \nabla \cdot (\sigma(x,y,z,t) \nabla \varphi(x,y,z,t)) = 0
+\end{equation}
+
+Power applied by the probe:
+
+\begin{equation}
+    p(x,y,z,t) = \sigma(x,y,z,t) \cdot |\Delta \varphi(x,y,z,t)|^2
+\end{equation}
+
+Due to tissue resistance, the effective power of the generater is obtained by a scaling. Thus can be modeled as follwing   
+
+\begin{equation}
+    Q_{rf} = p(x,y,z,t) \cdot \frac{p_{eff}(t)}{p_{total}(t)} 
 \end{equation}
 
 \begin{equation}
-    Electrical Energy: TODO
+    p_{total}(t) = \int_{\Omega} p(x,y,z,t) dx
 \end{equation}
+
+\begin{equation}
+    p_{eff}(t) = \frac{4 \cdot p_{setup} \cdot R_{tis}(t) \cdot R_I}{(R_{tis}(t) + R_I)^2}
+\end{equation}
+
+\begin{equation}
+    R_{tis}(t) = \frac{U^2}{p_{total}(t)}
+\end{equation}
+
+- TODO : explain parameters \\
 
 - No energy is lost \\
 - Electrical Energy becomes heat energy by Tissue resistance \\
 - Heat Energy is distributed by heat equation \\
 
 \begin{equation}
-    Heat equation : TODO 
+    \partial_t (\rho c T) - \nabla \cdot (\lambda \nabla T) = Q
 \end{equation}
 
+The heat equation is a well known parabolic partial differential equation. \\
+
+We are assuming $\rho$ and $c$ are constant \\
+$\rho$ = density \\
+$c$ = specific heat capacity \\
+$\lambda$ = thermal conductivity, which is depending on T \\
+T = T(r,z,t) = temperature \\
+Q = Q(r,z,t) = heat energy \\
+
+
+- Additionaly to temperature destribution, there is the cooling effect of perfusion 
+
+\begin{equation}
+    Q_{total} = Q_{rf} + Q_{perf}
+\end{equation}
+
+- $Q_{rf}$ is descripted above \\
+- $Q_{perf}$ is blood perfusion \\
+
+
+\begin{equation}
+    Q_{perf}(x,y,z,t) = ??v?? \cdot \rho_{blood} c_{vlood} \cdot (T_{body} - T(x,y,z,t))
+\end{equation}
+
+
 - Discretization of the equation in space and time domain \\
-- Time can be modeled continuously or in discrete intervalls \\
+- Time dependecy can be modeled continuously or in discrete intervalls \\
 - Discrete intervalls are is typically more practical in modeling but less efficient or exact \\
 - Discrete intervalls can be refined if necessary \\
+
+- As described above, the whole simulation will be done on a 2D half section representing the 3D axis symmetric geometry \\ 
+
 
 \section{Mathematical aspects of discrete simulation}
 
@@ -100,12 +187,47 @@ Lets talk about:\\
 \subsubsection{Elliptical problems}
 - Elliptical problems in general \\
 - build up system of PDE's to describe problem \\
-- Using the cylindric domain, different domains \\
+
+- Ritz-Galerkin-Verfahren, for Details see ref book TODO \\
+- This documentation will be focused on the 3D -> 2D aspect
+
+
+- Using the cylindric domain, different domains, will be described later \\
+
+
+\subsubsection{Assembling system of equations}
+- Systems of equations by finite number of elements calculated with shape function \\
+- solution is approximation of real solution \\
+
+\begin{equation}
+    Matrix
+\end{equation}
+
+\subsubsection{Boundary conditions}
+- Dirichlet with trick, define value to be solution of variable \\
+- TODO \\
+
+
+- Neumann boundary with curve integral \\
+
+\begin{equation}
+    f = f_{vol} + f_{surf}
+\end{equation}
+
+\begin{equation}
+    b = \int_{\Gamma_2} g \cdot \phi_{i} d S 
+\end{equation}
+
+- Note : In 2D dimension the surface integral is around the boundary line \\
+- For natural boundary conditions $g(x) = 0$, the surface integral added is zero, which is a trivial solution \\
 
 \subsubsection{Parabolic problems}
 - Parabolic / time-dependent problems \\
-- Ignoring time dependency first and calculate the resulting elliptical problem
+- Usually involve an elliptic problem with additional time dependent factor \\
+
+- Ignoring time dependency at first and calculate the resulting elliptical problem \\
 - Build system of equations for elliptical problem \\
+
 - Describe the parabolic PDE as an ODE with matrices from elliptical PDE \\
 - Solving the system of ODE equations over discrete time intervalls \\
 - Runge-Kutta \\
@@ -121,7 +243,6 @@ Lets talk about:\\
 - boundary condition (heat source or sink) \\
 - In this simulation, heat source is from electrical energy \\
 
-\subsection{Numerical solution of system of ODE's}
 
 \subsection{Axial symmetrie}
 - Using axial symmetrie to simplify computations \\
@@ -139,6 +260,15 @@ Lets talk about:\\
     \label{projection_2D_general}
 \end{figure}
 
+
+- TODO: write this more formal
+- Lax-Milgram-Lemma and Poincaré inequality on 3D-Domain determine a unique solution \\
+- $u \in H^{1}_{r}(\Omega) \cap \{ v|_{\Gamma_{0}} \}  $
+- Trace-operator \\
+- rotation axis becomes an artificial boundary on 2D half section \\
+
+- A more formal description can be found in : \\
+- Use input from article TODO \\
 
 
 \section{Discretization of PDEs}
@@ -251,14 +381,14 @@ Constant material parameters: \\
 
 \subsubsection{Rotation axis}
 
-- this is an artificial boundary \\
+- this is an artificial boundary, as discribed above \\
 - To keep the axis symmetry, here must apply natural neumann bundary conditions \\
-- Othe conditions would break the symmetrie \\
+- Other conditions would break the trace operator \\
 - \begin{equation}
     n \cdot \nabla \varphi = 0
 \end{equation}
 
-- Use input from article \\
+
 
 
 \subsection{Calculation of electrical energy}
@@ -383,6 +513,7 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 
 \newpage
 
+
 \subsection{Discretization / Triangulation}
 
 - Grid generation and refinement \\
@@ -400,7 +531,17 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 - Add boundary conditions afterwards \\
 - grouping of similar calculations allow more vectorized operations \\ 
 
+\subsection{ODE for parabolic problems}
+
+
 \subsection{Solving the system of equations}
+- direct solver would be preferred in general \\
+- if numbers of element grows, this computations takes up lots of memory \\
+- up from a certain point, high amount memory can't be efficiently handled with RAM anymore \\
+- using additional memory is extremely costly in terms of calculation speed \\
+- since matrix is sparse, iterative solver can be very fast \\
+- iterative solver is preferred if elements grow in numbers \\
+- TODO : when should you use iterative solver \\
 
 \subsection{Error estimations}
 
@@ -408,7 +549,7 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 - H1-Norm \\
 - L2-Norm \\
 
-- The analytical solution of the problem is unknown, but we can estimate it by calculating different element sizes on different fine grids \\
+- The analytical solution of the problem is unknown, but we can estimate it by calculating different element sizes on different sized fine grids \\
 
 Idea: Define geometric some geometric coordinates on triangle and look for best matching or choose some points on different geometrical entities \\
 
@@ -423,14 +564,17 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 
 \section{Other numerical aspects }
+
 \subsection{Numerical integration}
 - quadrature on discrete points \\
 
 \subsection{Numerical gradient on discrete points}
 
 - "Testfunction nähern Ersatzlösung an " \\
-- gradient is constant on every triangle \\
-- however, gradient is needed on discrete points \\
+- in our case, gradient is constant on every triangle \\
+- actually discrete gradient on vertices is interesting \\
+- vertices as average value of surrounding triangles \\
+
 
 \subsection{Surface integral}
 - sum of integral of every single triangle \\
@@ -444,10 +588,12 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 \section{Applied simulation}
 \subsection{Generating TestData / Get reference data}
 - Material parameters see Stein TODO \\
-- Using specification data from electrical generator \\
+- Using specification data from electrical generator TODO \\
 
 \subsection{Solving the PDEs}
+
 \subsection{Combine everything to continous time dependent simulation}
+
 \subsection{Interpretation of result numbers}
 - Interprete numbers \\
 - Compare with data from experiment or other simulations \\
@@ -474,23 +620,35 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 
 \subsection{Graphical output}
+- Data can be easily recreated \\
+- Solution is axis symmetric, so values apply for every angle $\phi$ \\
+- This gets 3D data in cylindrical coordinates \\
+- Can be reevaluated into cartesian coordinates to be plotted \\
+- Discrete points are linear interpolated \\
+
 
 % part 3, Summary
 
 \section{Summary and Outlook}
 
 \subsection{Project Summary}
-- One could argue that writing a simulation from scratch is a waste of time \\
+- One could argue that writing a numerical simulation from scratch is a waste of time \\
 - There are many highly useful numerical software solutions for numerical simulation and numerical problems \\
 - Usually there is no need to write an own detailed implementation \\
-- Creating own scripts and implementations helps to understand numerical problems and error sources \\
+- However, creating own scripts and implementations helps to understand numerical problems and error sources \\
 - This approach helps enormously to increase the ability to use these software products effectively and to generate better simulations and is mandatory to improve \\
 - There can also be no software developer without understanding how a computer works numbers \\
+- Implementing the algorithms on own trains understanding of numerical problems \\
+- Should be programmed by everyone working with finite elements at least once \\
 
 \subsubsection{strengths and flaws}
-- why is it good, why is it bad
 - good: numerical results do match the general expectation \\
-- bad: model is to simplified to represent real world conditions \\
+- "zuverlässige" convergency \\
+- numerical solution matches "qualitativ" the expectations \\
+- Implementation can be easily adopted to more complex approaches \\
+
+- bad: model is way to simplified to represent real world conditions of RFA \\
+- Even further modifications would not change the results heavily \\
 
 \subsubsection{future modifications}
 - Material parameters are dependent on Temperature and potential -> \\
@@ -499,17 +657,24 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 - Different types of perfusion \\
 - Defining more realistic and complex boundary conditions \\
 - Perhaps a second needle in a 3D simulation \\
+- Basic algorithm can be adopted to 3D problems \\
 
 \subsection{State of the current Research}
 - Research in the simulation of medical therapy methods \\
-- 
+- TODO \\
 
 
 \subsection{Other FEM projects and software}
 
+- There is a lot of good commercial FEM software out there \\
+- Matlab PDE toolbox, libraries with efficient implementation of almost every aspect on solving PDEs \\
+- COMSOL Multiphysics, a High-Power simulation program with model builder and GUI \\
+- ANSYS, like COMSOL but a little weaker but more widely used\\
+
+- Also, good open source software \\
 - FENICS \\
-- COMSOL \\
-- ANSYS \\
+- FREEFEM \\
+
 
 \newpage
 

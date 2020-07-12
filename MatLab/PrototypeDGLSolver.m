@@ -100,7 +100,7 @@ F_coa = [ ]; % coagulation state
 
 % DEBUG Mesh
  [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-  numAdditionalGridRefinements = 8;
+  numAdditionalGridRefinements = 7;
 
 % Extra coarse grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
