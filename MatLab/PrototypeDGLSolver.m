@@ -104,7 +104,7 @@ F_coa = [ ]; % coagulation state
 
 % Extra coarse grid of the 2D-cross-section
 [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
- numAdditionalGridRefinements = 0;
+ numAdditionalGridRefinements = 2;
  
 % Extra fine grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
@@ -191,7 +191,7 @@ intyp = 1;
 phi = Ah \ fh;
 
 figure(2);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), phi);
+trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
 title('Solution of the finite element method for phi');
 
 
