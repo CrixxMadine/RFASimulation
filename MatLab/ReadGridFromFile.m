@@ -24,24 +24,22 @@ function [pmesh, tmesh, bedges] = ReadGridFromFile(folderPath)
 %    domain5   -> '400' : rotation axis
 
 
-pmeshTransp = load(append(folderPath, 'pmesh.txt'))';
-% If you use MatLab 2018b or older version: use strcat instead of append
-% e.g. pmesh = load(strcat(folderPath, 'pmesh.txt'))';
+pmesh = load(strcat(folderPath, 'pmesh.txt'));
 
-tmeshTransp = load(append(folderPath, 'tmesh.txt'));
-tmeshTransp = int32(tmeshTransp)';
+tmesh = load(strcat(folderPath, 'tmesh.txt'));
 
 % MatLab counts indizes from one
 % Grid Data counts indizes from zero
-tmeshTransp  = ShiftAllPointsByOne(tmeshTransp);
+tmesh  = ShiftAllPointsByOne(tmesh);
 
-bpoints = load(append(folderPath, 'bedges.txt'));
+
+bpoints = load(strcat(folderPath, 'bedges.txt'));
 bpoints = ShiftAllPointsByOne(bpoints);
 
-bnumbers = load(append(folderPath, 'binfo.txt'));
+bnumbers = load(strcat(folderPath, 'binfo.txt'));
 bnumbers = ShiftAllPointsByOne(bnumbers);
 
-bconverter = load(append(folderPath, 'bconversion.txt'));
+bconverter = load(strcat(folderPath, 'bconversion.txt'));
 
 if (max(bnumbers) > size(bconverter))
     throw(MException(folderPath,'Conversion data is corrupted'));
@@ -49,10 +47,7 @@ end
 
 btype = ConvertBoundaryType(bnumbers, bconverter(:,2))';
 
-
-pmesh = pmeshTransp';
-tmesh = tmeshTransp';
-bedges = int32([bpoints btype]);
+bedges = [bpoints btype];
 
 %% Helper functions
 
