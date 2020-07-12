@@ -35,28 +35,62 @@ totalNodesNumber = size(pmesh,1);
 [~,idx] = sort(bmesh(:,1));   % sort just the first column
 sorted_bmesh = bmesh(idx,:);  % sort the whole matrix using the sort indices
 
+
+%[~,idx] = sort(bmesh(:,2));
+%sorted_bmesh_2 = bmesh(idx,:);
+
+
+allNodes = unique([bmesh(:,1), bmesh(:,2)]);
+left_Nodes = unique(bmesh(:,1));
+right_Nodes = unique(bmesh(:,2));
+
+notInLeft = setdiff(allNodes, left_Nodes);
+notInRight = setdiff(allNodes, right_Nodes);
+
+
+hereIsDirich = find(bmesh(:,3) == 1);
+
+theseAreDirichNodes = unique([bmesh(hereIsDirich,1), bmesh(hereIsDirich,2)]);
+
 % First: Only dirichlet
 dirichletValues = zeros(totalNodesNumber,1);
 isRealDirich = zeros(totalNodesNumber,1);
 neumannValues = zeros(totalNodesNumber,1);
 
 for i=1:boundaryNodesNumber 
-    type = sorted_bmesh(i,3);
-    node = boundaryNodes(i);
     
-    if (type == 1) % Dirichlet
-
-        dirichletValues(node) = sorted_bmesh(i,4);       
-        isRealDirich(node) = 1;
+    % Dirich Values
+    node = boundaryNodes(i);
+    if (ismember(node, theseAreDirichNodes))
+        
+         % THIS IS PROBLEM -> sets wrong number to dirich
+         dirichletValues(node) = sorted_bmesh(i,4);       
+         isRealDirich(node) = 1;
+    
+    % No dirich Value
+    else
+        
+        isRealDirich(node) = 2;
+        type = sorted_bmesh(i,3);
+        
+        if (type == 2) % Neumann           
+            
+            neumannValues(node) = sorted_bmesh(i,4);  
+            
+        else        
+            % TODO        
+        end
+    %end
+%     type = sorted_bmesh(i,3);
+%     node = boundaryNodes(i);
+%     
+%     if (type == 1) % Dirichlet
+% 
+%         dirichletValues(node) = sorted_bmesh(i,4);       
+%         isRealDirich(node) = 1;
    
         
-    elseif (type == 2) % Neumann
 
-        isRealDirich(node) = 2;  
-        neumannValues(node) = sorted_bmesh(i,4);
-        
-    else 
-        % TODO
         
     end
 end

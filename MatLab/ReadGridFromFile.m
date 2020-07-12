@@ -47,7 +47,7 @@ end
 
 btype = ConvertBoundaryType(bnumbers, bconverter(:,2))';
 
-bedges = [bpoints btype];
+bedges = [bpoints btype]; 
 
 %% Helper functions
 

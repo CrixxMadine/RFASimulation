@@ -5,7 +5,7 @@ function [pmesh, tmesh, bedges] = GetSimpleDebugMesh()
 simple_pmesh = [0 0 ;
                 1 0 ;
                 0 1 ;
-                1 1 ];
+                1 1 ;];
             
 simple_tmesh = [1 2 3;
                 2 4 3];
