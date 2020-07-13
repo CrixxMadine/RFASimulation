@@ -56,7 +56,8 @@ for i=1:n
         if (bedges(i,3) == 300) % outer boundary
             bmesh(i,3) = 2;     % Neumann 
             bmesh(i,4) = 0;
-            
+         
+        %elseif(2<1)
         elseif (bedges(i,3) == 400) % rotation axis
             bmesh(i,3) = 2;     % Neumann 
             bmesh(i,4) = 0;

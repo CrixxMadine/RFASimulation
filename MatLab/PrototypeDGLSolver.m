@@ -99,20 +99,20 @@ F_coa = [ ]; % coagulation state
 % Seems to be a of the one error on the grid
 
 % DEBUG Mesh
- [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-  numAdditionalGridRefinements = 2;
+% [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
+%  numAdditionalGridRefinements = 5;
 
 % Extra coarse grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 % numAdditionalGridRefinements = 1;
  
 % Extra fine grid of the 2D-cross-section
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
-% numAdditionalGridRefinements = 0;
+[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+ numAdditionalGridRefinements = 0;
 
 % Halved grid, coarse withe prerefinement for region around electrodes
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-%  numAdditionalGridRefinements = 1;
+%  numAdditionalGridRefinements = 0;
 
 %% Testing 3d mesh reconstruction
 % Domain is rotation symmetric
@@ -201,6 +201,8 @@ phi = Ah \ fh;
 figure(2);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
 title('Solution of the finite element method'); % for phi');
+xlabel('x axis');
+ylabel('y-axis');
 %zlim([-1.5 1.5]);
 
 
@@ -245,8 +247,8 @@ uh0_Temp = zeros(size(energyPoints)) + T_body;
 uh_Temp  = uh0_Temp;
 
 % Calculate the right hand side of the equation with discrete point
-Q_rfa   = energyElements;                       % heat of electrical power
-Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
+%Q_rfa   = energyPoints;                       % heat of electrical power
+%Q_perf  = nu .* rho .* c .* (T_body - uh_Temp); % heat of blood perfusion
  
 Q_total = 0;
 Q_rfa   = 0;
@@ -276,11 +278,12 @@ for t_count=2:size(t_vec,2)
 %         Q_rfa = electricEnergy; % time independent by now  
 %         Q_total = Q_rfa;
 %     end
-    Q_rfa = Q_rfa + delta_t .* energyElements;         % sum of electricEnergy
+    Q_rfa = delta_t .* energyPoints;         % sum of electricEnergy
     Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_next); % cooling of blood perfusion
+    Q_total = Q_total + Q_rfa + Q_perf;
     
     [Kh_heat, Mh_heat, fh_heat] ...
-          = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_rfa, Q_perf, intyp);
+          = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
           
     left  = Mh_heat + delta_t * Kh_heat;
     right = Mh_heat * uh_old + delta_t * fh_heat;

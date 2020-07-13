@@ -70,20 +70,27 @@ for i=1:boundaryNodesNumber
 
          
          % Is correct dirich value for node
-         if (sorted_bmesh(i,3) == 1)
-            dirichletValues(node) = sorted_bmesh(i,4);  
+        % if (sorted_bmesh(i,3) == 1)
+         %   dirichletValues(node) = sorted_bmesh(i,4);  
          
-         else
-             row = find(sorted_bmesh(:,1) == node);
-             if ((sorted_bmesh(row,3) == 1))
-              dirichletValues(node) = sorted_bmesh(row,4);
-             else
-         
-         % Need to find correct dirich vale
-            row = find(sorted_bmesh(:,2) == node);
-            dirichletValues(node) = sorted_bmesh(row,4);
+        % else
+             row1 = find(sorted_bmesh(:,1) == node);
+             row2 = find(sorted_bmesh(:,2) == node);
+             row = [row1 row2];
+             if ((sorted_bmesh(row(1),3) == 1))
+              dirichletValues(node) = sorted_bmesh(row(1),4);
+              
+             elseif ((sorted_bmesh(row(2),3) == 1))
+                          % Need to find correct dirich vale
+            %row = find(sorted_bmesh(:,2) == node);
+          dirichletValues(node) = sorted_bmesh(row(2),4);
+          
+             else 
+                 error('Whaaaaa');
+
+           
              end
-         end
+       %  end
          
     
     % No dirich Value
@@ -129,13 +136,10 @@ for j=1:boundaryNodesNumber
     
     if (isRealDirich(node) == 1) % Dirichlet value
         
-            Ah_bound(1:totalNodesNumber, node) = 0;
+        Ah_bound(1:totalNodesNumber, node) = 0;
 
-        %if(node ~= 1)
-         %   if (node ~= 2)
-            Ah_bound(node, 1:totalNodesNumber) = 0;
-          %  end
-        %end
+        Ah_bound(node, 1:totalNodesNumber) = 0;
+
         Ah_bound(node,node) = 1;
         
         fh_bound(node) = dirichletValues(node);

@@ -46,7 +46,7 @@ totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);
 power_setup = 200;   % power of the generator (in range 20-200 W)
 U_elec = 2;          % Potential difference of the two electrodes
 
-R_setup = 80;        % TODO find good value % inner resistance of the generator
+R_setup = 20;        % TODO find good value % inner resistance of the generator
 R_tis = U_elec * U_elec / totalPower; % tissue resistance
 
 effectivePower = (4 * power_setup * R_tis * R_setup) / ...
