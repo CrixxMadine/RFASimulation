@@ -137,6 +137,8 @@ end
 % Create new Midpoint and find that point in newly generated pmesh
 % Then add the old bcondition value to the new and old edge
 
+%% TODO: HERE IS ERROR !!!!!!
+
 numEdges = size(bedges,1) ;
 bedges_new = zeros(numEdges, 3);
 
