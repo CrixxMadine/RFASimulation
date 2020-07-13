@@ -12,7 +12,7 @@ simple_tmesh = [1 2 3;
             
 simple_bedges = [1    1    2    3 ;
                  2    3    4    4 ;
-                100   0    0   101];
+                 0   100  101   0];
              
 pmesh  = simple_pmesh;
 tmesh  = simple_tmesh;

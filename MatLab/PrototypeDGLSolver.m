@@ -100,7 +100,7 @@ F_coa = [ ]; % coagulation state
 
 % DEBUG Mesh
  [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-  numAdditionalGridRefinements = 7;
+  numAdditionalGridRefinements = 2;
 
 % Extra coarse grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
@@ -200,8 +200,8 @@ phi = Ah \ fh;
 
 figure(2);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
-title('Solution of the finite element method for phi');
-
+title('Solution of the finite element method'); % for phi');
+%zlim([-1.5 1.5]);
 
 
 %% Calculate electric power from the electric potential
@@ -209,11 +209,11 @@ title('Solution of the finite element method for phi');
 % -> is now subroutine
 power = zeros(size(phi,1),1);
 
-electricEnergy = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
+[energyPoints, energyElements] = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
 
 %% Plot the power distribution - deactivated by comments
 figure(3);
-trisurf(tmesh, pmesh(:,1), pmesh(:,2), electricEnergy);
+trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
 title('RFA electric energy at every point of mesh');
 
 
@@ -241,11 +241,11 @@ T_body = 37 + 273.15; % body temperature in Kelvin
 
 % Set initial temperature distribution for t = 0
 % (T = T_body on the entire domain)
-uh0_Temp = zeros(size(electricEnergy)) + T_body;
+uh0_Temp = zeros(size(energyPoints)) + T_body;
 uh_Temp  = uh0_Temp;
 
 % Calculate the right hand side of the equation with discrete point
-Q_rfa   = electricEnergy;                       % heat of electrical power
+Q_rfa   = energyElements;                       % heat of electrical power
 Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
  
 Q_total = 0;
@@ -276,13 +276,11 @@ for t_count=2:size(t_vec,2)
 %         Q_rfa = electricEnergy; % time independent by now  
 %         Q_total = Q_rfa;
 %     end
-    Q_rfa = delta_t .* electricEnergy;
+    Q_rfa = Q_rfa + delta_t .* energyElements;         % sum of electricEnergy
     Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_next); % cooling of blood perfusion
-    Q_total = Q_total + Q_rfa + Q_perf;           % Update Q_total  
-    % TODO: calculate RFA!
     
     [Kh_heat, Mh_heat, fh_heat] ...
-          = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
+          = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_rfa, Q_perf, intyp);
           
     left  = Mh_heat + delta_t * Kh_heat;
     right = Mh_heat * uh_old + delta_t * fh_heat;

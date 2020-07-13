@@ -1,4 +1,4 @@
-function electricEnergy = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma)
+function [energyPoints, energyElements] = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma)
 
 %% Calculate electric power from the electric potential
 
@@ -24,7 +24,7 @@ power = zeros(size(phi,1),1);
 
 
 % Eliminate gradient on boundary nodes -> is not defined in weak form
-boundaryNodes = unique([bedges(1,:), bedges(2,:)]);
+boundaryNodes = unique([bedges(:,1), bedges(:,2)]);
 phi_dx(boundaryNodes) = 0;
 phi_dy(boundaryNodes) = 0;
 
@@ -54,6 +54,21 @@ effectivePower = (4 * power_setup * R_tis * R_setup) / ...
 
 % Calculate the electric energy at every vertex point
 electricEnergy = power .* (effectivePower / totalPower);
+
+energyPoints = electricEnergy;
+
+%% Energy surface
+[tx,ty] = pdegrad(pmesh',tmesh',phi);
+
+power_surface = zeros(length(tmesh),1);
+
+for i=1:size(power,1)
+    power_surface(i) = sigma * norm([tx(i), ty(i)])^2;   
+end
+
+energyElements = power_surface .* (effectivePower / totalPower);
+
+
 
 end
 

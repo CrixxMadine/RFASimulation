@@ -128,9 +128,14 @@ for j=1:boundaryNodesNumber
     node = boundaryNodes(j);
     
     if (isRealDirich(node) == 1) % Dirichlet value
-        Ah_bound(node, 1:totalNodesNumber) = 0;
-        Ah_bound(1:totalNodesNumber, node) = 0;
         
+            Ah_bound(1:totalNodesNumber, node) = 0;
+
+        %if(node ~= 1)
+         %   if (node ~= 2)
+            Ah_bound(node, 1:totalNodesNumber) = 0;
+          %  end
+        %end
         Ah_bound(node,node) = 1;
         
         fh_bound(node) = dirichletValues(node);

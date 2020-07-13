@@ -1,4 +1,4 @@
-function [Ah, Mh, fh] = AssembCylindricHeatEquation2D(pmesh, tmesh, k, q, Q_val, intyp)
+function [Ah, Mh, fh] = AssembCylindricHeatEquation2D(pmesh, tmesh, k, q, Q_rfa, Q_perf, intyp)
 
 %% Function summary and arguments description
 
@@ -52,7 +52,11 @@ for i=1:Me
     p3 = pmesh(a(3),:)';
     
     % Define f_rhs as constant average value from the triangulation
-    f_rhs = @(r,z) 1 / 3 * (Q_val(a(1)) + Q_val(a(2)) + Q_val(a(3)));
+    % f_rhs = @(r,z) 1 / 3 * (Q_val(a(1)) + Q_val(a(2)) + Q_val(a(3)));
+    
+    Q_perf_val = 1 / 3 * Q_perf(a(1)) + Q_perf(a(2)) + Q_perf(a(3));
+    % Better use pdegrad for triangle
+    f_rhs = @(r,z) Q_rfa(i) + Q_perf_val;
     
     % assemble matrix and right hand sand for the current element
     [K_elem, f_elem, M_elem] = LinearElement2D(k, q, f_rhs, p1, p2, p3, intyp, 'true');
