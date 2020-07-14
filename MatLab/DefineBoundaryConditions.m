@@ -61,10 +61,15 @@ for i=1:n
         elseif (bedges(i,3) == 400) % rotation axis
             bmesh(i,3) = 2;     % Neumann 
             bmesh(i,4) = 0;
+         
+            % Testing
+        else
+            bmesh(i,3) = 2;     % Neumann 
+            bmesh(i,4) = 0;            
             
-        else     % anywhere on the needle, blank or electrode
-            bmesh(i,3) = 1;           % Dirichlet
-            bmesh(i,4) = 37 + 273.15; % body temperature in Kelvin
+       % else     % anywhere on the needle, blank or electrode
+       %     bmesh(i,3) = 1;           % Dirichlet
+       %     bmesh(i,4) = 37 + 273.15; % body temperature in Kelvin
         end
         
     else   

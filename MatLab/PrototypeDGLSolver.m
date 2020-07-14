@@ -104,7 +104,7 @@ F_coa = [ ]; % coagulation state
 
 % Extra coarse grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-% numAdditionalGridRefinements = 1;
+% numAdditionalGridRefinements = 0;
  
 % Extra fine grid of the 2D-cross-section
 [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
