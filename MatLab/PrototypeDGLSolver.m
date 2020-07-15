@@ -351,7 +351,7 @@ for t_count=2:size(t_vec,2)
      
     uh_next = left \ right;
 
-    %% Testing 
+    %% Testing UNDEFINED BOUNDARY
     
 for i=1:length(fakeDir)
 
