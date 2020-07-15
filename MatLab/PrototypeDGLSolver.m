@@ -51,7 +51,7 @@ disp('This script runs a simulation of radio frequency ablation');
 
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;  % Starting point -> t = 0 seconds
-t_step  = 0.25;
+t_step  = 0.2;
 t_end   = 240.00;  
 t_vec   = t_start:t_step:t_end;
 
@@ -100,19 +100,25 @@ F_coa = [ ]; % coagulation state
 
 % DEBUG Mesh
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-%  numAdditionalGridRefinements = 5;
+% numAdditionalGridRefinements = 0;
+% [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
+%  [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
+% xx = zeros(4,4);
+% xy = zeros(4,1)
+% bmesh = DefineBoundaryConditions(bedges, 'phi');
+%[Ah, fh] = AddBoundaryConditionsToFEMatrix(xx, xy, pmesh, bmesh);
 
 % Extra coarse grid of the 2D-cross-section
 %[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-% numAdditionalGridRefinements = 0;
+% numAdditionalGridRefinements = 2;
  
 % Extra fine grid of the 2D-cross-section
-[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
- numAdditionalGridRefinements = 0;
+%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+% numAdditionalGridRefinements = 0;
 
 % Halved grid, coarse withe prerefinement for region around electrodes
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-%  numAdditionalGridRefinements = 0;
+ [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+  numAdditionalGridRefinements = 1;
 
 %% Testing 3d mesh reconstruction
 % Domain is rotation symmetric
@@ -197,6 +203,59 @@ intyp = 1;
 
 % Solve the system of equations
 phi = Ah \ fh;
+
+
+%% TEST Add fakedir
+
+hereIsDirich = find(bmesh(:,3) == 1);
+theseAreDirichNodes = unique([bmesh(hereIsDirich,1), bmesh(hereIsDirich,2)]);
+
+hereIsNeumann = find(bmesh(:,3) == 2);
+neumannNodes = unique([bmesh(hereIsNeumann,1), bmesh(hereIsNeumann,2)]);
+
+% Dirichlet corner nodes
+[vali, posi] = intersect(theseAreDirichNodes, neumannNodes);
+
+fuckYou(length(vali)) = 0;
+
+for ff=1:length(vali)
+ecke = vali(ff);
+nnn = find(bmesh(:,1)==ecke);
+uuu = find(bmesh(:,2)==ecke);
+rowVonEcke = unique([nnn, uuu]);
+
+bla = [bmesh(rowVonEcke,1) bmesh(rowVonEcke,2)];
+
+yuhu = setdiff(bla, theseAreDirichNodes);
+
+if (length(yuhu) > 0)
+fuckYou(ff) = yuhu;
+end
+
+end
+
+fast = unique(fuckYou);
+fakeDir = fast(fast~=0);
+
+
+for i=1:length(fakeDir)
+
+
+mmm = fakeDir(i);
+rows = [find(bmesh(:,1) == mmm) find(bmesh(:,2) == mmm)];
+neighbours = [bmesh(rows,1) bmesh(rows,2)];    
+    
+realNeighbours = (neighbours(neighbours ~= mmm));
+
+uiuiu = realNeighbours(1);
+jajaj = realNeighbours(2);
+
+phi(mmm) = (phi(uiuiu) + phi(jajaj)) / 2;
+
+end
+
+
+%phi(fakeDir) = 0; % TODO
 
 figure(2);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
@@ -292,8 +351,29 @@ for t_count=2:size(t_vec,2)
      
     uh_next = left \ right;
 
+    %% Testing 
+    
+for i=1:length(fakeDir)
+
+
+mmm = fakeDir(i);
+rows = [find(bmesh(:,1) == mmm) find(bmesh(:,2) == mmm)];
+neighbours = [bmesh(rows,1) bmesh(rows,2)];    
+    
+realNeighbours = (neighbours(neighbours ~= mmm));
+
+uiuiu = realNeighbours(1);
+jajaj = realNeighbours(2);
+
+uh_next(mmm) = (uh_next(uiuiu) + uh_next(jajaj)) / 2;
+
+end
+
+%% END testing
+    
+    
     figure(4);
-    trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - 273.15);
+    trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next - 273.15);
     title(['Temperature Distribution in ° Celsius after ', num2str(t_next), ' seconds']);
     
     if (t_count == 2)

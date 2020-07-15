@@ -52,7 +52,7 @@ for i=1:n
     
     elseif strcmp(type, 'temp')
         
-        %if (2 < 1)  %% TODO TESTING
+        %if (1 < 2)  %% TODO TESTING
         if (bedges(i,3) == 300) % outer boundary
             bmesh(i,3) = 2;     % Neumann 
             bmesh(i,4) = 0;
@@ -67,9 +67,9 @@ for i=1:n
             bmesh(i,3) = 2;     % Neumann 
             bmesh(i,4) = 0;            
             
-       % else     % anywhere on the needle, blank or electrode
-       %     bmesh(i,3) = 1;           % Dirichlet
-       %     bmesh(i,4) = 37 + 273.15; % body temperature in Kelvin
+        %else     % anywhere on the needle, blank or electrode
+         %   bmesh(i,3) = 1;           % Dirichlet
+         %   bmesh(i,4) = 37 + 273.15; % body temperature in Kelvin
         end
         
     else   

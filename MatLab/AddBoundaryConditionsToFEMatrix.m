@@ -49,8 +49,36 @@ notInRight = setdiff(allNodes, right_Nodes);
 
 
 hereIsDirich = find(bmesh(:,3) == 1);
-
 theseAreDirichNodes = unique([bmesh(hereIsDirich,1), bmesh(hereIsDirich,2)]);
+
+% hereIsNeumann = find(bmesh(:,3) == 2);
+% neumannNodes = unique([bmesh(hereIsNeumann,1), bmesh(hereIsNeumann,2)]);
+% 
+% % Dirichlet corner nodes
+% [vali, posi] = intersect(theseAreDirichNodes, neumannNodes);
+% 
+% fuckYou(length(vali)) = 0;
+% 
+% for ff=1:length(vali)
+% ecke = vali(ff);
+% nnn = find(bmesh(:,1)==ecke);
+% uuu = find(bmesh(:,2)==ecke);
+% rowVonEcke = unique([nnn, uuu]);
+% 
+% bla = [bmesh(rowVonEcke,1) bmesh(rowVonEcke,2)];
+% 
+% yuhu = setdiff(bla, theseAreDirichNodes);
+% 
+% if (length(yuhu) > 0)
+% fuckYou(ff) = yuhu;
+% end
+% 
+% end
+% 
+% fast = unique(fuckYou);
+% fakeDirich = fast(fast~=0);
+
+
 
 % First: Only dirichlet
 dirichletValues = zeros(totalNodesNumber,1);
@@ -74,16 +102,43 @@ for i=1:boundaryNodesNumber
          %   dirichletValues(node) = sorted_bmesh(i,4);  
          
         % else
+        
+            % TODO -> this not right ...
              row1 = find(sorted_bmesh(:,1) == node);
              row2 = find(sorted_bmesh(:,2) == node);
              row = [row1 row2];
+             
+             testVal = sorted_bmesh(row,3);
+             if (testVal(1) ~= testVal(2))
+                stopHere = 0; 
+                
+                node1=sorted_bmesh(row(1),1);
+                node2=sorted_bmesh(row(2),1);
+                node3=sorted_bmesh(row(1),2);
+                node4=sorted_bmesh(row(2),2);
+                
+                testestest = unique([node1 node2 node3 node4]);
+                %isRealDirich(testestest) = 1;
+             end
+             
              if ((sorted_bmesh(row(1),3) == 1))
               dirichletValues(node) = sorted_bmesh(row(1),4);
+              
+%               if (testVal(1) ~= testVal(2))
+%               % Testing
+%               dirichletValues(testestest) = sorted_bmesh(row(1),4);
+%               end
               
              elseif ((sorted_bmesh(row(2),3) == 1))
                           % Need to find correct dirich vale
             %row = find(sorted_bmesh(:,2) == node);
           dirichletValues(node) = sorted_bmesh(row(2),4);
+          
+          
+%           if (testVal(1) ~= testVal(2))
+%                         % Testing
+%           dirichletValues(testestest) = sorted_bmesh(row(2),4);
+%          end
           
              else 
                  error('Whaaaaa');
