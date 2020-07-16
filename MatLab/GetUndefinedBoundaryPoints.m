@@ -7,22 +7,23 @@ hereIsNeumann = find(bmesh(:,3) == 2);
 neumannNodes = unique([bmesh(hereIsNeumann,1), bmesh(hereIsNeumann,2)]);
 
 % Dirichlet corner nodes
-[vali] = intersect(theseAreDirichNodes, neumannNodes);
+[problemCornerNodes] = intersect(theseAreDirichNodes, neumannNodes);
 
-fuckYou(length(vali)) = 0;
+numProblemPoints = length(problemCornerNodes);
+fuckYou(numProblemPoints) = 0;
 
-for ff=1:length(vali)
-ecke = vali(ff);
-nnn = find(bmesh(:,1)==ecke);
-uuu = find(bmesh(:,2)==ecke);
-rowVonEcke = unique([nnn, uuu]);
+for count=1:length(problemCornerNodes)
+corner = problemCornerNodes(count);
+temp1 = find(bmesh(:,1)==corner);
+temp2 = find(bmesh(:,2)==corner);
+rowVonEcke = unique([temp1, temp2]);
 
 bla = [bmesh(rowVonEcke,1) bmesh(rowVonEcke,2)];
 
 yuhu = setdiff(bla, theseAreDirichNodes);
 
 if (length(yuhu) > 0)
-fuckYou(ff) = yuhu;
+fuckYou(count) = yuhu;
 end
 
 end
@@ -31,10 +32,9 @@ fast = unique(fuckYou);
 fakeDir = fast(fast~=0);
 
 
-numFakeDir = length(fakeDir);
-undefinedPoints = zeros(numFakeDir,1));
+undefinedPoints(numProblemPoints) = 0;
 
-for i=1:numFakeDir
+for i=1:numProblemPoints
 
 current = fakeDir(i);
 rows = [find(bmesh(:,1) == current) find(bmesh(:,2) == current)];
