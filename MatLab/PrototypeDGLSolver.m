@@ -205,7 +205,8 @@ intyp = 1;
 phi = Ah \ fh;
 
 
-%% TEST Add fakedir
+%% TEST Add fakedi
+
 
 hereIsDirich = find(bmesh(:,3) == 1);
 theseAreDirichNodes = unique([bmesh(hereIsDirich,1), bmesh(hereIsDirich,2)]);
