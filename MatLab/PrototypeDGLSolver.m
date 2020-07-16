@@ -207,17 +207,12 @@ intyp = 1;
 phi = Ah \ fh;
 
 
-%% TEST Add fake di
+%% TEST Add fake dirichlet values
 
-
-for i=1:length(fakeDir)
-
-phi(mmm) = (phi(uiuiu) + phi(jajaj)) / 2;
-
+for i=1:length(undefinedPoints)
+    phi(undefinedPoints(i,1)) = (phi(undefinedPoints(i,2)) + phi(undefinedPoints(i,3))) / 2;
 end
 
-
-%phi(fakeDir) = 0; % TODO
 
 figure(2);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
@@ -249,6 +244,8 @@ title('RFA electric energy at every point of mesh');
 
 % Define the new boundary conditions for the heat equation
  bmesh = DefineBoundaryConditions(bedges, 'temp');
+ 
+ undefinedPoints = GetUndefinedBoundaryPoints(bmesh);
  
 % Define specific pde parameters for parabolic heat equation
 k_Temp = @(r,z) lambda; 
@@ -312,7 +309,11 @@ for t_count=2:size(t_vec,2)
     [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh, bmesh);      
      
     uh_next = left \ right;
+    %% TEST Add fake dirichlet values
 
+    for i=1:length(undefinedPoints)
+        uh_next(undefinedPoints(i,1)) = (uh_next(undefinedPoints(i,2)) + uh_next(undefinedPoints(i,3))) / 2;
+    end
     %% Testing UNDEFINED BOUNDARY
     
 for i=1:length(fakeDir)
