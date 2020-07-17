@@ -35,20 +35,25 @@
 % part 1, Introduction 
 
 \section{Introduction to radio frequency ablation}
-Lets talk about:\\
 - Medical Treatment of Tumor\\
+- Minimally invasive surgery \\ 
 - Radio frequency ablation\\
-- Why RFA Simulation is important \\
+- RFA has been proven to be one of the best therapies for small tumors (smaller than 5 cm in size) \\
+- Simulation of RFA is important \\
+- If you have stable and converging simulation model, it is easy to try out different modifications without cumbersome experiments \\ 
+- It is easy to configure \\
+- Is also used on a larger scale for Virtual Reality simulation to train mediciners and surgeons \\
+- For more information see TODO \\
+- \\
+- 
 - Motivation / This project in General\\
-
-- TODO \\
-
-
-- Study approach to study finite elements and behaviour of convergence \\
+- This is the documentation to study approach on numerical simulation \\
+- Radio frequency ablation is the underlying model \\
+- Study finite elements and behaviour of convergence \\
 - FEM simulation for RFA in 2D space domain with discrete time solutions \\
 - The modeled problem is a 3D problem \\
 - By modeling one needle there, is a axis symmetrie in the domain \\
-- 3D axis symmetric cylindrical domain can be described with 2D torus elements \\ 
+- 3D axis symmetric cylindrical domain can be described with 2D torus elements and special FEM techniques \\ 
 
 
 % part 2, Main
@@ -307,14 +312,16 @@ Laplace in polar coordinates:
 
 \subsection{PDE for Electric potential}
 
-\subsubsection{Weak formulation of the problem}
+\subsubsection{Discretization of the problem}
 4 areas can be distinguished from a mathematical point of view \\
 - Inner domain \\
 - Fixed Potential of electrodes \\
 - Outer boundaries with no fixed potential -> Robin \\
 - Rotation axis, artificial boundary -> Neumann \\
 
-Constant material parameters: \\
+Constant material parameters -> \\
+Coefficients are constants \\
+This will simplify calculations and coupling \\
 
 \subsubsection{Inner Domain}
 
@@ -333,33 +340,37 @@ Constant material parameters: \\
     - \Delta \varphi(x,y,z) = 0
 \end{equation}
 
-- Using a cylindric domain, we can use cylinder coordinates (see ref Laplace in cylinder)
+- Using a cylindric domain, it is preferred to change coordinate systems \\
+- Axis symmetry is given cylindrical coordinates (see ref Laplace in cylinder)
 
 \begin{equation}
     - \Delta \varphi(r,\phi,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{1}{r^2} \frac{\partial^2 \varphi}{\partial \phi^2} -      \frac{\partial^2 \varphi}{\partial z^2}  = 0
 \end{equation}
 
 - Since the domain has axis symmetry, the solution for $\varphi$ is independent from the angular $\phi$ \\
-- So equation simplifies to 
+- So equation basically simplifies to 
 
 \begin{equation}
-    - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
+    - \Delta \varphi(r,\phi,z) \overset{!}{=} - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
 \end{equation}
 
+To keep the following descriptions simple, we will (ignore) "verzichten" the explicit dependencies r and z, since this is trivial
 
 \subsubsection{Electrodes}
 
 - Potential difference on the electrodes is fixed by definition \\
-- For calculations, potential will be defined as $\pm 1$ \\
+- For calculations, potential will be defined as $\pm 1$ chosen arbitrarily \\
+- Bipolar probes have one fixed potential at each electrode
 
 \begin{equation}
     \varphi = \pm 1
 \end{equation}
 
+- Other values would be possible too, but are rather unusual at monopolar probes \\
 
 \subsubsection{Outer boundary}
 
-- one approach is a simplification with natural boundary conditions \\
+- An easy approach is a simplification with natural boundary conditions \\
 
 \begin{equation}
     n \cdot \nabla \varphi = 0
@@ -370,41 +381,42 @@ Constant material parameters: \\
     TODO
 \end{equation}
 
-
-- In actual RFA treatment, there is a mass to nullify the potential in the outer region \\
+- In actual RFA treatment, there is a mass to nullify the potential in the outer regions \\
 - For the lower boundary, this behaviour can be easily modeled with dirichlet conditions \\
-
 \begin{equation}
     \varphi = 0
 \end{equation}
+
+- Neither the neumann nor the dirichlet conditions actually reflect physics properly,, but is rather accurate enough for this approach \\
+- Since there are made other simplifications, especially with the unrealistic "Annahme" of constant material parameters, this simplification of boundary conditions is within the margin ob acceptable errors
 
 
 \subsubsection{Rotation axis}
 
 - this is an artificial boundary, as discribed above \\
-- To keep the axis symmetry, here must apply natural neumann bundary conditions \\
+- To keep the axis symmetry, "leicht einsehbar" that here must natural boundary conditions \\
 - Other conditions would break the trace operator \\
+- A more mathematical description for this "Annahme" will described in the following chapter
+
 - \begin{equation}
     n \cdot \nabla \varphi = 0
 \end{equation}
 
 
 
-
 \subsection{Calculation of electrical energy}
 
 - $\varphi$ can be calculated on every discrete point \\
-- Calculate power for every point \\
-- Tissue Resistance \\
-- Effective power \\
-- Calculate electric energy from electric power \\
+- Calculate power for every point with equations above (TODO add ref here) \\
+- Phi is evaluated on discrete mesh points \\
+- In a nutshell, Tissue Resistance and nonlinear behaviour of the generator generate an effective power which is as well the total power of the domain  a scalar multiplication factor for every discrete value for phi \\
 
-
+- Thus leading to the calculation of the electric energy from electric power above \\
 
 
 \subsection{PDE for temperature Distribution}
 
-\subsubsection{Weak formulation}
+\subsubsection{Discretization of the problem}
 
 From physics above, the temperature distribution is modeled by the heat equation: 
 
@@ -414,13 +426,19 @@ From physics above, the temperature distribution is modeled by the heat equation
 
 The heat equation is a well known parabolic partial differential equation. \\
 
-We are assuming $\rho$ and $c$ are constant \\
-$\rho$ = density \\
-$c$ = specific heat capacity \\
-$\lambda$ = thermal conductivity, which is depending on T \\
 T = T(r,z,t) = temperature \\
 Q = Q(r,z,t) = heat energy \\
 
+The material parameters are taken as constant, as described above \\
+$\rho$ = density \\
+$c$ = specific heat capacity, \\
+$\lambda$ = thermal conductivity \\
+- In temperature range of radio frequency ablation, $c$ and $\lambda$ are especially nonlinear depending on the temperature, for which the phase change of water is reason to \\ Evaporated water has a totally different heat capacity and thermal conductivty, also the transition is smooth and not abrupt \\
+
+
+- However, Modeling the phase change of water and corresponding heat capacity does in practise lead to big numerical problems \\
+
+- It is reasonable to at least model the temperature dependency of lambda, which leads to the following description
 
 Cylindrical coordinates: see 'Transient Heat Transfer in a Partially Cooled Cylindrical Rod' from Lawrence Agbezuge
 
@@ -428,25 +446,44 @@ Cylindrical coordinates: see 'Transient Heat Transfer in a Partially Cooled Cyli
     \rho c \frac{\partial T}{\partial t} -  \frac{d\lambda}{dT} \left[ \left( \frac{\partial T}{\partial r} \right)^2 + \left( \frac{\partial T}{\partial z} \right)^2 \right] - \lambda \left( \frac{\partial^2 T}{\partial r^2} + \frac{1}{r} \frac{\partial T}{\partial r} + \frac{\partial^2 T}{\partial z^2} \right) = Q
 \end{equation}
 
-For the first run, we assume $lambda$ is also constant too, which greatly reduces the complexity of the problem to the form
+- For sake of simplicity in this academic approach, we will ignore the phase change of water willingly as a whole \\
+
+- So it is "good" to assume that $lambda$ would also be constant too, which greatly reduces the complexity of the whole PDE \\
 
 \begin{equation}
     \rho c \frac{\partial T}{\partial t} - \lambda \left( \frac{\partial^2 T}{\partial r^2} + \frac{1}{r} \frac{\partial T}{\partial r} + \frac{\partial^2 T}{\partial z^2} \right) = Q
 \end{equation}
 
-\textcolor{red}{TODO: explain Q her}
+- The right hand side is described in the physics, see ref\\
+- It is depending on the generated electrical energy and the cooling effect of perfusion \\
 
 \begin{equation}
     Q_{total} = Q_{rf} + Q_{perf}
 \end{equation}
 
-- $Q_{rf}$ is descripted above \\
-- $Q_{perf}$ is blood perfusion \\
-- TODO: Maybe explain this in the physics above??? \\
+- Since the material parameters are constant, $Q_{perf}$ can be easily evaluated linear depending on T for every discrete time step \\
 
+\subsubsection{Needle}
 
+- If we assume that the probe is cooled from outside, it is as simple and also accurate assumption to take the body temperature as constant temperature for the probe over the whole intervall
+\begin{equation}
+    T = T_{body} \
+\end{equation}
 
+- Usually body temperature is around $\cong$ 37 degree Celsius or 310.15 degree Kelvin \\
+- If the probe is not cooled, another simple approach is to model the behaviour of needle likewise as the outer boundary \\  
 
+\subsubsection{Outer boundary}
+
+- Assuming there is no "Disturbing" from outside, natural boundary conditions conditions are the correct assumption for the heat equation  
+
+- \begin{equation}
+    n \cdot \nabla \varphi = 0
+\end{equation}
+
+- These can also be used to model non cooled probes \\
+
+- In the following, we will discribe how the PDE models for $\varphi$ and $T$ can be transformed in the context of finite elements and numerically evaluated at discrete points \\
 
 
 \section{Applied FEM technologies}
@@ -462,14 +499,6 @@ Electric potential / Laplace's equation in cylindrical domain:
 
 - $u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
 - $v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
-
-Approximate with linear regression functions\\
-Linear regression functions for reference triangles:
-\begin{align}
-    \phi_1(\xi, \eta) &= 1 - \xi - \eta \\
-    \phi_2(\xi, \eta) &= \xi \\
-    \phi_2(\xi, \eta) &= \eta 
-\end{align}
 
 Specific PDE for electric potential, inner domain: 
 
@@ -527,12 +556,23 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 \subsection{Assembling system of equation}
 
 - assemble elementwise \\
-- use symmetrie of elements if koefficients are constant or allow it \\
+- Approximate elements with linear regression functions\\
+- Calculation on reference triangles to speed up performance and accuracy \\
+
+Linear regression functions for reference triangles:
+\begin{align}
+    \phi_1(\xi, \eta) &= 1 - \xi - \eta \\
+    \phi_2(\xi, \eta) &= \xi \\
+    \phi_2(\xi, \eta) &= \eta 
+\end{align}
+
+- use symmetrie of elements if coefficients are constant or allow it \\
 - Add boundary conditions afterwards \\
 - grouping of similar calculations allow more vectorized operations \\ 
 
 \subsection{ODE for parabolic problems}
 
+\textcolor{blue}{TODO}
 
 \subsection{Solving the system of equations}
 - direct solver would be preferred in general \\
@@ -565,24 +605,33 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 \section{Other numerical aspects }
 
-\subsection{Numerical integration}
-- quadrature on discrete points \\
+
+\subsection{Surface integral}
+- Sum of integral of every single triangle \\
+- Single triangle on discrete gauss quadrature points \\
+- Can use more nodes, which is usually worth the calculation effort \\
+- Implemented on 3 or 7 points \\
+- TODO insert picture \\
 
 \subsection{Numerical gradient on discrete points}
-
 - "Testfunction nähern Ersatzlösung an " \\
 - in our case, gradient is constant on every triangle \\
 - actually discrete gradient on vertices is interesting \\
-- vertices as average value of surrounding triangles \\
-
-
-\subsection{Surface integral}
-- sum of integral of every single triangle \\
+- vertices as average value of surrounding the sorrounding triangles \\
 
 \subsection{Grid refinement}
-- refine triangle uniformly into 4 new ones \\
+- Refine triangle uniformly into 4 new ones \\
+- Can be done as efficient vector operation \\
 
-
+\subsection{Troublesome neighbours}
+- Collision on corner nodes and boundaries of electrodes \\
+- Corner node is defined well for dirichlet as well as for neumann conditions \\
+- Handling dirichlet nodes is done by setting row and column vectores to zero and rhs to dirichlet value, which is a problem for the neumann boundary  \\
+- Dirichlet value has higher priority for corners \\
+- This is a problem for the node on the neumann boundary next to the corner \\
+- So this exactly neumann node has some unforseen behaviour \\
+- To handle this, best way has shown to be to ignore the result for this node and interpolate the result by weighing the neighboring nodes \\  
+- This particular solution might have its obvious flaws, but gets pretty good results in practise \\
 
 
 \section{Applied simulation}
