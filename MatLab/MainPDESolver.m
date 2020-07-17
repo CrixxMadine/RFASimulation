@@ -4,24 +4,17 @@
 % The whole matlab code is part of an AMP application project
 % Project is about numeric simulation of radio frequency ablation
 
-% This skript is mainly for experimenting with the RFA PDEs
-% Also general documentation of the numeric approaches
+% THIS SCRIPT IS NOT OPTIMIZED
+% It heavily prefers intention telling over optimization
 
-% THIS SCRIPT IS BY NO MEANS OPTIMIZED
-% It massively prefers intention telling over optimization
-% For an optimized simulation program, see the C++ source code
-
-% for model reference see article of my advisor:
+% For model reference see article of my advisor:
 % Tim Kroeger et al. 
 % "Numerical Simulation of Radio Frequency
 %  Ablation with State Dependent Material
 %  Parameters in Three Space Dimensions"
 
-%  TODO: ADD PUBLISHER
-
 clear variables;
 disp('This script runs a simulation of radio frequency ablation');
-
 
 
 %% Explanantion of space and time dimensions
@@ -30,15 +23,17 @@ disp('This script runs a simulation of radio frequency ablation');
 % Due to axis symmetrie, the whole simulation is reduced to a 2D-problem
 % All calculations are done in cylindrical coordinates
 
-% cylindrical domain for the simulation
-%  ____    ____
-% |    |  |    |
-% |    |  |    |
-% |    |  |    |
-% |     \/     |
-% |            |
-% |            |
-% |____________|
+% Cylindrical domain for the simulation
+%
+%  Full cross-section       halved 
+%   _____    _____           ____
+%  |     |  |     |         |    |
+%  |     |  |     |         |    |
+%  |     |  |     |         |    |
+%  |      \/      |   or   /     |
+%  |              |        |     |
+%  |              |        |     |
+%  |______________|        |_____|
 %
 
 % Transformation reference to cylindrical coordinates 
@@ -50,8 +45,8 @@ disp('This script runs a simulation of radio frequency ablation');
 %% Time discretization
 
 % Time discretization in seconds for time-dependant simulation 
-t_start = 0.00;  % Starting point -> t = 0 seconds
-t_step  = 0.2;
+t_start = 0.00;    % Starting point -> t = 0 seconds
+t_step  = 0.2;     % tau
 t_end   = 240.00;  
 t_vec   = t_start:t_step:t_end;
 
@@ -59,6 +54,8 @@ t_vec   = t_start:t_step:t_end;
 %% Material parameters
 
 % For the first simulation run, everything should be absolutely const.
+
+% TODO clean up
 
 % Alternative model for linear dependent material parameters
 % for ref. see books from Stein T. and Kröger T.
@@ -68,26 +65,12 @@ c_stein      = [ 3455*0.001 0      -0.376     0   ]';   % Stein gives c in J/gK 
 lambda_stein = [ 0.437    0.0025      0       0   ]'; 
 
 % Constant material parameters 
-sigma_phi = sigma_stein(1);  % electric conductivity
-rho_blood = rho_stein(1);    % density
-c_blood   = c_stein(1);      % specific heat capacity
-lambda    = lambda_stein(1); % thermal conductivty
+sigma_phi  =     0.21;      % electric conductivity
+rho_blood  =  1080;         % density
+c_blood    =  3455 * 0.001; % specific heat capacity
+lambda     =     0.437;     % thermal conductivty -> in J/gK respectively in J/kg*K
 
-nu_blood  = 0.01765;         % blood perfusion coefficient
-
-% Variable state parameters
-% phi   = [ ]; % electric potential  
-temp  = [ ]; % temperature distribution
-F_wat = [ ]; % relative content of fluid water
-F_vap = [ ]; % relative content of vapor
-F_coa = [ ]; % coagulation state
-
-% TODO 
-% F_wat(t,x) + F_vap(t,x) == 1;  -> this would be intuitive
-% F_wat(t,x) + F_vap(t,x) <= 1;  -> this is more appropriate
-
-% Constant Prefactors for PDE
-
+nu_blood  =      0.01765;   % blood perfusion coefficient
 
 
 %% Grid Generation - Choose grid for calculation
