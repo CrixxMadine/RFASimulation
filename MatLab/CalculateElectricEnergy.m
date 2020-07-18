@@ -7,7 +7,7 @@ power = zeros(size(phi,1),1);
 % Get the numerical gradient of every vertex
 %[phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, phi);
 
-[phi_dx, phi_dy] = TriGradient(pmesh(:,1),pmesh(:,2), phi);
+%[phi_dx, phi_dy] = TriGradient(pmesh(:,1),pmesh(:,2), phi);
 
 % x = -2:0.2:2;
 % y = x';
