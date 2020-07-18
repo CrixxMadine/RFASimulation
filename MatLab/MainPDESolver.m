@@ -166,6 +166,7 @@ ylabel('z axis');
 
 
 %% Plot 3D mesh reconstruction -> TODO move downwards
+
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
@@ -177,35 +178,7 @@ scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING);
 colorbar(); 
  caxis([min(d(:,4)), max(d(:,4))])
 
-% ctest = jet(uh3D);
 
-figure(900);
-% h = scatter3(data(:,1), data(:,2), data(:,3), 20, data(:,4), 'MarkerFaceColor', 'Flat');
-% colorbar(); 
-% caxis([min(data(:,4)), max(data(:,4))])
-
-% % Colormap "where the value of the 0.2 to 1 is red and
-% % -0.2 to -1 is blue, and the rest is green.
-% numColors = 256;
-% vec = linspace(-1, 1, numColors);
-% cmap = zeros(numColors, 3);
-% % Make everything green to start with
-% cmap(:, 2) = 1;
-% % Make red from where vec goes from 0.2 to 1.
-% redIndexes = vec >= 0.2 & vec <= 1;
-% cmap(redIndexes, 1) = 1;
-% cmap(redIndexes, 2) = 0;
-% cmap(redIndexes, 3) = 0;
-% % Make blue from where vec goes from -1 to -0.2.
-% blueIndexes = vec >= -1 & vec <= -0.2;
-% cmap(blueIndexes, 1) = 0;
-% cmap(blueIndexes, 2) = 0;
-% cmap(blueIndexes, 3) = 1;
-% cmap % Echo to command window so we can see it.
-
-surf(d(:,1), d(:,2), d(:,3), uh3D);
-plot3(d(:,1), d(:,2), d(:,3), '.', uh3D);
-colormap default;
 
 
 %% Calculate electric power from the electric potential

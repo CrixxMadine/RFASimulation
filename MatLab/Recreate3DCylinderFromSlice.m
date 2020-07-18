@@ -31,10 +31,9 @@ end
 
 colorMap3D = zeros(numberOfNodes * 36 , 3);
 
-for xxx=0:1:35
-    area = (xxx) * numberOfNodes + 1;
-    colorMap3D(area:area+length(uh)-1, :) = currentColorMap;    
-end
+%for xxx=0:1:35
+  
+%end
 
 % END TEST
 
@@ -49,10 +48,14 @@ for angle=0:10:350
     angleVec = zeros(numberOfNodes,1) + angle;
     
     area = (angle/10) * numberOfNodes + 1;
-    pmesh3DCylinder(area:area+numberOfNodes-1, :) = [pmesh(:,1), angleVec, pmesh(:,2)];
-    
+    pmesh3DCylinder(area:area+numberOfNodes-1, :) = [pmesh(:,1), angleVec, pmesh(:,2)];   
+      
     uh3D(area:area+numberOfNodes-1) = uh;
 
+    
+    colorMap3D(area:area+numberOfNodes-1, :) = currentColorMap; 
+    
+    
 end
 
 [s,t,u] = pol2cart(pmesh3DCylinder(:,2)', pmesh3DCylinder(:,1)', pmesh3DCylinder(:,3)');
