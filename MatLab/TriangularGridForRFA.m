@@ -1,5 +1,11 @@
 function [pmesh, tmesh, edges] = TriangularGridForRFA()
 
+%% Info on this subroutine
+%
+% This class was used to create a structured triangular grid
+% Meanwhile, simulation uses unstructured grid
+% Function is obsolete now
+
 %% Parameters Explanation
 %  pmesh := Point mesh, the x and y coords to all nodes 
 %           e.g. pmesh(1) = [x y]
@@ -84,7 +90,7 @@ function [pmesh, tmesh, edges] = TriangularGridForRFA()
 
 %% Grid generation
 
-% TODO
+% This section was moved elsewhere
 
 pmesh = 0;
 tmesh = 0;
