@@ -100,10 +100,10 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 % We can use value for every point of 3d domain
 
 
-%uh = zeros(size(pmesh,1),1);
-%[pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
+% uh = zeros(size(pmesh,1),1);
+% [pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
 % d = pmesh3DCylinder;
-% plot3(d(:,1), d(:,2), d(:,3);
+% plot3(d(:,1), d(:,2), d(:,3));
 
 %% Refine the initial grid
 
@@ -287,21 +287,21 @@ for t_count=2:size(t_vec,2)
     end
     %% Testing UNDEFINED BOUNDARY
     
-for i=1:length(fakeDir)
-
-
-mmm = fakeDir(i);
-rows = [find(bmesh(:,1) == mmm) find(bmesh(:,2) == mmm)];
-neighbours = [bmesh(rows,1) bmesh(rows,2)];    
-    
-realNeighbours = (neighbours(neighbours ~= mmm));
-
-uiuiu = realNeighbours(1);
-jajaj = realNeighbours(2);
-
-uh_next(mmm) = (uh_next(uiuiu) + uh_next(jajaj)) / 2;
-
-end
+% for i=1:length(fakeDir)
+% 
+% 
+% mmm = fakeDir(i);
+% rows = [find(bmesh(:,1) == mmm) find(bmesh(:,2) == mmm)];
+% neighbours = [bmesh(rows,1) bmesh(rows,2)];    
+%     
+% realNeighbours = (neighbours(neighbours ~= mmm));
+% 
+% uiuiu = realNeighbours(1);
+% jajaj = realNeighbours(2);
+% 
+% uh_next(mmm) = (uh_next(uiuiu) + uh_next(jajaj)) / 2;
+% 
+% end
 
 %% END testing
     
