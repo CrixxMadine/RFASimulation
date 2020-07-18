@@ -9,7 +9,16 @@ neumannNodes = unique([bmesh(hereIsNeumann,1), bmesh(hereIsNeumann,2)]);
 % Dirichlet corner nodes
 [problemCornerNodes] = intersect(theseAreDirichNodes, neumannNodes);
 
-numProblemPoints = length(problemCornerNodes);
+numProblemPoints = size(problemCornerNodes,1);
+
+
+
+% Case no problematic points (e.g. only one type of boundary conditions)
+if (numProblemPoints == 0) 
+    undefinedPoints = zeros(0,0);
+    return;
+end 
+
 fuckYou(numProblemPoints) = 0;
 
 for count=1:length(problemCornerNodes)
@@ -32,7 +41,7 @@ fast = unique(fuckYou);
 fakeDir = fast(fast~=0);
 
 
-undefinedPoints(numProblemPoints) = 0;
+undefinedPoints = zeros(numProblemPoints, 3);
 
 for i=1:numProblemPoints
 

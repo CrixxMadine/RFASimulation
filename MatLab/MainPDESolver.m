@@ -55,14 +55,12 @@ t_vec   = t_start:t_step:t_end;
 
 % For the first simulation run, everything should be absolutely const.
 
-% TODO clean up
-
 % Alternative model for linear dependent material parameters
 % for ref. see books from Stein T. and Kröger T.
-sigma_stein  = [ 0.21     0.013      -1     1.143 ]'; 
-rho_stein    = [ 1080   -0.00056   -0.657     0   ]';
-c_stein      = [ 3455*0.001 0      -0.376     0   ]';   % Stein gives c in J/gK not in J/kg*K
-lambda_stein = [ 0.437    0.0025      0       0   ]'; 
+% sigma_stein  = [ 0.21     0.013      -1     1.143 ]'; 
+% rho_stein    = [ 1080   -0.00056   -0.657     0   ]';
+% c_stein      = [ 3455*0.001 0      -0.376     0   ]';   % Stein gives c in J/gK not in J/kg*K
+% lambda_stein = [ 0.437    0.0025      0       0   ]'; 
 
 % Constant material parameters 
 sigma_phi  =     0.21;      % electric conductivity
@@ -75,17 +73,11 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 
 %% Grid Generation - Choose grid for calculation
 
-
-%% TODO THERE IS SOME ASYMMETRIE BUG by calculating ohi
-% Maybe bug is in the boundary values???
-% Or perhaps point coordinates are not accurate enough ?
-% Seems to be a of the one error on the grid
-
 % DEBUG Mesh
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
 % numAdditionalGridRefinements = 0;
 % [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
-%  [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
+% [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
 % xx = zeros(4,4);
 % xy = zeros(4,1)
 % bmesh = DefineBoundaryConditions(bedges, 'phi');
@@ -120,7 +112,6 @@ tmeshFiner = tmesh;
 bedgesFiner = bedges;
 
 
-
 for i=1:numAdditionalGridRefinements
 
 [pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
@@ -150,9 +141,6 @@ title('Point vertices in the refined triangulation');
 pmesh = pmeshFiner;
 tmesh = tmeshFiner;
 bedges = bedgesFiner;
-
-
-stopHereBreakPoint = 0;
 
 
 %% TESTING FIND ERROR IN ASYMMETRIE
