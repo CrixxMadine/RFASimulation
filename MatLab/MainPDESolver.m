@@ -178,7 +178,7 @@ for count=1:length(phi)
 end
 
 TESTING = zeros(length(phi) * 36 , 3);
-for xxx=1:35
+for xxx=0:1:35
     area = (xxx) * length(phi) + 1;
     TESTING(area:area+length(phi)-1, :) = newColorMap;    
 end
@@ -187,13 +187,16 @@ end
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
-%figure(500)
+figure(500)
 uh = zeros(size(pmesh,1),1);
 [pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
 d = [pmesh3D uh3D];
+scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING);
+colorbar(); 
+ caxis([min(d(:,4)), max(d(:,4))])
 
 % ctest = jet(uh3D);
-scatter3(d(:,1), d(:,2), d(:,3), 1, TESTING);
+
 figure(900);
 % h = scatter3(data(:,1), data(:,2), data(:,3), 20, data(:,4), 'MarkerFaceColor', 'Flat');
 % colorbar(); 
