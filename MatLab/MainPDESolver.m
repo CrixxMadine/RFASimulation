@@ -91,7 +91,7 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
   [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
    numAdditionalGridRefinements = 1;
 
-%% Testing 3d mesh reconstruction
+%% Plot 3D mesh reconstruction -> TODO move downwards
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
@@ -101,16 +101,18 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 % d = pmesh3DCylinder;
 % plot3(d(:,1), d(:,2), d(:,3));
 
-%% Refine the initial grid
+%% Optional refinement of the initial grid
+
+% number of refinement steps can be defined above
 
 pmeshFiner = pmesh;
 tmeshFiner = tmesh;
 bedgesFiner = bedges;
 
-
 for i=1:numAdditionalGridRefinements
 
-[pmeshFiner, tmeshFiner, bedgesFiner] = TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
+    [pmeshFiner, tmeshFiner, bedgesFiner] =  ...
+        TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
 
 end 
 
@@ -191,18 +193,16 @@ ylabel('y-axis');
 
 %% Calculate electric power from the electric potential
 
-% -> is now subroutine
-power = zeros(size(phi,1),1);
+[energyPoints, energyElements] = ... 
+    CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
 
-[energyPoints, energyElements] = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
 
-%% Plot the power distribution - deactivated by comments
 figure(3);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
 title('RFA electric energy at every point of mesh');
 
 
-%% Calculate the Heat for the Temperature Distribution T
+%% Calculate the Heat used for the Temperature Distribution T
 
 % The temperature distribution is given by the heat equation
 % | dT(x,y,z,t)/dt - div ( (lambda(x,y,z,t) * grad T(x,y,z,t) ) = Q_heat |
@@ -219,6 +219,7 @@ k_Temp = @(r,z) lambda;
 q_Temp = @(r,z) 0;
 intyp = 1;
 
+% Material parameters, see section above
 nu  = nu_blood;    % perfusion coefficient, prefactor to Q_perf
 rho = rho_blood;   % density
 c   = c_blood;     % heat capacity    
@@ -242,7 +243,7 @@ Q_rfa   = 0;
 % TODO crawler for column vectors
 
 
-%% Calculate the temperatute distribution over time
+%% Calculate the temperatute distribution ODE over time
 
 % Time looping
 
@@ -276,32 +277,14 @@ for t_count=2:size(t_vec,2)
     [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh, bmesh);      
      
     uh_next = left \ right;
-    %% TEST Add fake dirichlet values
-
+    
+    % Approximate values on problematic points from neighbours
     for i=1:length(undefinedPoints)
-        uh_next(undefinedPoints(i,1)) = (uh_next(undefinedPoints(i,2)) + uh_next(undefinedPoints(i,3))) / 2;
+        uh_next(undefinedPoints(i,1)) = ... 
+            (uh_next(undefinedPoints(i,2)) + uh_next(undefinedPoints(i,3))) / 2;
     end
-    %% Testing UNDEFINED BOUNDARY
-    
-% for i=1:length(fakeDir)
-% 
-% 
-% mmm = fakeDir(i);
-% rows = [find(bmesh(:,1) == mmm) find(bmesh(:,2) == mmm)];
-% neighbours = [bmesh(rows,1) bmesh(rows,2)];    
-%     
-% realNeighbours = (neighbours(neighbours ~= mmm));
-% 
-% uiuiu = realNeighbours(1);
-% jajaj = realNeighbours(2);
-% 
-% uh_next(mmm) = (uh_next(uiuiu) + uh_next(jajaj)) / 2;
-% 
-% end
-
-%% END testing
-    
-    
+  
+    % Update plot for the calculation results of temperature distribution
     figure(4);
     trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next - 273.15);
     title(['Temperature Distribution in ° Celsius after ', num2str(t_next), ' seconds']);
@@ -310,14 +293,63 @@ for t_count=2:size(t_vec,2)
         breakPointAfter1Second = 0;
     end
     
-    % Try rotate data
-%     figure(100);
-%     surf(pmesh(2,:)',pmesh(1,:)', pmesh(1,:)', uh0_Temp);
-%     for i = 1:360
-%         rotate(h,[0 1 0], i);
-%         drawnow;
-%     end
+
+
+
+    if (t_count == 2)
+       merken1 = uh_next; 
+    elseif (t_count == 240)
+       merken2 = uh_next; 
+    elseif (t_count == 480)
+       merken3 = uh_next; 
+    elseif (t_count == 720)
+       merken4 = uh_next; 
+    elseif (t_count == 960)
+      merken5 = uh_next; 
+    end
     
+    stopTheExecutionHereBreakpoint = 0;
+    
+    % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);
+    
+    
+end % for 
+
+
+figure(500);
+trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next);
+title('Difference between 1 minute and one second');
+
+figure(5);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken2 - merken1);
+title('Difference between 1 minute and one second');
+
+figure(6);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken3 - merken1);
+title('Difference between 2 minutes and one second');
+
+figure(7);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken4 - merken1);
+title('Difference between 3 minutes and one second');
+
+% figure(8);
+% trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
+% title('Difference between 4 minutes and one second');
+
+figure(9);
+trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - merken1);
+title('Difference between 5 minutes and one second');
+
+
+stopTheExecutionHereBreakpoint = 0;
+
+test11 = uh_next - merken1;
+test22 = uh_next - merken4;
+
+
+stopTheExecutionHereBreakpoint = 0;
+
+%% Create 3D-Data from 2D slice
 
 % see: https://www.mathworks.com/matlabcentral/answers/506492-how-do-i-plot
 %      -animation-of-temperature-data-for-a-3d-object-with-time
@@ -337,80 +369,59 @@ for t_count=2:size(t_vec,2)
 % end
 % hold off
 
-    if (t_count == 2)
-       merken1 = uh_next; 
-    elseif (t_count == 240)
-       merken2 = uh_next; 
-    elseif (t_count == 480)
-       merken3 = uh_next; 
-    elseif (t_count == 720)
-       merken4 = uh_next; 
-    elseif (t_count == 960)
-      merken5 = uh_next; 
-    end
-    
-    stopTheExecutionHereBreakpoint = 0;
-    
-    % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);
-    
-    
-    % We will reduce the time dependency to a semi-discrete problem
-    %   Mh * du/dt + Ah * u = fh 
-    % 
-    % This is now practically an ODE we can solve over time 
+% TODO
 
 
-    % In theory, you could solve this ODE by inverting Mh
-    % TODO 
 
 
-    % To solve the system of ODE aborve, we use implicit Euler
-    % 
-    % Mh + delta_t * Ah * u(t_1) = u(t_0) + delta_t * f(t_1)
-    %
+%% OLD REGION SOLVE ODE -> Experimental code fragments
 
-    
-    % Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
-    % Q_total = Q_total + delta_t * (Q_rfa + Q_perf); % Update Q_total
+% This is fragmented code from calculation of temperature distribution
+% Will be documented for later use in project
 
-    % Test
-    % Q_total = zeros(size(Q_total));
-    
-    % Assemble FEM systems of equation for temperature distribution
-    % [Kh_heat, Mh_heat, fh_heat] ...
-      %   = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
 
-    %% TRY SOLVE PDE SYSTEM OLD
-%     Mh_heat = Mh_heat * c * rho;
-%  
-%     Ah_Temp = Mh_heat + delta_t * Ah_heat;
-%     fh_Temp = uh0_Temp + delta_t * fh_heat;
+% -> An approach using sigma for Euler/Crank-Nicolson
+
+% We will reduce the time dependency to a semi-discrete problem
+%   Mh * du/dt + Ah * u = fh 
 % 
-%     % Add boundary conditions
-%     [Ah_Temp, fh_Temp] = AddBoundaryConditionsToFEMatrix(Ah_Temp, fh_Temp, pmesh, tmesh, bmesh);
-% 
-%     % This is just for visualization
-%     uh_Temp = Ah_Temp \ fh_Temp; 
-% 
-%     % use new solution as old solution for next iteration
-%     uh0_Temp = uh_Temp;
-%     
-%     figure(4);
-%     trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_Temp - 273.15);
-%     title('Schematic Temperature Distribution in ° Celsius');
+% This is now practically an ODE we can solve over time 
 
-    %% TRY SOLVE PDE NEW
+
+% In theory, you could solve this ODE by inverting Mh
+% TODO 
+
+
+% To solve the system of ODE aborve, we use implicit Euler
+% 
+% Mh + delta_t * Ah * u(t_1) = u(t_0) + delta_t * f(t_1)
+%
+
+
+% Q_perf  = nu .* rho .* c .* (uh_Temp - T_body); % heat of blood perfusion
+% Q_total = Q_total + delta_t * (Q_rfa + Q_perf); % Update Q_total
+
+% Test
+% Q_total = zeros(size(Q_total));
+
+% Assemble FEM systems of equation for temperature distribution
+% [Kh_heat, Mh_heat, fh_heat] ...
+  %   = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
+
+  
+  
+% TRY SOLVE Matrix by matrix invert matrix 
     
-    % Reduce this to a system of ODE 
-    % u'(t) = A * u(t) + g(t)
-    % u(0) = u_0
-    
-    % u(t) = u_h
-    % A    = - M_h^(-1) * Kh
-    % g(t) = M_h^(-1) * f_h(t)
-    % u_0  = M_h^(-1) * Anfangswerte
-    
-    % Calculate inverted mass matrix
+% Reduce this to a system of ODE 
+% u'(t) = A * u(t) + g(t)
+% u(0) = u_0
+
+% u(t) = u_h
+% A    = - M_h^(-1) * Kh
+% g(t) = M_h^(-1) * f_h(t)
+% u_0  = M_h^(-1) * Anfangswerte
+
+% Calculate inverted mass matrix
 %     Mh_heat = Mh_heat * c * rho;    
 %     Mh_heat_inv = inv(Mh_heat); 
 %     
@@ -450,48 +461,9 @@ for t_count=2:size(t_vec,2)
 %     trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', uh_heat - 273.15);
 %     title('Schematic Temperature Distribution in ° Celsius');
 
-end % for 
 
-
-figure(500);
-trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next);
-title('Difference between 1 minute and one second');
-
-figure(5);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken2 - merken1);
-title('Difference between 1 minute and one second');
-
-figure(6);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken3 - merken1);
-title('Difference between 2 minutes and one second');
-
-figure(7);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken4 - merken1);
-title('Difference between 3 minutes and one second');
-
-% figure(8);
-% trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
-% title('Difference between 4 minutes and one second');
-
-figure(9);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - merken1);
-title('Difference between 5 minutes and one second');
-
-
-stopTheExecutionHereBreakpoint = 0;
-
-test11 = uh_next - merken1;
-test22 = uh_next - merken4;
-
-
-stopTheExecutionHereBreakpoint = 0;
-
-%% Create 3D-Data from 2D slice
-
-
-
-
-%% Galerkin FEM - TRYING TODO maybe this is a bit to complicated ...
+% -> Galerkin FEM - TRYING 
+% 
 %  For every time step, there will be a system of equations 
 %
 %    R1 S1     u0     F1
@@ -514,65 +486,14 @@ stopTheExecutionHereBreakpoint = 0;
 
 
 % Calculate the system of equations for galerkin fem
-R1 = Mh + delta_t*A;
-S1 = Mh + 0.5 * delta_t * A;
-R2 = 0.5 * delta_t * Ah;
-S2 = 0.5 * Mh + (delta_t/3) * Ah;
-Ph = [R1, S1;   % full matrix
-      R2, S2];
-  
-
-
-uh_Temp = Ph \ fh_heat;
+% R1 = Mh + delta_t*A;
+% S1 = Mh + 0.5 * delta_t * A;
+% R2 = 0.5 * delta_t * Ah;
+% S2 = 0.5 * Mh + (delta_t/3) * Ah;
+% Ph = [R1, S1;   % full matrix
+%       R2, S2];
+%   
+% 
+% 
+% uh_Temp = Ph \ fh_heat;
  
-
-
-
-%% Abbreviations TODO: UPDATE
-%
-% ----- Keywords ------
-% Keywords in comments are written in capital letters
-% 
-% NABLA  : The nabla operator
-%
-% DIV    : divergence,       NABLA /dotproduct something
-% GRAD   : gradient,         NABLA /multiply something
-% LAPLACE: Laplace operator, NABLA /dotproduct NABLA /multiply something
-%
-% PARAM  : this marks a material parameter
-% PDE    : this marks a PDE
-% STATE  : this marks a depending state
-% 
-%
-
-
-% ----- All Abbreviations in order -----
-%
-% c      : PARAM - specific heat capacity
-%  
-% F      : marks stated related to fluid
-% F_wat  : STATE - relative content of fluid water
-% F_vap  : STATE - relative content of vapor
-% F_coa  : STARE - coagulation state
-%
-% gamma  : the outer boundary of the domain
-%
-% lambda : PARAM - thermal conductivity
-% 
-% omega  : the whole domain
-%
-% phi    : PDE, STATE - electric potential  phi(t,x)
-%
-% Q      : PDE  -  heat energy Q(t,x)
-% 
-% Q_pc   : phase change part of Q
-% Q_perf : perfusion part of Q 
-% Q_rf   : radio frequency part of Q
-%
-% rho    : PARAM - density
-%
-% sigma  : PARAM - electric conductivity
-%
-% Temp   : STATE - temperature distribution
-%
-%
