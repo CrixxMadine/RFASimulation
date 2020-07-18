@@ -42,15 +42,6 @@ disp('This script runs a simulation of radio frequency ablation');
 % z = z;
 
 
-%% Time discretization -> Set step size here
-
-% Time discretization in seconds for time-dependant simulation 
-t_start = 0.00;    % Starting point -> t = 0 seconds
-t_step  = 0.2;     % tau
-t_end   = 240.00;  
-t_vec   = t_start:t_step:t_end;
-
-
 %% Material parameters
 
 % For the first simulation run, everything should be absolutely const.
@@ -141,15 +132,6 @@ tmesh = tmeshFiner;
 bedges = bedgesFiner;
 
 
-%% TESTING FIND ERROR IN ASYMMETRIE
-
-bmesh = DefineBoundaryConditions(bedges, 'phi');
-
-undefinedPoints = GetUndefinedBoundaryPoints(bmesh);
-
-stopHere = 0;
-
-
 %% Calculate electrical potential phi 
 
 % In the inner domain, phi is quasistatic and modeled as follows
@@ -158,6 +140,7 @@ stopHere = 0;
 
 % Add boundary conditions for the elliptical problem
 bmesh = DefineBoundaryConditions(bedges, 'phi');
+undefinedPoints = GetUndefinedBoundaryPoints(bmesh);
 
 % Define specific parameters for phi PDE
 
@@ -202,7 +185,7 @@ trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
 title('RFA electric energy at every point of mesh');
 
 
-%% Calculate the Heat used for the Temperature Distribution T
+%% Calculate the feat used for the temperature distribution T
 
 % The temperature distribution is given by the heat equation
 % | dT(x,y,z,t)/dt - div ( (lambda(x,y,z,t) * grad T(x,y,z,t) ) = Q_heat |
@@ -232,15 +215,19 @@ T_body = 37 + 273.15; % body temperature in Kelvin
 uh0_Temp = zeros(size(energyPoints)) + T_body;
 uh_Temp  = uh0_Temp;
 
-% Calculate the right hand side of the equation with discrete point
-%Q_rfa   = energyPoints;                       % heat of electrical power
-%Q_perf  = nu .* rho .* c .* (T_body - uh_Temp); % heat of blood perfusion
  
 Q_total = 0;
 Q_rfa   = 0;
 
 
-% TODO crawler for column vectors
+
+%% Time discretization -> Set step size here
+
+% Time discretization in seconds for time-dependant simulation 
+t_start = 0.00;    % Starting point -> t = 0 seconds
+t_step  = 0.2;     % tau
+t_end   = 240.00;  
+t_vec   = t_start:t_step:t_end;
 
 
 %% Calculate the temperatute distribution ODE over time
