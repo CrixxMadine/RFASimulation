@@ -20,64 +20,21 @@ function [Ah_bound, fh_bound] = AddBoundaryConditionsToFEMatrix(Ah, fh, pmesh, b
 %   -> Fourth row :  right hand side value of the boundary condition
 
 
+%% Implementation
+
 boundaryNodes = unique([bmesh(:,1), bmesh(:,2)]);
 boundaryNodesNumber = size(boundaryNodes,1);
 
 totalNodesNumber = size(pmesh,1);
 
-% Not important by now -> TODO
-%innerNodesNumber = totalNodesNumber - boundaryNodesNumber;
-%innerNodes = setdiff(1:totalNodesNumber, boundaryNodes);
-
-% Inlcude boundary condition
 
 % Sorting bmesh
 [~,idx] = sort(bmesh(:,1));   % sort just the first column
 sorted_bmesh = bmesh(idx,:);  % sort the whole matrix using the sort indices
 
 
-%[~,idx] = sort(bmesh(:,2));
-%sorted_bmesh_2 = bmesh(idx,:);
-
-
-allNodes = unique([bmesh(:,1), bmesh(:,2)]);
-left_Nodes = unique(bmesh(:,1));
-right_Nodes = unique(bmesh(:,2));
-
-notInLeft = setdiff(allNodes, left_Nodes);
-notInRight = setdiff(allNodes, right_Nodes);
-
-
 hereIsDirich = find(bmesh(:,3) == 1);
 theseAreDirichNodes = unique([bmesh(hereIsDirich,1), bmesh(hereIsDirich,2)]);
-
-% hereIsNeumann = find(bmesh(:,3) == 2);
-% neumannNodes = unique([bmesh(hereIsNeumann,1), bmesh(hereIsNeumann,2)]);
-% 
-% % Dirichlet corner nodes
-% [vali, posi] = intersect(theseAreDirichNodes, neumannNodes);
-% 
-% fuckYou(length(vali)) = 0;
-% 
-% for ff=1:length(vali)
-% ecke = vali(ff);
-% nnn = find(bmesh(:,1)==ecke);
-% uuu = find(bmesh(:,2)==ecke);
-% rowVonEcke = unique([nnn, uuu]);
-% 
-% bla = [bmesh(rowVonEcke,1) bmesh(rowVonEcke,2)];
-% 
-% yuhu = setdiff(bla, theseAreDirichNodes);
-% 
-% if (length(yuhu) > 0)
-% fuckYou(ff) = yuhu;
-% end
-% 
-% end
-% 
-% fast = unique(fuckYou);
-% fakeDirich = fast(fast~=0);
-
 
 
 % First: Only dirichlet
