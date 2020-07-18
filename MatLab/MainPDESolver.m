@@ -64,7 +64,8 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 
 %% Grid Generation - Choose grid for calculatione here
 
-%   ->  Uncomment the grid you want to investigate
+%   ->  Uncomment the grid you want to use for calculation
+%       The variable below is for additional grid refinement
 
 % 1.) Simple DEBUG Mesh
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
@@ -82,7 +83,7 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
   [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
    numAdditionalGridRefinements = 0;
 
-
+   
 %% Optional refinement of the initial grid
 
 % number of refinement steps can be defined above
@@ -97,6 +98,7 @@ for i=1:numAdditionalGridRefinements
         TriangularMeshRefinement2D(pmeshFiner, tmeshFiner, bedgesFiner);
 
 end 
+
 
 %% Plot the mesh, for control -> can be deactivated by comments
 
@@ -137,7 +139,7 @@ undefinedNodes = GetUndefinedBoundaryPoints(bmesh);
 k_EPot  = @(r,z) 1;
 q_EPot  = @(r,z) 0;
 f_rhs_EPot = @(r,z) 0;
-intyp = 1;
+intyp = 2;
 
 % Assemble global FEM system of equations elementwise
 [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k_EPot, q_EPot, f_rhs_EPot, intyp);
@@ -164,7 +166,6 @@ ylabel('z axis');
 %zlim([-1.5 1.5]);
 
 
-
 %% Plot 3D mesh reconstruction -> TODO move downwards
 
 % Domain is rotation symmetric
@@ -172,13 +173,12 @@ ylabel('z axis');
 
 figure(500)
 uh = zeros(size(pmesh,1),1);
-[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh, phi, 1);
+[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh, phi, 4);
 d = [pmesh3D uh3D];
-scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING);
-colorbar(); 
- caxis([min(d(:,4)), max(d(:,4))])
-
-
+scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING, 'filled');
+colormap(jet);
+colorbar('AxisLocation','in'); 
+caxis([min(d(:,4)), max(d(:,4))]);
 
 
 %% Calculate electric power from the electric potential
@@ -192,7 +192,7 @@ trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
 title('RFA electric energy at every point of mesh');
 
 
-%% Calculate the feat used for the temperature distribution T
+%% Calculate the heat used for the temperature distribution T
 
 % The temperature distribution is given by the heat equation
 % | dT(x,y,z,t)/dt - div ( (lambda(x,y,z,t) * grad T(x,y,z,t) ) = Q_heat |
@@ -225,7 +225,6 @@ uh_Temp  = uh0_Temp;
  
 Q_total = 0;
 Q_rfa   = 0;
-
 
 
 %% Time discretization -> Set step size here
@@ -309,64 +308,53 @@ for t_count=2:size(t_vec,2)
     
 end % for 
 
-
-figure(500);
-trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next);
-title('Difference between 1 minute and one second');
-
-figure(5);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken2 - merken1);
-title('Difference between 1 minute and one second');
-
-figure(6);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken3 - merken1);
-title('Difference between 2 minutes and one second');
-
-figure(7);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken4 - merken1);
-title('Difference between 3 minutes and one second');
-
-% figure(8);
-% trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
-% title('Difference between 4 minutes and one second');
-
-figure(9);
-trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - merken1);
-title('Difference between 5 minutes and one second');
-
-
-stopTheExecutionHereBreakpoint = 0;
-
-test11 = uh_next - merken1;
-test22 = uh_next - merken4;
-
-
-stopTheExecutionHereBreakpoint = 0;
+%% TEST SHOW difference
+% figure(500);
+% trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next);
+% title('Difference between 1 minute and one second');
+% 
+% figure(5);
+% trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken2 - merken1);
+% title('Difference between 1 minute and one second');
+% 
+% figure(6);
+% trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken3 - merken1);
+% title('Difference between 2 minutes and one second');
+% 
+% figure(7);
+% trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken4 - merken1);
+% title('Difference between 3 minutes and one second');
+% 
+% % figure(8);
+% % trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
+% % title('Difference between 4 minutes and one second');
+% 
+% figure(9);
+% trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - merken1);
+% title('Difference between 5 minutes and one second');
+% 
+% 
+% stopTheExecutionHereBreakpoint = 0;
+% 
+% test11 = uh_next - merken1;
+% test22 = uh_next - merken4;
+% 
+% 
+% stopTheExecutionHereBreakpoint = 0;
 
 
 %% Create 3D-Data from 2D slice
 
-% see: https://www.mathworks.com/matlabcentral/answers/506492-how-do-i-plot
-%      -animation-of-temperature-data-for-a-3d-object-with-time
-% for video idea 
-% 
-% maxt = max(t);
-% mint = min(t);
-% N = 100;
-% cmap = jet(N);                % generate N colors for temperature
-% plot3(x,y,z)
-% hold on
-% for i = 1:length(x)
-%     itemp = round((t(i)-mint)/(maxt-mint)*(N-1))+1;
-%     h = plot3(x(i),y(i),z(i),'.','color',cmap(itemp,:));
-%     pause(0.1)
-%     delete(h)
-% end
-% hold off
-
-% TODO
-
-
+figure(1000)
+uh = zeros(size(pmesh,1),1);
+[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh, uh_next-273.15, 4);
+d = [pmesh3D uh3D];
+scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING, 'filled');
+colormap(jet);
+colorbar(); 
+caxis([min(d(:,4)), max(d(:,4))])
+title('Temperature distribution in °C');
+stopHere = 0;
 
 
 %% OLD REGION SOLVE ODE -> Experimental code fragments
