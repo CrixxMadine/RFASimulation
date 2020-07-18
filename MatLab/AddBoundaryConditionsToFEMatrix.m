@@ -48,35 +48,14 @@ for i=1:boundaryNodesNumber
     node = boundaryNodes(i);
     if (ismember(node, theseAreDirichNodes))
         
-         % THIS IS PROBLEM -> sets wrong number to dirich
-         
+        
          isRealDirich(node) = 1;
          
-
-         
-         % Is correct dirich value for node
-        % if (sorted_bmesh(i,3) == 1)
-         %   dirichletValues(node) = sorted_bmesh(i,4);  
-         
-        % else
-        
             % TODO -> this not right ...
              row1 = find(sorted_bmesh(:,1) == node);
              row2 = find(sorted_bmesh(:,2) == node);
              row = [row1 row2];
              
-             testVal = sorted_bmesh(row,3);
-             if (testVal(1) ~= testVal(2))
-                stopHere = 0; 
-                
-                node1=sorted_bmesh(row(1),1);
-                node2=sorted_bmesh(row(2),1);
-                node3=sorted_bmesh(row(1),2);
-                node4=sorted_bmesh(row(2),2);
-                
-                testestest = unique([node1 node2 node3 node4]);
-                %isRealDirich(testestest) = 1;
-             end
              
              if ((sorted_bmesh(row(1),3) == 1))
               dirichletValues(node) = sorted_bmesh(row(1),4);
