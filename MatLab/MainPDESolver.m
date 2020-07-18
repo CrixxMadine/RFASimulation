@@ -82,15 +82,6 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
   [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
    numAdditionalGridRefinements = 1;
 
-%% Plot 3D mesh reconstruction -> TODO move downwards
-% Domain is rotation symmetric
-% We can use value for every point of 3d domain
-
-
-% uh = zeros(size(pmesh,1),1);
-% [pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
-% d = pmesh3DCylinder;
-% plot3(d(:,1), d(:,2), d(:,3));
 
 %% Optional refinement of the initial grid
 
@@ -113,6 +104,7 @@ figure(1);
 subplot(2,2,1);
 trimesh(tmesh, pmesh(:,1), pmesh(:,2)');
 title('Triangulation without refinement');
+ylabel('Space dimensions in mm')
 
 subplot(2,2,2);
 trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
@@ -134,13 +126,9 @@ bedges = bedgesFiner;
 
 %% Calculate electrical potential phi 
 
-% In the inner domain, phi is quasistatic and modeled as follows
-% |   - div ( (sigma(x,y,z) * grad phi(x,y,z) ) = 0   |
-%  -> This is a Laplacian Equation, elliptical PDE second order
-
 % Add boundary conditions for the elliptical problem
 bmesh = DefineBoundaryConditions(bedges, 'phi');
-undefinedPoints = GetUndefinedBoundaryPoints(bmesh);
+undefinedPoints = GetUndefinedBoundaryPoints(bmesh); % ref. see function
 
 % Define specific parameters for phi PDE
 
@@ -159,8 +147,7 @@ intyp = 1;
 phi = Ah \ fh;
 
 
-%% TEST Add fake dirichlet values
-
+% Handle problematic bundary points by approximation 
 for i=1:length(undefinedPoints)
     phi(undefinedPoints(i,1)) = (phi(undefinedPoints(i,2)) + phi(undefinedPoints(i,3))) / 2;
 end
@@ -172,6 +159,17 @@ title('Solution of the finite element method'); % for phi');
 xlabel('x axis');
 ylabel('y-axis');
 %zlim([-1.5 1.5]);
+
+
+%% Plot 3D mesh reconstruction -> TODO move downwards
+% Domain is rotation symmetric
+% We can use value for every point of 3d domain
+
+
+% uh = zeros(size(pmesh,1),1);
+% [pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
+% d = pmesh3DCylinder;
+% plot3(d(:,1), d(:,2), d(:,3));
 
 
 %% Calculate electric power from the electric potential
