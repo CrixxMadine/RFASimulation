@@ -1,4 +1,5 @@
 function [pmesh3D, uh3D, colorMap3D] = Recreate3DCylinderFromSlice(pmesh, uh, rotType)
+
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,9 +10,17 @@ function [pmesh3D, uh3D, colorMap3D] = Recreate3DCylinderFromSlice(pmesh, uh, ro
 % rotType = 5 : 72 points
 % rotType = 6 : 108 points
 
+
+stepSize = 10; 
+lastStep = 350;
+
+
+%% Implementaion
+
 numberOfNodes = size(pmesh,1);
 
-%% TSET JET
+% 1.) -> Calculate a color gradient for the solution vector
+
 numberOfDifferentColors = 256;  % use can use other value too 
 colorGradientRGB = jet(numberOfDifferentColors);
 
@@ -19,7 +28,6 @@ maxVal = max(uh);
 minVal = min(uh);
 
 uh_Reference = uh - minVal;
-
 currentColorMap(numberOfNodes,3) = 0;
 
 referenceFactor = (numberOfDifferentColors - 1) / (maxVal - minVal);
@@ -31,23 +39,17 @@ end
 
 colorMap3D = zeros(numberOfNodes * 36 , 3);
 
-%for xxx=0:1:35
-  
-%end
 
-% END TEST
-
-
+% 2.) Rebuild 3D cartesian coordinates from 2D cylinder coordinates
 
 pmesh3DCylinder = zeros(numberOfNodes * 36 , 3);
-
 uh3D = zeros(numberOfNodes * 4, 1);
 
-for angle=0:10:350
+for angle=0:stepSize:lastStep
     
     angleVec = zeros(numberOfNodes,1) + angle;
     
-    area = (angle/10) * numberOfNodes + 1;
+    area = (angle/stepSize) * numberOfNodes + 1;
     pmesh3DCylinder(area:area+numberOfNodes-1, :) = [pmesh(:,1), angleVec, pmesh(:,2)];   
       
     uh3D(area:area+numberOfNodes-1) = uh;
