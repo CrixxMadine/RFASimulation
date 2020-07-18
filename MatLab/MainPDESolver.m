@@ -17,7 +17,7 @@ clear variables;
 disp('This script runs a simulation of radio frequency ablation');
 
 
-%% Explanantion of space and time dimensions
+%% Explanation of computational domain
 
 % This simulation models a needle inserted in a malignant tissue
 % Due to axis symmetrie, the whole simulation is reduced to a 2D-problem
@@ -42,7 +42,7 @@ disp('This script runs a simulation of radio frequency ablation');
 % z = z;
 
 
-%% Time discretization
+%% Time discretization -> Set step size here
 
 % Time discretization in seconds for time-dependant simulation 
 t_start = 0.00;    % Starting point -> t = 0 seconds
@@ -71,29 +71,25 @@ lambda     =     0.437;     % thermal conductivty -> in J/gK respectively in J/k
 nu_blood  =      0.01765;   % blood perfusion coefficient
 
 
-%% Grid Generation - Choose grid for calculation
+%% Grid Generation - Choose grid for calculatione here
 
-% DEBUG Mesh
+%   ->  Uncomment the grid you want to investigate
+
+% 1.) Simple DEBUG Mesh
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-% numAdditionalGridRefinements = 0;
-% [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
-% [pmesh, tmesh, bedges] = TriangularMeshRefinement2D(pmesh, tmesh, bedges);
-% xx = zeros(4,4);
-% xy = zeros(4,1)
-% bmesh = DefineBoundaryConditions(bedges, 'phi');
-%[Ah, fh] = AddBoundaryConditionsToFEMatrix(xx, xy, pmesh, bmesh);
+%  numAdditionalGridRefinements = 0;
 
-% Extra coarse grid of the 2D-cross-section
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-% numAdditionalGridRefinements = 2;
+% 2.) Extra coarse full 2D Cross-Section
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+%  numAdditionalGridRefinements = 2;
  
-% Extra fine grid of the 2D-cross-section
-%[pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
-% numAdditionalGridRefinements = 0;
+% 3.) Extra fine full 2D-cross-section
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+%  numAdditionalGridRefinements = 0;
 
-% Halved grid, coarse withe prerefinement for region around electrodes
- [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-  numAdditionalGridRefinements = 1;
+% 4.) Halved Cross-Scetion, coarse domain with prerefinement for region around electrodes
+  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+   numAdditionalGridRefinements = 1;
 
 %% Testing 3d mesh reconstruction
 % Domain is rotation symmetric
