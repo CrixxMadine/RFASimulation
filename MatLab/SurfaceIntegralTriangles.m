@@ -1,19 +1,21 @@
-function [sum] = SurfaceIntegralTriangles(tmesh, pmesh, z_val)
+function [sumOfElementIntegrals] = SurfaceIntegralTriangles(tmesh, pmesh, z_val)
 
+% Return the surface integral on a triangulation
+% 
 % returns:
-% sum := numeric integral over the whole triangulation 
+%  sum := numeric integral over the whole triangulation 
 %
 % Input args:
-% pmesh := point matrix of triangulation
-% tmesh := triangle matrix of triangulation
-% z_val := discrete values for every point of the triangulation
+%  pmesh := point matrix of triangulation
+%  tmesh := triangle matrix of triangulation
+%  z_val := discrete values for every point of the triangulation
 
 
-n = size(tmesh,1);
-sum = 0;
+numberTriangles = size(tmesh,1);
+sumOfElementIntegrals = 0;
 
-tic;
-for i=1:n
+
+for i=1:numberTriangles
    
     % get the global point numbers of the current triangle
     p = [tmesh(i,1),  tmesh(i,2), tmesh(i,3)];
@@ -30,12 +32,11 @@ for i=1:n
     
     area = 0.5 * abs(det(A));
 
-    res = 0.5 * (z_val(p(1)) + z_val(p(2)) + z_val(p(3))) * area;
+    elementIntegral = 0.5 * (z_val(p(1)) + z_val(p(2)) + z_val(p(3))) * area;
 
-    sum = sum + abs(res);
+    sumOfElementIntegrals = sumOfElementIntegrals + abs(elementIntegral);
 
 end
-
 
 
 end
