@@ -3,17 +3,35 @@ function [pmesh3D, uh3D, colorMap3D] = Recreate3DCylinderFromSlice(pmesh, uh, ro
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-% rotType = 1 :  4 points
-% rotType = 2 :  9 points
-% rotType = 3 : 18 points
-% rotType = 4 : 36 points
-% rotType = 5 : 72 points
-% rotType = 6 : 108 points
+% rotType = 1 :   4 points
+% rotType = 2 :   9 points
+% rotType = 3 :  18 points
+% rotType = 4 :  36 points
+% rotType = 5 :  72 points
+% rotType = 6 : 120 points
 
+% default value
+if (nargin == 2)
+    rotType = 4;
+end
 
-stepSize = 10; 
-lastStep = 350;
-
+switch rotType
+    case 1
+        angleStepSize = 90; 
+    case 2
+        angleStepSize = 40;
+    case 3 
+        angleStepSize = 20;
+    case 4 
+        angleStepSize = 10;
+    case 5
+        angleStepSize =  5;
+    case 6
+        angleStepSize =  3;
+    otherwise
+        error('Yoe entered and invalid rotType argument!')
+end
+lastAngle = 360 - angleStepSize;
 
 %% Implementaion
 
@@ -45,11 +63,11 @@ colorMap3D = zeros(numberOfNodes * 36 , 3);
 pmesh3DCylinder = zeros(numberOfNodes * 36 , 3);
 uh3D = zeros(numberOfNodes * 4, 1);
 
-for angle=0:stepSize:lastStep
+for angle=0:angleStepSize:lastAngle
     
     angleVec = zeros(numberOfNodes,1) + angle;
     
-    area = (angle/stepSize) * numberOfNodes + 1;
+    area = (angle/angleStepSize) * numberOfNodes + 1;
     pmesh3DCylinder(area:area+numberOfNodes-1, :) = [pmesh(:,1), angleVec, pmesh(:,2)];   
       
     uh3D(area:area+numberOfNodes-1) = uh;
