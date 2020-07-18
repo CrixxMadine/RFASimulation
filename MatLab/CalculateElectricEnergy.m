@@ -1,25 +1,19 @@
 function [energyPoints, energyElements] = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma)
 
-%% Calculate electric power from the electric potential
+%% Calculate electric power from the potential for every node
 
 power = zeros(size(phi,1),1);
 
-% Get the numerical gradient of every vertex
-%[phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, phi);
-
-%[phi_dx, phi_dy] = TriGradient(pmesh(:,1),pmesh(:,2), phi);
-
-% x = -2:0.2:2;
-% y = x';
-% z = x .* exp(-x.^2 - y.^2);
-% [px,py] = gradient(z);
+% -> This is an old approach to calculate the gradient on scattered values 
+%    It uses general discrete values on the grid with no reference to FEM 
+%    Basically works, but is pretty unrelieable if element size is small
 % 
-% [test_dx, test_dy] = gradient(phi');
+%  Get the numerical gradient to every discrete solution
+% [phi_dx, phi_dy] = TriangularGradient(tmesh, pmesh, phi);
 
 
-
-%% Testing 2
-
+% -> This is the new approach, using the fact that there is a FEM solution
+%    Evaluates the gradient on nodes with the surface gradient of element 
 [phi_dx, phi_dy] = VerticesGradientPDE(pmesh, tmesh, bedges, phi);
 
 
@@ -28,13 +22,14 @@ boundaryNodes = unique([bedges(:,1), bedges(:,2)]);
 phi_dx(boundaryNodes) = 0;
 phi_dy(boundaryNodes) = 0;
 
+
 % Calclulate power(r,z) for every vertex
 
 for i=1:size(power,1)
     power(i) = sigma * norm([phi_dx(i), phi_dy(i)])^2;   
 end
 
-% TODO testing
+% Plot the calculated power
 figure(200);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), power);
 title('Constant power at every point of mesh');
@@ -57,7 +52,9 @@ electricEnergy = power .* (effectivePower / totalPower);
 
 energyPoints = electricEnergy;
 
-%% Energy surface
+
+%% Alternative variant: Calculate the energy for every element 
+
 [tx,ty] = pdegrad(pmesh',tmesh',phi);
 
 power_surface = zeros(length(tmesh),1);
@@ -67,7 +64,6 @@ for i=1:size(power,1)
 end
 
 energyElements = power_surface .* (effectivePower / totalPower);
-
 
 
 end
