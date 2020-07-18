@@ -191,7 +191,6 @@ figure(3);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
 title('RFA electric energy at every point of mesh');
 
-
 %% Calculate the heat used for the temperature distribution T
 
 % The temperature distribution is given by the heat equation
