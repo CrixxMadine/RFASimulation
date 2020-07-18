@@ -127,23 +127,28 @@ cyl_fk_int = {cyl_fk_int1 ; cyl_fk_int2 ; cyl_fk_int3};
 
 
 %% Optional mass matrix for parabolic equations
-% Equation: \integrate: u * v * r * dr dz
-mass_int_11 = @(r,z) det_J .* phi1(r,z) .* phi1(r,z);
-mass_int_12 = @(r,z) det_J .* phi1(r,z) .* phi2(r,z);
-mass_int_13 = @(r,z) det_J .* phi1(r,z) .* phi3(r,z);
 
-mass_int_21 = @(r,z) det_J .* phi2(r,z) .* phi1(r,z);
-mass_int_22 = @(r,z) det_J .* phi2(r,z) .* phi2(r,z);
-mass_int_23 = @(r,z) det_J .* phi2(r,z) .* phi3(r,z);
+if strcmp(opt_M, 'true')
+    
+    % Equation: \integrate: u * v * r * dr dz
+    mass_int_11 = @(r,z) det_J .* phi1(r,z) .* phi1(r,z);
+    mass_int_12 = @(r,z) det_J .* phi1(r,z) .* phi2(r,z);
+    mass_int_13 = @(r,z) det_J .* phi1(r,z) .* phi3(r,z);
 
-mass_int_31 = @(r,z) det_J .* phi3(r,z) .* phi1(r,z);
-mass_int_32 = @(r,z) det_J .* phi3(r,z) .* phi2(r,z);
-mass_int_33 = @(r,z) det_J .* phi3(r,z) .* phi3(r,z);
+    mass_int_21 = @(r,z) det_J .* phi2(r,z) .* phi1(r,z);
+    mass_int_22 = @(r,z) det_J .* phi2(r,z) .* phi2(r,z);
+    mass_int_23 = @(r,z) det_J .* phi2(r,z) .* phi3(r,z);
 
-mass_int = {mass_int_11, mass_int_12, mass_int_13;
-            mass_int_21, mass_int_22, mass_int_23;
-            mass_int_31, mass_int_32, mass_int_33};
-        
+    mass_int_31 = @(r,z) det_J .* phi3(r,z) .* phi1(r,z);
+    mass_int_32 = @(r,z) det_J .* phi3(r,z) .* phi2(r,z);
+    mass_int_33 = @(r,z) det_J .* phi3(r,z) .* phi3(r,z);
+
+    mass_int = {mass_int_11, mass_int_12, mass_int_13;
+                mass_int_21, mass_int_22, mass_int_23;
+                mass_int_31, mass_int_32, mass_int_33};
+end        
+
+
 %% Calculate the element matrix and associated right hand side
 
 K = zeros(3,3);
