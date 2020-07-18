@@ -1,6 +1,6 @@
 function [pmesh, tmesh, bedges] = GetSimpleDebugMesh()
 
-% Return a very simple triangulation to debug and test mesh functions
+% Return a very simple triangulation to debug and test functions
 
 simple_pmesh = [0 0 ;
                 1 0 ;
