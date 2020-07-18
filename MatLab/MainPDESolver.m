@@ -151,7 +151,8 @@ phi = Ah \ fh;
 
 % Handle problematic bundary points by approximation of neighbour values
 for i=1:length(undefinedNodes)
-    phi(undefinedNodes(i,1)) = (phi(undefinedNodes(i,2)) + phi(undefinedNodes(i,3))) / 2;
+    phi(undefinedNodes(i,1)) = ...
+        (phi(undefinedNodes(i,2)) + phi(undefinedNodes(i,3))) / 2;
 end
 
 
@@ -162,26 +163,7 @@ xlabel('r axis');
 ylabel('z axis');
 %zlim([-1.5 1.5]);
 
-%% TSET JET
-%figure(667);
-%surf(pmesh(:,1), pmesh(:,2), phi);
-c = jet(256);
 
-dif=max(phi) - min(phi);
-minus = 0 - min(phi);
-phiTest = phi + minus;
-newColorMap(length(phi),3) = 0;
-factor = 255/2;
-for count=1:length(phi)
-    stelle = floor(factor * phiTest(count) +1);
-    newColorMap(count,:) = c(stelle,:);
-end
-
-TESTING = zeros(length(phi) * 36 , 3);
-for xxx=0:1:35
-    area = (xxx) * length(phi) + 1;
-    TESTING(area:area+length(phi)-1, :) = newColorMap;    
-end
 
 %% Plot 3D mesh reconstruction -> TODO move downwards
 % Domain is rotation symmetric
@@ -189,7 +171,7 @@ end
 
 figure(500)
 uh = zeros(size(pmesh,1),1);
-[pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
+[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh,phi, 4);
 d = [pmesh3D uh3D];
 scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING);
 colorbar(); 
