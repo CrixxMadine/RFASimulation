@@ -13,7 +13,7 @@ numPoints = size(pmesh,1);
 
 pmesh3DCylinder = zeros(numPoints * 36 , 3);
 
-uh3D = zeros(numPoints * 36, 1);
+uh3D = zeros(numPoints * 4, 1);
 
 for angle=0:10:350
     
@@ -28,8 +28,8 @@ end
 
 [s,t,u] = pol2cart(pmesh3DCylinder(:,2)', pmesh3DCylinder(:,1)', pmesh3DCylinder(:,3)');
 
-figure(90);
-plot3(s(:), t(:), u(:), '.');
+%figure(90);
+%plot3(s(:), t(:), u(:), '.');
 % scatter3(s(:), t(:), u(:), '.');
 
 pmesh3D = [s',t',u'];

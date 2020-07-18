@@ -70,7 +70,7 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
 %  numAdditionalGridRefinements = 0;
 
-% 2.) Extra coarse full 2D Cross-Section
+% 2.) Extra coarse full 2D cross-section
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 %  numAdditionalGridRefinements = 2;
  
@@ -78,9 +78,9 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 %  numAdditionalGridRefinements = 0;
 
-% 4.) Halved Cross-Scetion, coarse domain with prerefinement for region around electrodes
+% 4.) Halved cross-section, coarse domain with prerefinement for region around electrodes
   [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-   numAdditionalGridRefinements = 1;
+   numAdditionalGridRefinements = 0;
 
 
 %% Optional refinement of the initial grid
@@ -126,18 +126,20 @@ bedges = bedgesFiner;
 
 %% Calculate electrical potential phi 
 
-% Add boundary conditions for the elliptical problem
+% Define boundary conditions for the elliptical phi PDE
 bmesh = DefineBoundaryConditions(bedges, 'phi');
-undefinedPoints = GetUndefinedBoundaryPoints(bmesh); % ref. see function
 
-% Define specific parameters for phi PDE
+% Problematic nodes, for ref. see function GetUndefinedBoundaryPoints(...)
+undefinedNodes = GetUndefinedBoundaryPoints(bmesh); 
 
+
+% Define PDE coefficients, ref. see function 'AssembCylindricLaplace2D(...)'
 k_EPot  = @(r,z) 1;
 q_EPot  = @(r,z) 0;
 f_rhs_EPot = @(r,z) 0;
 intyp = 1;
 
-% Assemble FEM system of equations 
+% Assemble global FEM system of equations elementwise
 [Ah, fh] = AssembCylindricLaplace2D(pmesh, tmesh, k_EPot, q_EPot, f_rhs_EPot, intyp);
 
 % Add boundary conditions
@@ -147,29 +149,78 @@ intyp = 1;
 phi = Ah \ fh;
 
 
-% Handle problematic bundary points by approximation 
-for i=1:length(undefinedPoints)
-    phi(undefinedPoints(i,1)) = (phi(undefinedPoints(i,2)) + phi(undefinedPoints(i,3))) / 2;
+% Handle problematic bundary points by approximation of neighbour values
+for i=1:length(undefinedNodes)
+    phi(undefinedNodes(i,1)) = (phi(undefinedNodes(i,2)) + phi(undefinedNodes(i,3))) / 2;
 end
 
 
 figure(2);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
-title('Solution of the finite element method'); % for phi');
-xlabel('x axis');
-ylabel('y-axis');
+title('Numerical FEM solution for electric potential phi'); 
+xlabel('r axis');
+ylabel('z axis');
 %zlim([-1.5 1.5]);
 
+%% TSET JET
+%figure(667);
+%surf(pmesh(:,1), pmesh(:,2), phi);
+c = jet(256);
+
+dif=max(phi) - min(phi);
+minus = 0 - min(phi);
+phiTest = phi + minus;
+newColorMap(length(phi),3) = 0;
+factor = 255/2;
+for count=1:length(phi)
+    stelle = floor(factor * phiTest(count) +1);
+    newColorMap(count,:) = c(stelle,:);
+end
+
+TESTING = zeros(length(phi) * 36 , 3);
+for xxx=1:35
+    area = (xxx) * length(phi) + 1;
+    TESTING(area:area+length(phi)-1, :) = newColorMap;    
+end
 
 %% Plot 3D mesh reconstruction -> TODO move downwards
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
+%figure(500)
+uh = zeros(size(pmesh,1),1);
+[pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
+d = [pmesh3D uh3D];
 
-% uh = zeros(size(pmesh,1),1);
-% [pmesh3D, uh3D] = Recreate3DCylinderFromSlice(pmesh,uh, 4);
-% d = pmesh3DCylinder;
-% plot3(d(:,1), d(:,2), d(:,3));
+% ctest = jet(uh3D);
+scatter3(d(:,1), d(:,2), d(:,3), 1, TESTING);
+figure(900);
+% h = scatter3(data(:,1), data(:,2), data(:,3), 20, data(:,4), 'MarkerFaceColor', 'Flat');
+% colorbar(); 
+% caxis([min(data(:,4)), max(data(:,4))])
+
+% % Colormap "where the value of the 0.2 to 1 is red and
+% % -0.2 to -1 is blue, and the rest is green.
+% numColors = 256;
+% vec = linspace(-1, 1, numColors);
+% cmap = zeros(numColors, 3);
+% % Make everything green to start with
+% cmap(:, 2) = 1;
+% % Make red from where vec goes from 0.2 to 1.
+% redIndexes = vec >= 0.2 & vec <= 1;
+% cmap(redIndexes, 1) = 1;
+% cmap(redIndexes, 2) = 0;
+% cmap(redIndexes, 3) = 0;
+% % Make blue from where vec goes from -1 to -0.2.
+% blueIndexes = vec >= -1 & vec <= -0.2;
+% cmap(blueIndexes, 1) = 0;
+% cmap(blueIndexes, 2) = 0;
+% cmap(blueIndexes, 3) = 1;
+% cmap % Echo to command window so we can see it.
+
+surf(d(:,1), d(:,2), d(:,3), uh3D);
+plot3(d(:,1), d(:,2), d(:,3), '.', uh3D);
+colormap default;
 
 
 %% Calculate electric power from the electric potential
@@ -193,7 +244,7 @@ title('RFA electric energy at every point of mesh');
 % Define the new boundary conditions for the heat equation
  bmesh = DefineBoundaryConditions(bedges, 'temp');
  
- undefinedPoints = GetUndefinedBoundaryPoints(bmesh);
+ undefinedNodes = GetUndefinedBoundaryPoints(bmesh);
  
 % Define specific pde parameters for parabolic heat equation
 k_Temp = @(r,z) lambda; 
@@ -264,9 +315,9 @@ for t_count=2:size(t_vec,2)
     uh_next = left \ right;
     
     % Approximate values on problematic points from neighbours
-    for i=1:length(undefinedPoints)
-        uh_next(undefinedPoints(i,1)) = ... 
-            (uh_next(undefinedPoints(i,2)) + uh_next(undefinedPoints(i,3))) / 2;
+    for i=1:length(undefinedNodes)
+        uh_next(undefinedNodes(i,1)) = ... 
+            (uh_next(undefinedNodes(i,2)) + uh_next(undefinedNodes(i,3))) / 2;
     end
   
     % Update plot for the calculation results of temperature distribution
@@ -333,6 +384,7 @@ test22 = uh_next - merken4;
 
 
 stopTheExecutionHereBreakpoint = 0;
+
 
 %% Create 3D-Data from 2D slice
 
