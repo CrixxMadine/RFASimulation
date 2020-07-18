@@ -10,10 +10,12 @@ function [pmesh3D, uh3D, colorMap3D] = Recreate3DCylinderFromSlice(pmesh, uh, ro
 % rotType = 5 :  72 points
 % rotType = 6 : 120 points
 
-% default value
+
+% Default value if no rotation type is defined
 if (nargin == 2)
     rotType = 4;
 end
+
 
 switch rotType
     case 1
@@ -29,9 +31,11 @@ switch rotType
     case 6
         angleStepSize =  3;
     otherwise
-        error('Yoe entered and invalid rotType argument!')
+        error('You entered and invalid rotType argument!')
 end
+
 lastAngle = 360 - angleStepSize;
+numberOfSteps = 360 / angleStepSize;
 
 %% Implementaion
 
@@ -55,12 +59,12 @@ for count=1:numberOfNodes
     currentColorMap(count,:) = colorGradientRGB(colorRow,:);
 end
 
-colorMap3D = zeros(numberOfNodes * 36 , 3);
+colorMap3D = zeros(numberOfNodes * numberOfSteps , 3);
 
 
 % 2.) Rebuild 3D cartesian coordinates from 2D cylinder coordinates
 
-pmesh3DCylinder = zeros(numberOfNodes * 36 , 3);
+pmesh3DCylinder = zeros(numberOfNodes * numberOfSteps , 3);
 uh3D = zeros(numberOfNodes * 4, 1);
 
 for angle=0:angleStepSize:lastAngle

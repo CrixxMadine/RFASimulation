@@ -172,7 +172,7 @@ ylabel('z axis');
 
 figure(500)
 uh = zeros(size(pmesh,1),1);
-[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh,phi, 4);
+[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh, phi, 1);
 d = [pmesh3D uh3D];
 scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING);
 colorbar(); 
