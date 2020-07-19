@@ -69,7 +69,7 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 
 % 1.) A simple DEBUG Mesh
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
-%  numAdditionalGridRefinements = 0;
+%  numAdditionalGridRefinements = 5;
 
 % 2.) Extra coarse full 2D cross-section
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
@@ -80,8 +80,8 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 %  numAdditionalGridRefinements = 0;
 
 % 4.) Halved cross-section, coarse domain with prerefinement for region around electrodes
-  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-   numAdditionalGridRefinements = 0;
+%  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+%   numAdditionalGridRefinements = 0;
 
    
 %% Optional refinement of the initial grid
