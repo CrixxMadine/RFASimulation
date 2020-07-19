@@ -239,9 +239,10 @@ stopExecutionHereBeforeEnteringTemperatureCalculation = 0;
 %  -> This is a second order parabolic equation
 % Problem is solved with a mixed finite element method
 
+kelvinToCelsius = 273.15;
+
 % Define the new boundary conditions for the heat equation
  bmesh = DefineBoundaryConditions(bedges, 'temp');
-
  undefinedNodes = GetUndefinedBoundaryPoints(bmesh);
  
 % Define specific pde parameters for parabolic heat equation
@@ -255,7 +256,7 @@ rho = rho_blood;   % density
 c   = c_blood;     % heat capacity    
 lam = lambda;      % thermal conductivity 
 
-T_body = 37 + 273.15; % body temperature in Kelvin
+T_body = 37 + kelvinToCelsius; % body temperature in Kelvin
 
 % Set initial temperature distribution for t = 0
 % (T = T_body on the entire domain)
@@ -264,39 +265,36 @@ uh_Temp  = uh0_Temp;
 
  
 Q_total = 0;
-Q_rfa   = 0;
 
 
 %% Time discretization -> Set step size here
 
 % Time discretization in seconds for time-dependant simulation 
+% Since problem is stiff, smaller time step leads to better results
+
 t_start = 0.00;    % Starting point -> t = 0 seconds
-t_step  = 0.2;     % tau
-t_end   = 240.00;  
-t_vec   = t_start:t_step:t_end;
+t_step  = 0.2;     % delta t on uniform time steps
+t_end   = 20.00;  
+t_vec   = (t_start:t_step:t_end)';
 
 
 %% Calculate the temperatute distribution ODE over time
 
-% Time looping
 
 t_next = t_vec(1);
 uh_next = uh0_Temp;
 
-for t_count=2:size(t_vec,2)
+% Time looping
+
+for t_count=2:1:length(t_vec)
     
     uh_old = uh_next;
     
-    % Calculate DELTA t
+    % Get time step delta_t
     t_old  = t_next;
     t_next = t_vec(t_count);      
     delta_t = t_next - t_old;
         
-    % Calculate total energy
-%     if (t_count == 2)
-%         Q_rfa = electricEnergy; % time independent by now  
-%         Q_total = Q_rfa;
-%     end
     Q_rfa = delta_t .* effPowerPoints;         % sum of electricEnergy
     Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_next); % cooling of blood perfusion
     Q_total = Q_total + Q_rfa + Q_perf;
@@ -319,24 +317,22 @@ for t_count=2:size(t_vec,2)
   
     % Update plot for the calculation results of temperature distribution
     figure(4);
-    trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next - 273.15);
+    trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next - kelvinToCelsius);
     title(['Temperature distribution in ° Celsius after ', num2str(t_next), ' seconds']);
     colormap(jet);
     colorbar(); 
-    caxis([min(uh_next)-273.15, max(uh_next)-273.15])
+    caxis([min(uh_next)-kelvinToCelsius, max(uh_next)-kelvinToCelsius])
     
     toBeReservedForBrakePoint = 0;
-    
-    
-    % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);   
-    
+        
 end % for 
 
 
 %% Create 3D-Data from 2D slice
 
 figure(1000)
-[pmesh3D, uh3D, colorMap3D_Temp] = Recreate3DCylinderFromSlice(pmesh, uh_next-273.15, 4);
+[pmesh3D, uh3D, colorMap3D_Temp] ... 
+    = Recreate3DCylinderFromSlice(pmesh, uh_next-kelvinToCelsius, 4);
 scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Temp, 'filled');
 colormap(jet);
 colorbar(); 
@@ -344,7 +340,9 @@ caxis([min(uh3D), max(uh3D)])
 title(['Temperature distribution in °C after ', num2str(t_next), ' seconds']);
 xlabel('x-axis in meter');
 ylabel('y-axis in meter');
-stopHere = 0;
+
+
+stopSkriptHere = 0;
 
 
 %% OLD REGION SOLVE ODE -> Experimental code fragments
