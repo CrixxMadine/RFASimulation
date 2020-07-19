@@ -72,9 +72,14 @@ for i=1:n
        %     bmesh(i,4) = 0;            
        
        % Variant two, cooled probe
-        else     % anywhere on the needle, blank or electrode
-            bmesh(i,3) = 1;           % Dirichlet
-            bmesh(i,4) = 37 + 273.15; % body temperature in Kelvin
+       % elseif(bedges(i,3) == 100 || bedges(i,3) == 101 || bedges(i,3) == 200)     % anywhere on the needle, blank or electrode
+       %     bmesh(i,3) = 1;           % Dirichlet
+       %     bmesh(i,4) = 37 + 273.15; % body temperature in Kelvi
+
+       % else                   % anywhere else
+       %     bmesh(i,3) = 2;    % Neumann 
+       %     bmesh(i,4) = 0; 
+       
         end
         
     else   

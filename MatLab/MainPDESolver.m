@@ -304,65 +304,14 @@ for t_count=2:size(t_vec,2)
     colorbar(); 
     caxis([min(uh_next)-273.15, max(uh_next)-273.15])
     
-    if (t_count == 2)
-        breakPointAfter1Second = 0;
-    end
+    stopHere = 0;
     
 
-
-
-    if (t_count == 2)
-       merken1 = uh_next; 
-    elseif (t_count == 240)
-       merken2 = uh_next; 
-    elseif (t_count == 480)
-       merken3 = uh_next; 
-    elseif (t_count == 720)
-       merken4 = uh_next; 
-    elseif (t_count == 960)
-      merken5 = uh_next; 
-    end
-    
-    stopTheExecutionHereBreakpoint = 0;
-    
+   
     % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);
     
     
 end % for 
-
-%% TEST SHOW difference
-% figure(500);
-% trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next);
-% title('Difference between 1 minute and one second');
-% 
-% figure(5);
-% trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken2 - merken1);
-% title('Difference between 1 minute and one second');
-% 
-% figure(6);
-% trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken3 - merken1);
-% title('Difference between 2 minutes and one second');
-% 
-% figure(7);
-% trisurf(tmesh, pmesh(:,2), pmesh(:,1), merken4 - merken1);
-% title('Difference between 3 minutes and one second');
-% 
-% % figure(8);
-% % trisurf(tmesh', pmesh(2,:)', pmesh(1,:)', merken5 - merken1);
-% % title('Difference between 4 minutes and one second');
-% 
-% figure(9);
-% trisurf(tmesh, pmesh(:,2), pmesh(:,1), uh_next - merken1);
-% title('Difference between 5 minutes and one second');
-% 
-% 
-% stopTheExecutionHereBreakpoint = 0;
-% 
-% test11 = uh_next - merken1;
-% test22 = uh_next - merken4;
-% 
-% 
-% stopTheExecutionHereBreakpoint = 0;
 
 
 %% Create 3D-Data from 2D slice
