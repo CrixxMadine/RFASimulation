@@ -73,7 +73,7 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 
 % 2.) Extra coarse full 2D cross-section
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-%  numAdditionalGridRefinements = 2;
+%  numAdditionalGridRefinements = 1;
  
 % 3.) Extra fine full 2D-cross-section
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
@@ -102,6 +102,22 @@ end
 
 %% Plot the mesh, for control -> can be deactivated by comments
 
+%% TODO this is for presentation
+% figure(55);
+% %subplot(2,2,1);
+% trimesh(tmesh, pmesh(:,1), pmesh(:,2));
+% title('Triangulation on halved cross-section coarse');
+% xlabel('r axis in meter');
+% ylabel('z axis in meter');
+% 
+% figure(56);
+% %subplot(2,2,1);
+% trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
+% title('Triangulation on halved cross-section refined');
+% xlabel('r axis in meter');
+% ylabel('z axis in meter');
+
+
 figure(1);
 subplot(2,2,1);
 trimesh(tmesh, pmesh(:,1), pmesh(:,2)');
@@ -113,11 +129,11 @@ trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
 title("Triangulation after " + num2str(numAdditionalGridRefinements) + " refinements");
 
 subplot(2,2,3);
-scatter(pmesh(:,1), pmesh(:,2));
+scatter(pmesh(:,1), pmesh(:,2), 8, 'filled');
 title('Point vertices in the initial triangulation');
 
 subplot(2,2,4);
-scatter(pmeshFiner(:,1), pmeshFiner(:,2));
+scatter(pmeshFiner(:,1), pmeshFiner(:,2), 8, 'filled');
 title('Point vertices in the refined triangulation');
 
 % Rebase refined grid to be the used grid
@@ -163,6 +179,9 @@ trisurf(tmesh, pmesh(:,1), pmesh(:,2), phi);
 title('Numerical FEM solution for electric potential phi'); 
 xlabel('r axis');
 ylabel('z axis');
+colormap(jet);
+colorbar('AxisLocation','in'); 
+caxis([min(phi), max(phi)]);
 %zlim([-1.5 1.5]);
 
 
@@ -172,13 +191,14 @@ ylabel('z axis');
 % We can use value for every point of 3d domain
 
 figure(500)
-uh = zeros(size(pmesh,1),1);
-[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh, phi, 4);
-d = [pmesh3D uh3D];
-scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING, 'filled');
+[pmesh3D, uh3D, colorMap3D_Phi] = Recreate3DCylinderFromSlice(pmesh, phi, 4);
+scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Phi, 'filled');
+title('Electrical potential phi on discrete points');
+xlabel('x axis in meter');
+ylabel('y axis in meter');
 colormap(jet);
 colorbar('AxisLocation','in'); 
-caxis([min(d(:,4)), max(d(:,4))]);
+caxis([min(uh3D), max(uh3D)]);
 
 
 %% Calculate electric power from the electric potential
@@ -279,7 +299,10 @@ for t_count=2:size(t_vec,2)
     % Update plot for the calculation results of temperature distribution
     figure(4);
     trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next - 273.15);
-    title(['Temperature Distribution in ° Celsius after ', num2str(t_next), ' seconds']);
+    title(['Temperature distribution in ° Celsius after ', num2str(t_next), ' seconds']);
+    colormap(jet);
+    colorbar(); 
+    caxis([min(uh_next)-273.15, max(uh_next)-273.15])
     
     if (t_count == 2)
         breakPointAfter1Second = 0;
@@ -345,14 +368,14 @@ end % for
 %% Create 3D-Data from 2D slice
 
 figure(1000)
-uh = zeros(size(pmesh,1),1);
-[pmesh3D, uh3D, TESTING] = Recreate3DCylinderFromSlice(pmesh, uh_next-273.15, 4);
-d = [pmesh3D uh3D];
-scatter3(d(:,1), d(:,2), d(:,3), 5, TESTING, 'filled');
+[pmesh3D, uh3D, colorMap3D_Temp] = Recreate3DCylinderFromSlice(pmesh, uh_next-273.15, 4);
+scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Temp, 'filled');
 colormap(jet);
 colorbar(); 
-caxis([min(d(:,4)), max(d(:,4))])
-title('Temperature distribution in °C');
+caxis([min(uh3D), max(uh3D)])
+title(['Temperature distribution in °C after ', num2str(t_next), ' seconds']);
+xlabel('x-axis in meter');
+ylabel('y-axis in meter');
 stopHere = 0;
 
 
