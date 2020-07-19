@@ -80,8 +80,8 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 %  numAdditionalGridRefinements = 0;
 
 % 4.) Halved cross-section, coarse domain with prerefinement for region around electrodes
-%  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-%   numAdditionalGridRefinements = 0;
+  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+   numAdditionalGridRefinements = 0;
 
    
 %% Optional refinement of the initial grid
