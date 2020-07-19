@@ -1,26 +1,19 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Template für die Erstellung einer Arbeit an der TH Nürnberg
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Definition des Grundsätzlichen dokumententyps und -layouts
+% Document type and layout
 \documentclass[parskip=half, titlepage=yes, 12pt, BCOR=12mm, DIV=calc]{scrartcl}
 
-% Definition der Praeambel
-% Praeambel = Quasi-Klasse mit Definitionen des Layouts
-% und Definition einbinden der verwendeten Pakete
+% Praeambel = definition of layout and packages
 \input{Praeambel}
 
 
 \usepackage{amsthm}
 \usepackage{lipsum}
 
-%% Hier startet der eigentliche Dokumenteninhalt
+%% Actual document
 \begin{document}
 
 
-%% Titelblatt und Verzeichnisse
+% Title and registers
 \maketitle
 \tableofcontents
 
@@ -65,19 +58,19 @@
 - Usually highly complex systems that are described by ODEs, PDEs and statistics \\
 - Phxsic can be approximated by simplified models \\
 - In real world physics these models are usually bounded by reality \\
-- In most physic fields excluding quantum mechanics and modern theoretical physics, "grobe" models are determinated, definite mathematical solutions can be found \\ 
+- In most physic fields excluding quantum mechanics and modern theoretical physics, rough models are determinated, definite mathematical solutions can be found \\ 
 - Since the physics is determinated, simulations can be done instead of experiment and measurement  \\
 - In practise, geometrical dimensions of points of interest are often usually vague \\
 - In many cases there is no reasonable analytical approach to solve these problems, especially in the field of engineering  \\
 - Modern numerical approaches are very flexible in this regard \\
-- "Statt glatter analytischer lösung gibt es ein beliebig genaue Näherung" \\ 
+- Instead of a smooth analytical solution, an arbitrarily precise approximation can often be calculated \\
 - Simulations done right can be easily modified and adapted to different models and boundaries \\
 - These models are usually discribed by PDEs \\ 
-- TODO: most frequently used methods \\
+
 
 - Finite difference method \\
 - Finite element method \\
-- Find more \\
+- TODO: most frequently used methods \\
 - In this approach we will model radio frequency ablations with simple finite element techniques \\
 
 
@@ -109,7 +102,7 @@
 - For the simulation, we will use a RFA model as described following kroeger \\
 - For simplicity, material parameters are seen constant \\
 - In real world, material parameters are highly dependant on body conditions, temperature and vary heavily with different patients \\
-- For some "Untersuchungen hierzu" , see Stein \\
+- For some research to this topic, see Stein \\
 
 - Electrical energy depends on the electrical power \\
 - Power is defined by potential of the domain \\
@@ -121,7 +114,7 @@
 Power applied by the probe:
 
 \begin{equation}
-    p(x,y,z,t) = \sigma(x,y,z,t) \cdot |\Delta \varphi(x,y,z,t)|^2
+    p(x,y,z,t) = \sigma(x,y,z,t) \cdot |\nabla \varphi(x,y,z,t)|^2
 \end{equation}
 
 Due to tissue resistance, the effective power of the generater is obtained by a scaling. Thus can be modeled as follwing   
@@ -142,7 +135,16 @@ Due to tissue resistance, the effective power of the generater is obtained by a 
     R_{tis}(t) = \frac{U^2}{p_{total}(t)}
 \end{equation}
 
-- TODO : explain parameters \\
+$\sigma$ : electric conductivity \\
+$\varphi = \varphi(x,y,z,t)$ : electric potential \\
+$p \: = p(x,y,z,t)$  : power \\
+
+
+$R_{tis}$ : tissue resistance \\
+$R_I$ : inner resistance generator \\
+$p_{setup}$ : setup power generator \\
+$U$ : potential difference\\
+
 
 - No energy is lost \\
 - Electrical Energy becomes heat energy by Tissue resistance \\
@@ -155,11 +157,12 @@ Due to tissue resistance, the effective power of the generater is obtained by a 
 The heat equation is a well known parabolic partial differential equation. \\
 
 We are assuming $\rho$ and $c$ are constant \\
-$\rho$ = density \\
-$c$ = specific heat capacity \\
-$\lambda$ = thermal conductivity, which is depending on T \\
-T = T(r,z,t) = temperature \\
-Q = Q(r,z,t) = heat energy \\
+$\rho$ : density \\
+$c$ : specific heat capacity \\
+$\lambda$ : thermal conductivity \\ %, which is depending on T \\
+$\nu$ : perfusion coefficient \\
+$T = T(x,y,z,t)$ : temperature \\
+$Q = Q(x,y,z,t)$ : heat energy \\
 
 
 - Additionaly to temperature destribution, there is the cooling effect of perfusion 
@@ -173,7 +176,7 @@ Q = Q(r,z,t) = heat energy \\
 
 
 \begin{equation}
-    Q_{perf}(x,y,z,t) = ??v?? \cdot \rho_{blood} c_{vlood} \cdot (T_{body} - T(x,y,z,t))
+    Q_{perf}(x,y,z,t) = \nu_{perf} \cdot \rho_{blood} c_{vlood} \cdot (T_{body} - T(x,y,z,t))
 \end{equation}
 
 
@@ -239,6 +242,7 @@ Q = Q(r,z,t) = heat energy \\
 - For this simulation, backward euler / implicit euler formula does the job \\
 
 \subsubsection{FEM in Electrostatics}
+- TODO \\
 - General info \\
 - special domain \\
 - boundary conditions \\
@@ -301,7 +305,7 @@ Laplace in cylindric coordinates:
     \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \phi^2} + \frac{\partial^2}{\partial z^2}
 \end{equation}
 
-TODO : Write something \\
+TODO \\
 
 Laplace in polar coordinates:
 \begin{equation}
@@ -350,8 +354,12 @@ This will simplify calculations and coupling \\
 - Since the domain has axis symmetry, the solution for $\varphi$ is independent from the angular $\phi$ \\
 - So equation basically simplifies to 
 
+% \begin{equation}
+  %  - \Delta \varphi(r,\phi,z) \overset{!}{=} - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial %\varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial %z^2} = 0
+% \end{equation}
+
 \begin{equation}
-    - \Delta \varphi(r,\phi,z) \overset{!}{=} - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
+    - \nabla  ( \sigma \cdot \nabla \varphi(r,\phi,z)) \overset{!}{=} - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
 \end{equation}
 
 To keep the following descriptions simple, we will (ignore) "verzichten" the explicit dependencies r and z, since this is trivial
@@ -497,8 +505,11 @@ Electric potential / Laplace's equation in cylindrical domain:
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
 \end{equation}
 
-- $u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
-- $v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} $ \\
+\begin{align}
+    u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} \\
+    v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \}     
+\end{align}
+
 
 Specific PDE for electric potential, inner domain: 
 
@@ -614,7 +625,7 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 - TODO insert picture \\
 
 \subsection{Numerical gradient on discrete points}
-- "Testfunction nähern Ersatzlösung an " \\
+- Trial functions approach the solution of the variation problem \\
 - in our case, gradient is constant on every triangle \\
 - actually discrete gradient on vertices is interesting \\
 - vertices as average value of surrounding the sorrounding triangles \\
@@ -728,14 +739,14 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 \newpage
 
 
-%% Literaturverzeichnis mit allen Einträgen der .bib-Datei
+%% Literature register using .bib file
 \clearpage
 \nocite{*}
 \printbibliography
 
 \newpage
 
-%% Letzter Teil, Anhang
+%% last part, appendix
 \appendix
 
 \input{Appendix} 
