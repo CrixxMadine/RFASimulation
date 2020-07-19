@@ -29,10 +29,10 @@ for i=1:size(power,1)
     power(i) = sigma * norm([phi_dx(i), phi_dy(i)])^2;   
 end
 
-% Plot the calculated power
-figure(200);
-trisurf(tmesh, pmesh(:,1), pmesh(:,2), power);
-title('Constant power at every point of mesh');
+% Optionally plot the calculated power for control
+% figure(50);
+% trisurf(tmesh, pmesh(:,1), pmesh(:,2), power);
+% title('Constant power at every point of mesh');
 
 % Calculate total power of the domain
 totalPower = SurfaceIntegralTriangles(tmesh, pmesh, power);

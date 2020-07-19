@@ -72,12 +72,12 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 %  numAdditionalGridRefinements = 0;
 
 % 2.) Extra coarse full 2D cross-section
- [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-  numAdditionalGridRefinements = 2;
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+%  numAdditionalGridRefinements = 2;
  
 % 3.) Extra fine full 2D-cross-section
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
-%  numAdditionalGridRefinements = 0;
+ [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+  numAdditionalGridRefinements = 0;
 
 % 4.) Halved cross-section, coarse domain with prerefinement for region around electrodes
 %  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
@@ -185,12 +185,12 @@ caxis([min(phi), max(phi)]);
 %zlim([-1.5 1.5]);
 
 
-%% Plot 3D mesh reconstruction -> TODO move downwards
+%% Plot 3D mesh reconstruction for phi
 
 % Domain is rotation symmetric
 % We can use value for every point of 3d domain
 
-figure(500)
+figure(20)
 [pmesh3D, uh3D, colorMap3D_Phi] = Recreate3DCylinderFromSlice(pmesh, phi, 4);
 scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Phi, 'filled');
 title('Electrical potential phi on discrete points');
@@ -201,7 +201,7 @@ colorbar('AxisLocation','in');
 caxis([min(uh3D), max(uh3D)]);
 
 
-%% Calculate electric power from the electric potential
+%% Calculate electric energy of the electric potential
 
 [energyPoints, energyElements] = ... 
     CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
@@ -209,7 +209,23 @@ caxis([min(uh3D), max(uh3D)]);
 
 figure(3);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
-title('RFA electric energy at every point of mesh');
+title('Effective electric energy in VAs');
+xlabel('r-axis in meter');
+ylabel('z-axis in meter');
+colormap(jet);
+colorbar('AxisLocation','in'); 
+caxis([min(energyPoints), max(energyPoints)]);
+
+
+figure(600)
+[pmesh3D, uh3D, colorMap3D_Energy] = Recreate3DCylinderFromSlice(pmesh, energyPoints, 2);
+scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Energy, 'filled');
+title('Effective electric energy');
+xlabel('x axis in meter');
+ylabel('y axis in meter');
+colormap(jet);
+colorbar('AxisLocation','in'); 
+caxis([min(uh3D), max(uh3D)]);
 
 %% Calculate the heat used for the temperature distribution T
 

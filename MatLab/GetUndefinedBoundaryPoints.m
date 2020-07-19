@@ -60,6 +60,11 @@ for count=1:numDoubleDefinedPoints
 
     cornerNeighbours = setdiff(pointsNextToDirichCorner, allDirichNodes);
 
+    % On very coarse grid, this node might be defined     
+    if (isempty(cornerNeighbours))
+        cornerNeighbours = 0;
+    end
+    
     problematicNodes(count) = cornerNeighbours;
     
 end

@@ -39,9 +39,11 @@ end
 
 tmesh_test = [tmesh, zeros(size(tmesh,1),1)];
 
-figure(300);
-%[tx,ty] = pdegrad(pmesh',tmesh',u);
+figure(100);
 pdeplot(pmesh',bedges',tmesh_test','xydata',tx,'zdata',ty)
+title('Numerical gradient of the potential phi')
+xlabel('r-axis');
+ylabel('z-axis');
 
 end
 
