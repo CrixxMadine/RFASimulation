@@ -72,16 +72,16 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 %  numAdditionalGridRefinements = 0;
 
 % 2.) Extra coarse full 2D cross-section
-% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
-%  numAdditionalGridRefinements = 1;
+ [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
+  numAdditionalGridRefinements = 2;
  
 % 3.) Extra fine full 2D-cross-section
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
 %  numAdditionalGridRefinements = 0;
 
 % 4.) Halved cross-section, coarse domain with prerefinement for region around electrodes
-  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-   numAdditionalGridRefinements = 0;
+%  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+%   numAdditionalGridRefinements = 0;
 
    
 %% Optional refinement of the initial grid
@@ -168,7 +168,7 @@ phi = Ah \ fh;
 
 
 % Handle problematic bundary points by approximation of neighbour values
-for i=1:length(undefinedNodes)
+for i=1:size(undefinedNodes,1)
     phi(undefinedNodes(i,1)) = ...
         (phi(undefinedNodes(i,2)) + phi(undefinedNodes(i,3))) / 2;
 end
@@ -291,7 +291,7 @@ for t_count=2:size(t_vec,2)
     uh_next = left \ right;
     
     % Approximate values on problematic points from neighbours
-    for i=1:length(undefinedNodes)
+    for i=1:size(undefinedNodes,1)
         uh_next(undefinedNodes(i,1)) = ... 
             (uh_next(undefinedNodes(i,2)) + uh_next(undefinedNodes(i,3))) / 2;
     end
