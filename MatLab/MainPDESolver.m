@@ -325,12 +325,10 @@ for t_count=2:size(t_vec,2)
     colorbar(); 
     caxis([min(uh_next)-273.15, max(uh_next)-273.15])
     
-    stopHere = 0;
+    toBeReservedForBrakePoint = 0;
     
-
-   
-    % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);
     
+    % uh_next = CalculateSingleTimeStep(Ah, Mh, fh_rhs, uh_old, t_next, delta_t);   
     
 end % for 
 

@@ -1,4 +1,4 @@
-function [energyPoints, energyElements] = CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma)
+function [energyPoints, energyElements] = CalculateEffectivePower(pmesh, tmesh, bedges, phi, sigma)
 
 %% Calculate electric power from the potential for every node
 
