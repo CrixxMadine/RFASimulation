@@ -67,7 +67,7 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 %   ->  Uncomment the grid you want to use for calculation
 %       The variable below is for additional grid refinement
 
-% 1.) Simple DEBUG Mesh
+% 1.) A simple DEBUG Mesh
 % [pmesh, tmesh, bedges] = GetSimpleDebugMesh();
 %  numAdditionalGridRefinements = 0;
 
@@ -75,13 +75,13 @@ nu_blood  =      0.01765;   % blood perfusion coefficient
 % [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraCoarse\');
 %  numAdditionalGridRefinements = 2;
  
-% 3.) Extra fine full 2D-cross-section
- [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
-  numAdditionalGridRefinements = 0;
+% 3.) Extra fine full 2D-cross-section (Warning, calculation is slow)
+% [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Electrodes_Triang_ExtraFine\');
+%  numAdditionalGridRefinements = 0;
 
 % 4.) Halved cross-section, coarse domain with prerefinement for region around electrodes
-%  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
-%   numAdditionalGridRefinements = 0;
+  [pmesh, tmesh, bedges] = ReadGridFromFile('Grid\Unstruc_Triang_Halved_Needle\');
+   numAdditionalGridRefinements = 0;
 
    
 %% Optional refinement of the initial grid
@@ -227,6 +227,11 @@ colormap(jet);
 colorbar('AxisLocation','in'); 
 caxis([min(uh3D), max(uh3D)]);
 
+
+
+stopExecutionHereBeforeEnteringTemperatureCalculation = 0;
+
+
 %% Calculate the heat used for the temperature distribution T
 
 % The temperature distribution is given by the heat equation
@@ -236,7 +241,7 @@ caxis([min(uh3D), max(uh3D)]);
 
 % Define the new boundary conditions for the heat equation
  bmesh = DefineBoundaryConditions(bedges, 'temp');
- 
+
  undefinedNodes = GetUndefinedBoundaryPoints(bmesh);
  
 % Define specific pde parameters for parabolic heat equation
