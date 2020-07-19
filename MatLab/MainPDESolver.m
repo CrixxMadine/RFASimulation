@@ -102,21 +102,6 @@ end
 
 %% Plot the mesh, for control -> can be deactivated by comments
 
-%% TODO this is for presentation
-% figure(55);
-% %subplot(2,2,1);
-% trimesh(tmesh, pmesh(:,1), pmesh(:,2));
-% title('Triangulation on halved cross-section coarse');
-% xlabel('r axis in meter');
-% ylabel('z axis in meter');
-% 
-% figure(56);
-% %subplot(2,2,1);
-% trimesh(tmeshFiner, pmeshFiner(:,1), pmeshFiner(:,2));
-% title('Triangulation on halved cross-section refined');
-% xlabel('r axis in meter');
-% ylabel('z axis in meter');
-
 
 figure(1);
 subplot(2,2,1);
@@ -206,7 +191,7 @@ caxis([min(uh3D), max(uh3D)]);
 [effPowerPoints, effPowerElements] = ... 
     CalculateEffectivePower(pmesh, tmesh, bedges, phi, sigma_phi);
 
-
+% Plot on 2D domain
 figure(3);
 trisurf(tmesh, pmesh(:,1), pmesh(:,2), effPowerPoints);
 title('Effective electric energy in VAs');
@@ -217,7 +202,8 @@ colorbar('AxisLocation','in');
 caxis([min(effPowerPoints), max(effPowerPoints)]);
 
 
-figure(600)
+% Plot 3D reconstruction
+figure(200)
 [pmesh3D, uh3D, colorMap3D_Energy] = Recreate3DCylinderFromSlice(pmesh, effPowerPoints, 2);
 scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Energy, 'filled');
 title('Effective electric energy');
@@ -232,12 +218,12 @@ caxis([min(uh3D), max(uh3D)]);
 stopExecutionHereBeforeEnteringTemperatureCalculation = 0;
 
 
-%% Calculate the heat used for the temperature distribution T
+%% Define parameters for the heat equation
 
 % The temperature distribution is given by the heat equation
 % | dT(x,y,z,t)/dt - div ( (lambda(x,y,z,t) * grad T(x,y,z,t) ) = Q_heat |
-%  -> This is a second order parabolic equation
-% Problem is solved with a mixed finite element method
+%  
+% Problem is solved with implicit euler
 
 kelvinToCelsius = 273.15;
 
@@ -274,55 +260,61 @@ Q_total = 0;
 
 t_start = 0.00;    % Starting point -> t = 0 seconds
 t_step  = 0.2;     % delta t on uniform time steps
-t_end   = 20.00;  
+t_end   = 240.00;  
 t_vec   = (t_start:t_step:t_end)';
 
 
-%% Calculate the temperatute distribution ODE over time
-
+%% Calculate the temperatute distribution as sytsem of ODE over time
 
 t_next = t_vec(1);
-uh_next = uh0_Temp;
+uh_Temp_next = uh0_Temp;
 
 % Time looping
 
 for t_count=2:1:length(t_vec)
     
-    uh_old = uh_next;
+    % Use this to set brakepoint and stop execution if intended
+    % if (t_vec(t_count) == 12) % e.g. 12 seconds
+    %    stopExecutionHere = 0;  -> Set brakepoint here
+    % end
+    
+    uh_Temp_old = uh_Temp_next;
     
     % Get time step delta_t
     t_old  = t_next;
     t_next = t_vec(t_count);      
     delta_t = t_next - t_old;
         
-    Q_rfa = delta_t .* effPowerPoints;         % sum of electricEnergy
-    Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_next); % cooling of blood perfusion
+    Q_rfa = delta_t .* effPowerPoints;    % Electric energy = time * power 
+    Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_Temp_next); % cooling of blood perfusion
     Q_total = Q_total + Q_rfa + Q_perf;
     
     [Kh_heat, Mh_heat, fh_heat] ...
           = AssembCylindricHeatEquation2D(pmesh, tmesh, k_Temp, q_Temp, Q_total, intyp);
-          
+    
+    % Use implicit euler to calculate one time step
     left  = Mh_heat + delta_t * Kh_heat;
-    right = Mh_heat * uh_old + delta_t * fh_heat;
+    right = Mh_heat * uh_Temp_old + delta_t * fh_heat;
     
     [left, right] = AddBoundaryConditionsToFEMatrix(left, right, pmesh, bmesh);      
      
-    uh_next = left \ right;
+    uh_Temp_next = left \ right;
     
     % Approximate values on problematic points from neighbours
     for i=1:size(undefinedNodes,1)
-        uh_next(undefinedNodes(i,1)) = ... 
-            (uh_next(undefinedNodes(i,2)) + uh_next(undefinedNodes(i,3))) / 2;
+        uh_Temp_next(undefinedNodes(i,1)) = ... 
+            (uh_Temp_next(undefinedNodes(i,2)) + uh_Temp_next(undefinedNodes(i,3))) / 2;
     end
   
     % Update plot for the calculation results of temperature distribution
     figure(4);
-    trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_next - kelvinToCelsius);
+    trisurf(tmesh, pmesh(:,1), pmesh(:,2), uh_Temp_next - kelvinToCelsius);
     title(['Temperature distribution in ° Celsius after ', num2str(t_next), ' seconds']);
     colormap(jet);
     colorbar(); 
-    caxis([min(uh_next)-kelvinToCelsius, max(uh_next)-kelvinToCelsius])
+    caxis([min(uh_Temp_next)-kelvinToCelsius, max(uh_Temp_next)-kelvinToCelsius])
     
+    % Optional add brakePoint here
     toBeReservedForBrakePoint = 0;
         
 end % for 
@@ -330,9 +322,9 @@ end % for
 
 %% Create 3D-Data from 2D slice
 
-figure(1000)
+figure(300)
 [pmesh3D, uh3D, colorMap3D_Temp] ... 
-    = Recreate3DCylinderFromSlice(pmesh, uh_next-kelvinToCelsius, 4);
+    = Recreate3DCylinderFromSlice(pmesh, uh_Temp_next-kelvinToCelsius, 4);
 scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Temp, 'filled');
 colormap(jet);
 colorbar(); 
