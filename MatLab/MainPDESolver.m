@@ -203,22 +203,22 @@ caxis([min(uh3D), max(uh3D)]);
 
 %% Calculate electric energy of the electric potential
 
-[energyPoints, energyElements] = ... 
-    CalculateElectricEnergy(pmesh, tmesh, bedges, phi, sigma_phi);
+[effPowerPoints, effPowerElements] = ... 
+    CalculateEffectivePower(pmesh, tmesh, bedges, phi, sigma_phi);
 
 
 figure(3);
-trisurf(tmesh, pmesh(:,1), pmesh(:,2), energyPoints);
+trisurf(tmesh, pmesh(:,1), pmesh(:,2), effPowerPoints);
 title('Effective electric energy in VAs');
 xlabel('r-axis in meter');
 ylabel('z-axis in meter');
 colormap(jet);
 colorbar('AxisLocation','in'); 
-caxis([min(energyPoints), max(energyPoints)]);
+caxis([min(effPowerPoints), max(effPowerPoints)]);
 
 
 figure(600)
-[pmesh3D, uh3D, colorMap3D_Energy] = Recreate3DCylinderFromSlice(pmesh, energyPoints, 2);
+[pmesh3D, uh3D, colorMap3D_Energy] = Recreate3DCylinderFromSlice(pmesh, effPowerPoints, 2);
 scatter3(pmesh3D(:,1), pmesh3D(:,2), pmesh3D(:,3), 5, colorMap3D_Energy, 'filled');
 title('Effective electric energy');
 xlabel('x axis in meter');
@@ -259,7 +259,7 @@ T_body = 37 + 273.15; % body temperature in Kelvin
 
 % Set initial temperature distribution for t = 0
 % (T = T_body on the entire domain)
-uh0_Temp = zeros(size(energyPoints)) + T_body;
+uh0_Temp = zeros(size(effPowerPoints)) + T_body;
 uh_Temp  = uh0_Temp;
 
  
@@ -297,7 +297,7 @@ for t_count=2:size(t_vec,2)
 %         Q_rfa = electricEnergy; % time independent by now  
 %         Q_total = Q_rfa;
 %     end
-    Q_rfa = delta_t .* energyPoints;         % sum of electricEnergy
+    Q_rfa = delta_t .* effPowerPoints;         % sum of electricEnergy
     Q_perf  = delta_t .* nu .* rho .* c .* (T_body - uh_next); % cooling of blood perfusion
     Q_total = Q_total + Q_rfa + Q_perf;
     

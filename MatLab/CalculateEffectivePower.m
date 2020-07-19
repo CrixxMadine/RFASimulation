@@ -1,4 +1,4 @@
-function [energyPoints, energyElements] = CalculateEffectivePower(pmesh, tmesh, bedges, phi, sigma)
+function [effPowerPoints, effPowerElements] = CalculateEffectivePower(pmesh, tmesh, bedges, phi, sigma)
 
 %% Calculate electric power from the potential for every node
 
@@ -48,9 +48,7 @@ effectivePower = (4 * power_setup * R_tis * R_setup) / ...
     ((R_tis + R_setup)^2);  % effective power of the genrator
 
 % Calculate the electric energy at every vertex point
-electricEnergy = power .* (effectivePower / totalPower);
-
-energyPoints = electricEnergy;
+effPowerPoints = power .* (effectivePower / totalPower);
 
 
 %% Alternative variant: Calculate the energy for every element 
@@ -63,7 +61,7 @@ for i=1:size(power,1)
     power_surface(i) = sigma * norm([tx(i), ty(i)])^2;   
 end
 
-energyElements = power_surface .* (effectivePower / totalPower);
+effPowerElements = power_surface .* (effectivePower / totalPower);
 
 
 end
