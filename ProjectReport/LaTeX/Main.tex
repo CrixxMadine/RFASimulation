@@ -27,7 +27,7 @@
 
 % part 1, Introduction 
 
-\section{Introduction to radio frequency ablation}
+\section{Introduction to Radio Frequency Ablation}
 - Medical Treatment of Tumor\\
 - Minimally invasive surgery \\ 
 - Radio frequency ablation\\
@@ -37,6 +37,7 @@
 - It is easy to configure \\
 - Is also used on a larger scale for Virtual Reality simulation to train mediciners and surgeons \\
 - For more information see TODO \\
+- TODO insert picture
 - \\
 - 
 - Motivation / This project in General\\
@@ -51,22 +52,20 @@
 
 % part 2, Main
 
-\section{Computer-aided simulation of radio frequency ablation}
+\section{Simulation of radio frequency ablation}
 
 \subsection{Discrete Numerical Simulation}
-- Physical relationships can be described by physical laws which are described by mathematical relationships \\
-- Usually highly complex systems that are described by ODEs, PDEs and statistics \\
-- Phxsic can be approximated by simplified models \\
-- In real world physics these models are usually bounded by reality \\
-- In most physic fields excluding quantum mechanics and modern theoretical physics, rough models are determinated, definite mathematical solutions can be found \\ 
-- Since the physics is determinated, simulations can be done instead of experiment and measurement  \\
-- In practise, geometrical dimensions of points of interest are often usually vague \\
-- In many cases there is no reasonable analytical approach to solve these problems, especially in the field of engineering  \\
-- Modern numerical approaches are very flexible in this regard \\
-- Instead of a smooth analytical solution, an arbitrarily precise approximation can often be calculated \\
-- Simulations done right can be easily modified and adapted to different models and boundaries \\
-- These models are usually discribed by PDEs \\ 
+Physical relations can usually be described by physical laws, which in turn can be described by mathematical relations. 
+Usually, the descriptions represent highly complex systems, which in turn are described by ODEs, PDEs and statistics.
+In real-world physics, these models are limited by boundary conditions that allow the calculation of certain solutions of the mathematical modeling. 
+In most areas of physics, with the exception of quantum mechanics and modern theoretical physics, rough models can be formulated for which concrete solutions can be found. 
+Since the physics of our world is determined to a certain degree, investigations can also be carried out with the help of computer-aided simulations instead of experiments and measurements. 
+Properly performed simulations can be easily modified and adapted to different models and limits. \\
 
+In practice, the geometric dimensions of most problem descriptions are very irregular.
+In many cases, there is no reasonable analytical approach to solve these problems, especially in engineering applications.
+To this end, more and more improved numerical methods have been developed in recent decades 
+Instead of a smooth analytical solution, an approximation is calculated with sufficiently high accuracy.\\
 
 - Finite difference method \\
 - Finite element method \\
@@ -74,15 +73,24 @@
 - In this approach we will model radio frequency ablations with simple finite element techniques \\
 
 
+
+
 \subsection{About Errors in simulations and numerical approaches}
-- see TUM dissertation \\
-- There are different sources for errors following the simulation from the line from the real problem down to the discrete solution \\
-- Idealization error: discrepancy between reality and the idealized reality and the idealized constitutive laws and boundary conditions -> Systems are often way more complex in reality, every patient is different \\
-- Modeling errors: discrepancy between mathematical formulation and physical model -> e.g. using dimensionally reduced approaches, like linear dependencies or even constant parameters  \\
--  Discretization errors: discrepancy between the continous description and discrete discription of the model \\
-- Solution errors: using iterative approximation methods and rounding errors \\
+
+The numerical simulation of physical processes leads along the whole process from the description of the real problem up to the discrete solution to various sources of error.
+
+\begin{itemize}
+    \item Idealization errors, the discrepancy between reality and idealized reality and idealized constitutive laws and boundary conditions. In reality, physical relationships are often much more complex than the mathematical assumptions and side effects are often neglected.
+    \item Modelling errors, the discrepancy between mathematical formulation and physical model. Often physical assumptions in the mathematical description are represented by dimensionally reduced approaches, such as linear dependencies or invariant parameters.
+    \item  Discretization errors: discrepancy between the continous description and discrete discription of the model TODO
+    \item Solution errors: using iterative approximation methods and rounding errors  TODO \\
+\end{itemize}
+
+
 - It's basically a butterfly effect \\
 - Optimizing one error source often conflicts with another one -> e.g. handling nonlinearity can cause fatal numerical errors (at least that's what Kroeger said ...)
+
+For more information, see TUM Dissertation TODO add ref
 
 
 \subsection{The physics behind radio frequency ablation}
@@ -548,7 +556,7 @@ The formal model above is given by
 Adapted for the temperature distribution, assuming $\lambda$ and all material parameters are constant: 
 
 \begin{equation}
-    a_w(t;u,v) := \int_{\Omega} \rho c (\partial_t u \cdot v) drdz + \int_{\Omega} \lambda (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
+    a_w(t;u,v) := \int_{\Omega} \rho c (\partial_t u \cdot v) r drdz + \int_{\Omega} \lambda (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
 \end{equation}
 
 \newpage
@@ -659,24 +667,24 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 - Compare with data from experiment or other simulations \\
 - TODO compare with other simulations \\
 
-\section{Programming technologies}
-
-\subsection{Performance Optimization}
-\subsection{MatLab vs C++}
-- Could have done the whole simulation using only MATLAB \\
-- MATLAB is a scripting language that calls Fortran Subroutines, which are highly efficient in calculating problems of linear algebra \\
-- However, MATLAB has to call these subroutines in an efficient way to take these performance advantages \\
-- It is extremely easy to write bad and inperformant code in MATLAB, if it is used in the wrong way \\
-- Efficient implementation required hardcoding routines and is very stiff \\ 
-- To me it was important to write flexible code, that can be easily adapted and extended to try out different modification \\
-- This is way easier when using loops and subroutines instead of hard coded implementations, also the code because way more easier to read and fix \\
-- So I was going for a combined implementation of MatLab and C++ \\ 
-- When using flexible code design, C++ allows performance advantages in using loops etc over MATLAB \\
-- However, MATLAB allows easy function hadnling, what makes the algorithms more accessable for the reader \\ 
-- In the end I combined the advantages of both languages \\
-- MatLab serves as frame for the pre- and postprocessing, like grid generation and graphical output of the numerical results. \\
-- Also the scripts serve as a mathematical documentation of the whole simulation for the reader \\
-- Computation intense subroutines are done in C++ \\
+%\section{Programming technologies}
+%
+%\subsection{Performance Optimization}
+%\subsection{MatLab vs C++}
+%- Could have done the whole simulation using only MATLAB \\
+%- MATLAB is a scripting language that calls Fortran Subroutines, which are highly efficient in %calculating problems of linear algebra \\
+%- However, MATLAB has to call these subroutines in an efficient way to take these performance advantages %\\
+%- It is extremely easy to write bad and inperformant code in MATLAB, if it is used in the wrong way \\
+%- Efficient implementation required hardcoding routines and is very stiff \\ 
+%- To me it was important to write flexible code, that can be easily adapted and extended to try out %different modification \\
+%- This is way easier when using loops and subroutines instead of hard coded implementations, also the %code because way more easier to read and fix \\
+%- So I was going for a combined implementation of MatLab and C++ \\ 
+%- When using flexible code design, C++ allows performance advantages in using loops etc over MATLAB \\
+%- However, MATLAB allows easy function hadnling, what makes the algorithms more accessable for the reader %\\ 
+%- In the end I combined the advantages of both languages \\
+%- MatLab serves as frame for the pre- and postprocessing, like grid generation and graphical output of %the numerical results. \\
+%- Also the scripts serve as a mathematical documentation of the whole simulation for the reader \\
+%- Computation intense subroutines are done in C++ \\
 
 
 \subsection{Graphical output}
@@ -710,30 +718,22 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 - bad: model is way to simplified to represent real world conditions of RFA \\
 - Even further modifications would not change the results heavily \\
 
-\subsubsection{future modifications}
-- Material parameters are dependent on Temperature and potential -> \\
-- Using variable instead of fixed material parameters \\
-- Take the evaporation of water into account \\ 
-- Different types of perfusion \\
-- Defining more realistic and complex boundary conditions \\
-- Perhaps a second needle in a 3D simulation \\
-- Basic algorithm can be adopted to 3D problems \\
+\subsubsection{Future modifications}
+I plan to expand this project in the future and let the chosen model mature. The described material parameters are in reality strongly non-linearly dependent on the temperature and the surrounding factors. An improved parameterization of these should lead to much more realistic simulation results. Especially the evaporation of water and a more complex formulation of blood perfusion should be considered. Subsequently, more complex and more realistic boundary conditions should be chosen. 
+The simulation of a second needle and monopolar probes would also be conceivable. The underlying algorithm can basically be adapted to three-dimensional problems.
 
-\subsection{State of the current Research}
-- Research in the simulation of medical therapy methods \\
-- TODO \\
+%\subsection{State of the current Research}
+%- Research in the simulation of medical therapy methods \\
+%- TODO \\
 
 
-\subsection{Other FEM projects and software}
+\subsection{Other FEM software}
 
-- There is a lot of good commercial FEM software out there \\
-- Matlab PDE toolbox, libraries with efficient implementation of almost every aspect on solving PDEs \\
-- COMSOL Multiphysics, a High-Power simulation program with model builder and GUI \\
-- ANSYS, like COMSOL but a little weaker but more widely used\\
+There is a lot of great commercial FEM software available to solve problems of this kind. Matlab, the tool used for this numerical simulation, offers its own PDE toolbox with corresponding libraries with efficient implementation of almost all aspects for solving partial differential equations.
 
-- Also, good open source software \\
-- FENICS \\
-- FREEFEM \\
+In addition, there are numerous powerful simulation tools, which also offer additional features such as built-in geometric modelers and graphical user interfaces. COMSOL Multiphysics and ANSYS are two of the most widely used tools of their kind in modern industry.
+
+Aside from that, there are a number of powerful free open source software projects that provide a number of highly optimized library functions. Worth mentioning here are the FEniCS project and FreeFEM.
 
 
 \newpage
@@ -747,8 +747,8 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 \newpage
 
 %% last part, appendix
-\appendix
+% \appendix
 
-\input{Appendix} 
+% \input{Appendix} 
 
 \end{document} 
