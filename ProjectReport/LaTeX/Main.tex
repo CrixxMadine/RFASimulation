@@ -242,16 +242,6 @@ $Q = Q(x,y,z,t)$ : heat energy \\
 - Runge-Kutta \\
 - For this simulation, backward euler / implicit euler formula does the job \\
 
-\subsubsection{FEM in Electrostatics}
-- TODO \\
-- General info \\
-- special domain \\
-- boundary conditions \\
-
-\subsubsection{FEM in Temperature Fields / perhaps Fluid Dynamics}
-- General info \\
-- boundary condition (heat source or sink) \\
-- In this simulation, heat source is from electrical energy \\
 
 
 \subsection{Axial symmetrie}
@@ -645,19 +635,23 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 - This particular solution might have its obvious flaws, but gets pretty good results in practise \\
 
 
+
+
+% < Section 7 Applied simulation >
+
+
 \section{Applied simulation}
-\subsection{Generating TestData / Get reference data}
-- Material parameters see Stein TODO \\
-- Using specification data from electrical generator TODO \\
+\subsection{Get reference data}
+- Material parameters are obtained by Stein TODO make ref \\
+- The mean concrete TODO Write down concrete parameters \\
+- Using specification data from electrical generator \\
+- Make ref for broschure TODO \\
 
 \subsection{Solving the PDEs}
 
 \subsection{Combine everything to continous time dependent simulation}
+- Electric potential $\varphi$ and the elecrical energy $Q_{rf}$ are calculated in advance hence they are time independent \\ 
 
-\subsection{Interpretation of result numbers}
-- Interprete numbers \\
-- Compare with data from experiment or other simulations \\
-- TODO compare with other simulations \\
 
 %\section{Programming technologies}
 %
@@ -680,36 +674,107 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 
 \subsection{Graphical output}
-- Data can be easily recreated \\
-- Solution is axis symmetric, so values apply for every angle $\phi$ \\
-- This gets 3D data in cylindrical coordinates \\
-- Can be reevaluated into cartesian coordinates to be plotted \\
-- Discrete points are linear interpolated \\
+- 2D Data can be easily visualized on 3D plot \\
+- 3D visualization can be obtained by recreation \\
+- cross section solution is axis symmetric, so values apply for every angle $\phi$ \\
+- From this a 3D Recreation can be obtained by defining concrete angular points \\
+- Then retransformation into cartesian coordinates \\
+- Plot on 3D geometry with color gradient to visualize differences in result data \\
 
 
-% part 3, Summary
 
-\section{Summary and Outlook}
+% < Section 8 Numerical results >
+
+\section{Numerical results}
+
+%\begin{figure}[H]
+%    \centering
+%    \begin{minipage}{0.5\textwidth}[t]
+%        \centering
+%        \includegraphics[width=1.0\textwidth]{pictures/phi_2D_sideview.PNG}
+%        \caption{TODO}
+%        \label{phi_2D_sideview}
+%    \end{minipage}%
+%    \begin{minipage}{0.5\textwidth}[t]
+%        \centering
+%        \includegraphics[width=1.0\textwidth]{pictures/phi_2D_topview.PNG}
+%        \caption{TODO}
+%        \label{phi_2D_topview}
+%    \end{minipage}
+%\end{figure}
+
+TODO reserved for Text \\
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=0.8\textwidth]{pictures/phi_2D_sideview.PNG}
+        \caption{Time-independent numerical solution for $phi$ on a halved 2D cross-section}
+        \label{phi_2D_sideview}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=0.8\textwidth]{pictures/phi_2D_topview.PNG}
+        \caption{Topview of the solution for $\varphi$ on the halve grid}
+        \label{phi_2D_topview}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pictures/phi_3D.PNG}
+    \caption{3D reconstruction of the numerical solution for $\varphi$}
+    \label{phi_3D}
+\end{figure}
+
+- TODO reserved for text \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{pictures/temp_2D_240sec.PNG}
+    \caption{Temperature distribution after 240 seconds on a coarse halved cross-section}
+    \label{temp_2D_240sec}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{pictures/temp_2D_240sec_finer_full.PNG}
+    \caption{Temperature distribution after 240 seconds on a fine grid}
+    \label{temp_2D_240sec_finer_full}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{pictures/temp_3D_240sec_fine.PNG}
+    \caption{3D reconstruction of the temperature distribution after 240 seconds}
+    \label{temp_3D_240sec_fine}
+\end{figure}
+
+
+
+% < Section 9 Summary and outlook >
+
+\section{Summary and outlook}
 
 \subsection{Project Summary}
 \subsubsection{A humble simulation}
-- One could argue that writing a numerical simulation from scratch is a waste of time \\
-- There are many highly useful numerical software solutions for numerical simulation and numerical problems \\
-- Usually there is no need to write an own detailed implementation \\
-- However, creating own scripts and implementations helps to understand numerical problems and error sources \\
-- This approach helps enormously to increase the ability to use these software products effectively and to generate better simulations and is mandatory to improve \\
-- There can also be no software developer without understanding how a computer works numbers \\
-- Implementing the algorithms on own trains understanding of numerical problems \\
-- Should be programmed by everyone working with finite elements at least once \\
+One could argue, that it is a waste of time to write a numerical simulation from scratch. There are already many very useful software solutions for numerical simulations and these kind of problems in general. Therefore there is usually no need to write your own detailed implementation of the underlying algorithms. \\
 
-\subsubsection{strengths and flaws}
-- good: numerical results do match the general expectation \\
-- "zuverlässige" convergency \\
-- numerical solution matches "qualitativ" the expectations \\
-- Implementation can be easily adopted to more complex approaches \\
+However, creating your own scripts and implementations helps to understand numerical problems and sources of error in this type of modeling at all. Even all commercial software is based on algorithms of this kind. Dealing with these problems on one's own greatly improves the ability to use these software products effectively and write great simulations.\\
 
-- bad: model is way to simplified to represent real world conditions of RFA \\
-- Even further modifications would not change the results heavily \\
+There can be no good software developer who does not understand how a computer processes numbers. Similarly, this academic approach trains the understanding of numerical simulation. I think, everybody who deals with finite elements should have implemented such algorithms himself at some point. \\
+
+\subsubsection{Strengths and flaws}
+It is appropriate at this point to draw a conclusion about the results achieved. \\
+Basically the simulation can be regarded as quite good for a study project. 
+The numerical results are in good agreement with the general expectation. The calculations converge relatively reliably with reasonable choice of variables.
+The chosen implementation is flexible and can therefore easily be adapted to more complex approaches and models. \\
+However, the chosen model is far too simplified to be a realistic representation of the conditions of an actual RFA treatment. Further planned modifications are interesting from a mathematical point of view, but would not significantly change the results of the simulation and thus its validity.
+
 
 \subsubsection{Future modifications}
 I plan to expand this project in the future and let the chosen model mature. The described material parameters are in reality strongly non-linearly dependent on the temperature and the surrounding factors. An improved parameterization of these should lead to much more realistic simulation results. Especially the evaporation of water and a more complex formulation of blood perfusion should be considered. Subsequently, more complex and more realistic boundary conditions should be chosen. 
