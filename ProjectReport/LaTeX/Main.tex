@@ -32,10 +32,14 @@ Radio frequency ablation is a modern minimally invasive practice in surgery . In
 Radio Frequency Ablation (RFA) has been proven to be one of the best therapies for small tumors, which means areas smaller than 5 cm, in the human liver and kidney. The use of this treatment in modern medicine is increasing, as is the interest in research in this field. 
 One of the largest branches of research is the simulation of such a therapy. Experimental research is usually based either on real patients or alternatively on animal organs such as the livers of pigs. Since experimental practice is generally very cumbersome, the interest in simulating such processes was there from the very beginning.  
 With a stable and converging simulation model it is easier to try out different modifications and configurations of the process. Of course, these simulations are by no means a substitute for experimental practice, but they are a valuable addition to research. 
-On a larger scale, the simulation of this process is used with virtual reality simulation programs to train physicians and surgeons in this process.
+On a larger scale, the simulation of this process is used with virtual reality simulation programs to train physicians and surgeons in this process.\\
 
-- For more information see TODO \
-- TODO insert picture
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{pictures/ra_kidney_2.jpg}
+    \caption{Schematic illustration of Radio Frequency Ablation}
+    \label{fig:ra_kidney_2}
+\end{figure}
 
 This is the documentation of an academic approach to numerical finite element simulation. A model for the simulation of radio frequency ablation is used as the underlying time-dependent problem.
 The main purpose of this project is to study the finite element method and its convergence behaviour in an academic setting, rather than to verify a realistic simulation of radio frequency ablation. 
@@ -56,14 +60,11 @@ Since the physics of our world is determined to a certain degree, investigations
 Properly performed simulations can be easily modified and adapted to different models and limits. \\
 
 In practice, the geometric dimensions of most problem descriptions are very irregular.
-In many cases, there is no reasonable analytical approach to solve these problems, especially in engineering applications.
-To this end, more and more improved numerical methods have been developed in recent decades 
+In many cases, there is no reasonable analytical approach to solve these problems, especially in engineering applications. For this purpose, more and more improved numerical methods have been developed in the last decades. 
 Instead of a smooth analytical solution, an approximation is calculated with sufficiently high accuracy.\\
 
-- Finite difference method \\
-- Finite element method \\
-- TODO: most frequently used methods \\
-- In this approach we will model radio frequency ablations with simple finite element techniques \\
+For the numerical solution of partial differential equations, the methods of finite differences, finite elements, finite volumes and boundary elements have become widely accepted in practice.
+In this simulation approach, a model of radio frequency ablations is discretised and computed with common finite element techniques. \\
 
 
 
@@ -74,126 +75,97 @@ The numerical simulation of physical processes leads along the whole process fro
 
 \begin{itemize}
     \item Idealization errors, the discrepancy between reality and idealized reality and idealized constitutive laws and boundary conditions. In reality, physical relationships are often much more complex than the mathematical assumptions and side effects are often neglected.
+    
     \item Modelling errors, the discrepancy between mathematical formulation and physical model. Often physical assumptions in the mathematical description are represented by dimensionally reduced approaches, such as linear dependencies or invariant parameters.
-    \item  Discretization errors: discrepancy between the continous description and discrete discription of the model TODO
-    \item Solution errors: using iterative approximation methods and rounding errors  TODO \\
+    
+    \item  Discretization error, the discrepancy between the continuous description of the problem and the transfer to a discretized description. Discretization is in most cases merely a sufficiently accurate approximation to the continuum.
+    
+    \item Solution errors, caused by the use of iterative approximation methods and generally rounding errors within the scope of calculation accuracy. Beside the limited computing resources in general, it has to be considered that exact calculations are mostly not useful, because the underlying modeling also represents only an idealized estimation in the context of the error sources described above.
+    
 \end{itemize}
 
 
-- It's basically a butterfly effect \\
-- Optimizing one error source often conflicts with another one -> e.g. handling nonlinearity can cause fatal numerical errors (at least that's what Kroeger said ...)
-
-For more information, see TUM Dissertation TODO add ref
+Sources of error basically cause a butterfly effect, the earlier approximations are made, the greater the inaccuracy of the simulation results. In addition, the sources of error are often in antinomic relationships to each other, i.e. the optimization of one source of error is itself in conflict with another. For example, the modeling of nonlinear dependencies requires more complex solution algorithms which in turn generate new numerical sources of error. Further information on this topic can be found in this dissertation by Sorger \cite{sorger}.
 
 
 \subsection{The physics behind radio frequency ablation}
-- Needles stuck in tissue have electrodes with generate a potential \\
-- Generating electrical energy by power of an extern generator \\
-- Energy does not get lost \\
-- Heats the tissue, temperature rises do to continuing energy input \\
-- Generated heat is distributed on the tissue,  \\
-- Thus additionaly there is a cooling effect by the perfusion of blood \\
-- Heated tissue can kill harmful cells \\
-- The whole process is regulated from outside \\
+The underlying physical processes of radio frequency ablation can be described relatively straightforwardly.
+Needles with electrodes (either monopolar or bipolar) are inserted into the damaged tissue. The attached electrodes create a quasi-static potential in the target tissue. Outside the target tissue, the potential is removed in a controlled manner with the help of an additionally applied mass. \\
 
-- Interesting for our simuation is: \\
-- Temperature distribution over time \\
-- What else? TODO \\
+Electrical power is generated by an external generator using the quasi-static potential. This power supply is the basis for the electrically generated energy in the area of the probes.
+In principle, energy is not lost and the tissue resistance converts the energy into heat. \\
 
-- For the simulation, we will use a RFA model as described following kroeger \\
-- For simplicity, material parameters are seen constant \\
-- In real world, material parameters are highly dependant on body conditions, temperature and vary heavily with different patients \\
-- For some research to this topic, see Stein \\
+The heat generated is distributed throughout the tissue, which is why the temperature in the target area rises continuously. 
+In addition, the blood circulation causes a cooling effect through heat dissipation. The controlled temperature increase in the tissue kills the damaged target tissue. The entire process is controlled from the outside to keep the temperature in the ideal target area. \\
 
-- Electrical energy depends on the electrical power \\
-- Power is defined by potential of the domain \\
+Therefore the interesting result we are looking for is the discrete temperature distribution $\si{T}$ over time. \\
 
+The following description is derived from a RFA model by Kröger \cite{kroeger}.This description serves to illustrate the physical relationships. An adaptation to the calculation domain $\Omega$ will follow later.
+
+For simplicity, all material parameters are considered constant. In reality, the material parameters are strongly non-linearly dependent on both the temperature and the personal body conditions of the individual patient. Research on this aspect can be found at Stein \cite{stein} and Watanabe \cite{watanabe}. \\
+
+
+The electrical energy $E_{el}(x,y,z,t)$ is calculated from the electrical power $p$.This in turn is determined by the potential $varphi$ in the calculation area. Ignoring boundaries, $\varphi$ is defined as following:
 \begin{equation}
     - \nabla \cdot (\sigma(x,y,z,t) \nabla \varphi(x,y,z,t)) = 0
 \end{equation}
 
-Power applied by the probe:
-
+Where $\sigma$ is the electric conductivity of the surrounding tissue. \\
+The power applied by the probe is therefore obtained by the following relationship:
 \begin{equation}
     p(x,y,z,t) = \sigma(x,y,z,t) \cdot |\nabla \varphi(x,y,z,t)|^2
 \end{equation}
 
-Due to tissue resistance, the effective power of the generater is obtained by a scaling. Thus can be modeled as following   
-
-\begin{equation}
-    Q_{rf} = p(x,y,z,t) \cdot \frac{p_{eff}(t)}{p_{total}(t)} 
-\end{equation}
-
-\begin{equation}
-    p_{total}(t) = \int_{\Omega} p(x,y,z,t) dx
-\end{equation}
-
+The actual potential induced by the generator can be acquired by a scaling, taking into account the non-linear behaviour of the power supply due to tissue resistance. Therefore the effective power $p_{eff} $can be modeled as following:   
 \begin{equation}
     p_{eff}(t) = \frac{4 \cdot p_{setup} \cdot R_{tis}(t) \cdot R_I}{(R_{tis}(t) + R_I)^2}
 \end{equation}
 
+Where $R_{tis}$ is the tissue resistance, $R_I$ is the inner resistance of the generator, $p_{setup}$ is the initial setup power of the generator $U$ the potential difference between the electrodes.
+
+The total power $p_{total}$ is obtained by the domain integral over the power distribution.
+\begin{equation}
+    p_{total}(t) = \int_{\Omega} p(x,y,z,t) dx
+\end{equation}
+
+Tissue resistance is therefore modeled as linear depending on the total power.
 \begin{equation}
     R_{tis}(t) = \frac{U^2}{p_{total}(t)}
 \end{equation}
 
-$\sigma$ : electric conductivity \\
-$\varphi = \varphi(x,y,z,t)$ : electric potential \\
-$p \: = p(x,y,z,t)$  : power \\
-
-
-$R_{tis}$ : tissue resistance \\
-$R_I$ : inner resistance generator \\
-$p_{setup}$ : setup power generator \\
-$U$ : potential difference\\
-
-
-- No energy is lost \\
-- Electrical Energy becomes heat energy by Tissue resistance \\
-- Heat Energy is distributed by heat equation \\
-
+From these quantities, the electric energy can be calculated.
 \begin{equation}
-    \partial_t (\rho c T) - \nabla \cdot (\lambda \nabla T) = Q
+   E_{el}(x,y,z,t) = p(x,y,z,t) \cdot \frac{p_{eff}(t)}{p_{total}(t)} = Q_{rf}(x,y,z,t)
 \end{equation}
 
-The heat equation is a well known parabolic partial differential equation. \\
 
-We are assuming $\rho$ and $c$ are constant \\
-$\rho$ : density \\
-$c$ : specific heat capacity \\
-$\lambda$ : thermal conductivity \\ %, which is depending on T \\
-$\nu$ : perfusion coefficient \\
-$T = T(x,y,z,t)$ : temperature \\
-$Q = Q(x,y,z,t)$ : heat energy \\
+Since no energy is lost, the generated electrical energy becomes heat energy $Q_{rf}$ by tissue resistance. \\
 
+The energy generated causes the temperature to rise. The exact temperature distribution $T$ is described by the well known heat equation:
 
-- Additionaly to temperature destribution, there is the cooling effect of perfusion 
+\begin{equation}
+    \partial_t (\rho(x,y,z,t) \cdot c(x,y,z,t,) \cdot T(x,y,z,t)) - \nabla \cdot (\lambda(x,y,z,t) \cdot \nabla T(x,y,z,t)) = Q_{total}(x,y,z,t)
+\end{equation}
 
+Referring to the parameters above, $\rho$ is the density, $c$ is the specific heat capacity and $\lambda$ represents the thermal conductivity of the tissue, which are all highly dependent on the temperature $T$. \\
+The total heat energy $Q_{total}$ on the right hand side is basically the sum of all contributing heat sources and sinks. A very simplified approach leads to the following relationships:
 \begin{equation}
     Q_{total} = Q_{rf} + Q_{perf}
 \end{equation}
 
-- $Q_{rf}$ is descripted above \\
-- $Q_{perf}$ is blood perfusion \\
-
-
+Where $Q_{rf}$ is descripted above and $Q_{perf}$ models the additional cooling effect due to blood perfusion, which is given by the following equation:
 \begin{equation}
     Q_{perf}(x,y,z,t) = \nu_{perf} \cdot \rho_{blood} c_{vlood} \cdot (T_{body} - T(x,y,z,t))
 \end{equation}
+ 
+ Where $\nu_{perf}$ serves as an additional perfusion coefficient.
+
+This model serves as a basis for time-dependent discrete numerical simulation. As mentioned in the beginning, the geometric calculation area is discretised on a 2D half-section, which represents an axis-symmetric 3D geometry. 
 
 
-- Discretization of the equation in space and time domain \\
-- Time dependecy can be modeled continuously or in discrete intervalls \\
-- Discrete intervalls are is typically more practical in modeling but less efficient or exact \\
-- Discrete intervalls can be refined if necessary \\
+\section{Finite elements for discrete simulation}
 
-- As described above, the whole simulation will be done on a 2D half section representing the 3D axis symmetric geometry \\ 
-
-
-\section{Mathematical aspects of discrete simulation}
-
-\subsection{Theory of finite elements}
-
-\subsubsection{Elliptical problems}
+\subsection{Elliptical problems}
 - Elliptical problems in general \\
 - build up system of PDE's to describe problem \\
 
@@ -204,21 +176,15 @@ $Q = Q(x,y,z,t)$ : heat energy \\
 - Using the cylindric domain, different domains, will be described later \\
 
 
-\subsubsection{Assembling system of equations}
 - Systems of equations by finite number of elements calculated with shape function \\
-- solution is approximation of real solution \\
+- weak solution solution is approximation of real solution \\
 
-\begin{equation}
-    Matrix
-\end{equation}
 
-\subsubsection{Boundary conditions}
 - Dirichlet with trick, define value to be solution of variable \\
 - TODO \\
 
 
 - Neumann boundary with curve integral \\
-
 \begin{equation}
     f = f_{vol} + f_{surf}
 \end{equation}
@@ -230,9 +196,13 @@ $Q = Q(x,y,z,t)$ : heat energy \\
 - Note : In 2D dimension the surface integral is around the boundary line \\
 - For natural boundary conditions $g(x) = 0$, the surface integral added is zero, which is a trivial solution \\
 
-\subsubsection{Parabolic problems}
+\subsection{Parabolic problems}
 - Parabolic / time-dependent problems \\
 - Usually involve an elliptic problem with additional time dependent factor \\
+
+- Time dependecy can be modeled continuously or in discrete intervalls \\
+- Discrete intervalls are is typically more practical in modeling but less efficient or exact \\
+- Discrete intervalls can be refined if necessary \\
 
 - Ignoring time dependency at first and calculate the resulting elliptical problem \\
 - Build system of equations for elliptical problem \\
@@ -272,129 +242,107 @@ $Q = Q(x,y,z,t)$ : heat energy \\
 
 \section{Discretization of PDEs}
 
-\subsection{Computational Domain}
-- Using one needle, whole geometry domain is axis symmetric around one needle \\
-- Problem can be reduced to 2D problem using ring elements and cylindric coordinates \\
-- Eliminate dependency on angular $\phi$ from the calculations \\
-- For visualisation, symmetric results can be reconstructed to 3D \\
-- Whole calculation will be in cylindric coordinates \\
+\subsection{Computational domain}
 
-\subsection{FEM in cylindric Coordinates}
-- Rewrite the equations to cylindric coordinates \\
-- Calculations are made on a cross-section with angular phi = 0 \\
-- Define boundaries -> new artificial boundary around the rotation axis to be taken into consideration \\
-- Explain how the new boundary can be treated \\
+When simulating one single probe and using homogeneous and constant material parameters, the entire calculation area is axisymmetric around the needle. To make this symmetry usable for simplifying complexity, the problem has to be adapted according to the symmetry. The partial differential equations are reduced to a 2D problem by using ring elements and cylindrical coordinates, whereby the dependence on the angle is completely eliminated. \\
+
+The calculation area used is shown below. It is sufficient to use only half of the presented calculation area. The full cross section serves at this point for a better understanding of the geometry and is later used for plausibility checks of the simulation results.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{pictures/Grid_Explanation_full.PNG}
+    \caption{2D cross-section of the axis symmetric calculation domain}
+    \label{fig:Grid_Explanation_full}
+\end{figure}
+
+\subsection{FEM in cylindrical Coordinates}
+
+The equations described above refer to a Cartesian coordinate system. In order to exploit the rotational symmetry, all calculations of the domain must be adapted to cylindrical coordinates and the equations must be transformed accordingly. As an example, the Laplace operator in cylindrical coordinates is given here, which is used to describe the two partial differential equations.
  
 Laplace in cartesian coordinates:
 \begin{equation}
     \nabla^2 := \Delta := \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}
 \end{equation}
 
-Laplace in cylindric coordinates:
+Laplace in cylindrical coordinates:
 \begin{equation}
     \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \phi^2} + \frac{\partial^2}{\partial z^2}
-\end{equation}
-
-TODO \\
-
-Laplace in polar coordinates:
-\begin{equation}
-    \Delta := \frac{\partial^2}{\partial r^2} + \frac{1}{r} \frac{\partial}{\partial r} + \frac{1}{r^2} \frac{\partial^2}{\partial \phi^2}
 \end{equation}
 
 
 
 \subsection{PDE for Electric potential}
 
-\subsubsection{Discretization of the problem}
-4 areas can be distinguished from a mathematical point of view \\
-- Inner domain \\
-- Fixed Potential of electrodes \\
-- Outer boundaries with no fixed potential -> Robin \\
-- Rotation axis, artificial boundary -> Neumann \\
+\subsubsection{Discretization of the domain}
 
-Constant material parameters -> \\
-Coefficients are constants \\
-This will simplify calculations and coupling \\
+From a mathematical point of view, 4 different areas of the computational domain are of interest:
+\begin{itemize}
+    \item Inner area between the boundaries
+    \item Electrodes 
+    \item Rest of the sample and the outer boundaries
+    \item Artificial boundary on the rotation axis
+\end{itemize}
+
+As mentioned above, only constant material parameters are assumed. This results in essential simplifications for the further calculation.
 
 \subsubsection{Inner Domain}
 
-- The electric potential of the inner domain is described as : 
-
+The electrical potential in the inner domain behaves as described above:
 \begin{equation}
     - \nabla \cdot (\sigma(x,y,z,t) \nabla \varphi(x,y,z,t)) = 0
 \end{equation}
 
-- Elliptical boundary problem \\
-- Assuming constant material parameters: $\nabla \sigma = 0$ \\
-- Solution is independent from $\sigma$ so we can cut it out
-- Equation becomes Laplaces' equation, phi becomes time independent \\
+As sigma is assumed to be constant the following relation is valid:
+\begin{equation}
+    \nabla \cdot \sigma = 0
+\end{equation}
 
+Trivially this equation is now independent of $\sigma$, so $\sigma$ can be easily removed. The partial differential equation becomes the Laplace equation and $\varphi$ becomes time independent.
 \begin{equation}
     - \Delta \varphi(x,y,z) = 0
 \end{equation}
 
-- Using a cylindric domain, it is preferred to change coordinate systems \\
-- Axis symmetry is given cylindrical coordinates (see ref Laplace in cylinder)
-
+Adapted to the domain, the axis symmetry is exploited by using cylindrical coordinates.
 \begin{equation}
     - \Delta \varphi(r,\phi,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{1}{r^2} \frac{\partial^2 \varphi}{\partial \phi^2} -      \frac{\partial^2 \varphi}{\partial z^2}  = 0
 \end{equation}
 
-- Since the domain has axis symmetry, the solution for $\varphi$ is independent from the angular $\phi$ \\
-- So equation basically simplifies to 
-
-% \begin{equation}
-  %  - \Delta \varphi(r,\phi,z) \overset{!}{=} - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial %\varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial %z^2} = 0
-% \end{equation}
-
+Because of the axial symmetry, the solution for $\varphi$ is independent of the angle $\phi$. The PDE is thus reduced by one dimension. 
 \begin{equation}
     - \nabla  ( \sigma \cdot \nabla \varphi(r,\phi,z)) \overset{!}{=} - \Delta \varphi(r,z) = - \frac{1}{r} \frac{\partial \varphi}{\partial r} - \frac{\partial^2 \varphi}{\partial r^2} - \frac{\partial^2 \varphi}{\partial z^2} = 0
 \end{equation}
 
-To keep the following descriptions simple, we will (ignore) "verzichten" the explicit dependencies r and z, since this is trivial
+To keep the following descriptions clearer, the explicit specification of coordinates is omitted. $\varphi$ is dependent on $r$ and $z$ unless otherwise specified.
 
 \subsubsection{Electrodes}
 
-- Potential difference on the electrodes is fixed by definition \\
-- For calculations, potential will be defined as $\pm 1$ chosen arbitrarily \\
-- Bipolar probes have one fixed potential at each electrode
-
+The potential difference at the electrodes is fixed by definition. For the calculations the potential is defined as $\pm 1$ arbitrarily chosen. Since only one needle is modeled, it has a positive and negative electrode each.
 \begin{equation}
     \varphi = \pm 1
 \end{equation}
 
-- Other values would be possible too, but are rather unusual at monopolar probes \\
+Other values are also possible in principle, but are not useful for this modelling.
 
 \subsubsection{Outer boundary}
 
-- An easy approach is a simplification with natural boundary conditions \\
-
+To make the calculation as reasonable as possible, it is assumed that all other outer edges have natural Neumann boundary conditions for the electric potential $\varphi$. Although this does not exactly reflect the physical conditions of the potential, it is very appropriate in the context of the simplifications made.
 \begin{equation}
     n \cdot \nabla \varphi = 0
 \end{equation}
 
-- In cylindrical coordinates
-\begin{equation}
-    TODO
-\end{equation}
-
-- In actual RFA treatment, there is a mass to nullify the potential in the outer regions \\
-- For the lower boundary, this behaviour can be easily modeled with dirichlet conditions \\
+In addition to the electrodes, a mass is applied in the RFA treatment to nullify the potential in the outer regions. This behavior is simulated by assuming fixed Dirichlet values at the lower edge.
 \begin{equation}
     \varphi = 0
 \end{equation}
 
-- Neither the neumann nor the dirichlet conditions actually reflect physics properly,, but is rather accurate enough for this approach \\
-- Since there are made other simplifications, especially with the unrealistic "Annahme" of constant material parameters, this simplification of boundary conditions is within the margin ob acceptable errors
+Neither the Neumann nor the Dirichlet conditions correctly reflect the underlying physics, but are rather rough simplifications.
+Since further simplifications in the modeling were already made in the run-up, especially by the unrealistic assumption of constant material parameters, these simplifications of the boundary conditions are within the range of acceptable errors.
 
 
 \subsubsection{Rotation axis}
 
-- this is an artificial boundary, as discribed above \\
-- To keep the axis symmetry, "leicht einsehbar" that here must natural boundary conditions \\
-- Other conditions would break the trace operator \\
-- A more mathematical description for this "Annahme" will described in the following chapter
+The edge on the symmetry axis is purely artificial and a product of dimensional reduction. For reasons of maintaining symmetry, it is easy to see that natural boundary conditions apply here.
+A formal and detailed investigation of this statement can be found in the publication of Hengguang \cite{hengguang}. 
 
 - \begin{equation}
     n \cdot \nabla \varphi = 0
@@ -489,59 +437,61 @@ Cylindrical coordinates: see 'Transient Heat Transfer in a Partially Cooled Cyli
 \subsection{Weak solutions}
 \subsubsection{Electric potential}
 
-Electric potential / Laplace's equation in cylindrical domain:
+For the Ritz-Galerkin method, it is mandatory to transform the PDEs above into weak formulations. Poisson's equation is given as follows:
 
 \begin{equation}
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
 \end{equation}
 
 \begin{align}
-    u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \} \\
-    v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} = 0 \}     
+    u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} &= 0 \} 
+    \label{trial_functions1}\\
+    v \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} &= 0 \}     
+    \label{trial_functions2}
 \end{align}
 
+More information about the above transformation for Laplace's equation as well as a detailed proof of conformity can be found in the work of Hengguang \cite{hengguang}. \\
 
-Specific PDE for electric potential, inner domain: 
+This formulation leads analogously to the following description of the electric potential $\varphi$ for the inner domain: 
 
 \begin{equation}
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = 0 
 \end{equation}
 
+Using the same trial functions as described above (\ref{trial_functions1}) (\ref{trial_functions2}).  
+
 \subsubsection{Temperature Distribution}
 
-This is basically the problem above but as a hyperbolic problem \\
-Using semidiscrete solution and iterate solution over time \\
-We are applying method of the discontinuous galerkein fem \\
-For reference see Jung, Langer : Methode der finiten Elemente für Ingenieure, chapter 7.1 \\
+The temperature distribution as a hyperbolic problem can be described as a fully discrete substitute problem by discontinuous Galerkin FEM. The variation problem consists of a local discretization of the Laplace problem and a subsequent discretization in the time dimension.   
 
-
-
-Weak formulation for the problem: \\
+ A weak formulation of the problem can be described as follows: \\
 
 We are looking for $u(r,z,t) \in V_{g1}$ with $\Dot{u} \in L_2(\Omega)$ for almost every $t \in (0,T)$, so \\ \begin{equation}
 (\Dot{u},v)_0 + a(t;u,v) = \langle F(t),v \rangle \; for \; all \; v \in V_0    
 \end{equation}
-and for amost every $t \in (0, T)$ is the "Anfangsbedingung -> suche englische Formulierung"
+and for almost every $t \in (0, T)$ is the condition given as 
 \begin{equation}
     (u(r,z,0),v)_0 = (u_0,v)_0 \; for \; all \; v \in V_0
 \end{equation}
 
-The formal model above is given by 
+The formal description is given by 
 \begin{align*}
     (\Dot{u},v)_0 &= \int_{\Omega} \Dot{u}(r,z,t)v(r,z) drdz = \int_{\Omega} \frac{\partial u(r,z,t)}{\partial t} v(r,z) drdz, \\
     a(t;u,v) &= \int_{\Omega} \left[ \lambda_1(r,z,t) \frac{\partial u}{\partial r} \frac{\partial v}{\partial r} + \lambda_2(r,z,t) \frac{\partial u}{\partial z} \frac{\partial v}{\partial z} \right] \cdot r \cdot drdz + \int_{\Gamma_3} \alpha(r,z,t)u(r,z,t)v(r,z) ds, \\
     \langle F(t),v \rangle &= \int_{\Omega} f(r,z,t)v(r,z) drdz + \int_{\Gamma_2} g_2(r,z,t)v(r,z) ds + \int_{\Gamma_3} \alpha(r,z,t)u_A(r,z,t)v(r,z) ds, \\
-    V_{g_1} &= TODO, \\
-    V_0 &= TODO
+    V_{g_1} &= \{u \in H^1(\Omega) : u = g_1 \; in \;  \Gamma_1 \; for \; almost \; every \; t \in (0,T) \} \\
+    V_0 &= \{ v \in H^1(\Omega) : v = 0 \; in \; \Gamma_1 \}
 \end{align*}
 
-Adapted for the temperature distribution, assuming $\lambda$ and all material parameters are constant: 
+Adapted for the temperature distribution, assuming $\lambda$ and all material parameters are constant, the weak formulation can be described as follows: 
 
 \begin{equation}
     a_w(t;u,v) := \int_{\Omega} \rho c (\partial_t u \cdot v) r drdz + \int_{\Omega} \lambda (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
 \end{equation}
 
-\newpage
+Using the same trial functions as described above (\ref{trial_functions1}) (\ref{trial_functions2}).  \\
+
+For further information on the fully discrete weak formulation, please refer to the work of Jung \cite{jung}.
 
 
 \subsection{Discretization / Triangulation}
@@ -554,6 +504,21 @@ Adapted for the temperature distribution, assuming $\lambda$ and all material pa
 - refinement of triangle into 4 new pieces \\
 - \textcolor{blue}{insert picture here}
 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pictures/triangulation_full.PNG}
+    \caption{Triangulation on the full cross-section}
+    \label{fig:triangulation_full}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pictures/triangulation_halved_coarse.PNG}
+    \caption{Triangulation on the halved cross-section}
+    \label{fig:triangulation_halved}
+\end{figure}
 \subsection{Assembling system of equation}
 
 - assemble elementwise \\
@@ -608,32 +573,14 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 
 \subsection{Surface integral}
-- Sum of integral of every single triangle \\
-- Single triangle on discrete gauss quadrature points \\
-- Can use more nodes, which is usually worth the calculation effort \\
-- Implemented on 3 or 7 points \\
-- TODO insert picture \\
+The surface integral over the individual elements is required for the element by element assembly of the systems of equations. The computation of these takes place on discrete Gauss quadrature points. In this simulation, either 3 or 7 base points were used for the quadrature. More base points increase the calculation effort, but generally result in more precise calculation results. A detailed reference of the method used can be found in the book by Jung \cite{jung}.
 
 \subsection{Numerical gradient on discrete points}
-- Trial functions approach the solution of the variation problem \\
-- in our case, gradient is constant on every triangle \\
-- actually discrete gradient on vertices is interesting \\
-- vertices as average value of surrounding the sorrounding triangles \\
+In the Ritz-Galerkin algorithm, the applied trial functions approach the solution of the variation problem. The numerical gradient thus approximately corresponds to the gradients of the approach functions on the element. For this implementation only linear functions were used, accordingly the numerical gradient is constant for each element. In order to obtain an exact numerical result for the gradient on the discrete grid points, a mean value was calculated from the constant gradients of the surrounding elements.
 
-\subsection{Grid refinement}
-- Refine triangle uniformly into 4 new ones \\
-- Can be done as efficient vector operation \\
 
 \subsection{Troublesome neighbours}
-- Collision on corner nodes and boundaries of electrodes \\
-- Corner node is defined well for dirichlet as well as for neumann conditions \\
-- Handling dirichlet nodes is done by setting row and column vectores to zero and rhs to dirichlet value, which is a problem for the neumann boundary  \\
-- Dirichlet value has higher priority for corners \\
-- This is a problem for the node on the neumann boundary next to the corner \\
-- So this exactly neumann node has some unforseen behaviour \\
-- To handle this, best way has shown to be to ignore the result for this node and interpolate the result by weighing the neighboring nodes \\  
-- This particular solution might have its obvious flaws, but gets pretty good results in practise \\
-
+The joint use of Dirichlet and Neumann boundary conditions can lead to problems at individual points, specifically at the corners of Dirichlet edges to a Neumann edge. In the simulation this problem occurs concretely at the electrodes. Dirichlet nodes are treated by manipulating the equation of the node to a trivial problem. Dirichlet boundary conditions have a higher priority, therefore the common corner node is treated as a Dirichlet boundary condition. Before manipulating the matrix, the result of a matrix-vector multiplication with non-manipulated data is subtracted from the affected parts of the equation system on the right side. This compensates side effects of the following modification. The right side of the equation is set to the Dirichlet value and the corresponding matrix entry gets the value 1. All other variables of the affected row and column vector are set pragmatically to the value 0. This pragmatic procedure is exact for a Dirichlet node and does not require any calculation. However, this procedure has a very negative effect on an adjacent Neumann edge. By artificially modifying the system of equations, the equation for the directly adjacent Neumann node is invalidated. The calculation of the node thus delivers an undefined result. To overcome this problem, it has proved to be useful to ignore the calculated result for this concrete node and to interpolate a substitute result by weighting the results of neighboring nodes. This special implementation has obvious flaws, but achieves relatively good results in practice.
 
 
 
@@ -641,45 +588,16 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 
 \section{Applied simulation}
-\subsection{Get reference data}
-- Material parameters are obtained by Stein TODO make ref \\
-- The mean concrete TODO Write down concrete parameters \\
-- Using specification data from electrical generator \\
-- Make ref for broschure TODO \\
+
+\subsection{Reference data}
+In order to be able to perform a meaningful simulation, it is necessary to find suitable reference numbers for all variables used. For the determination of material parameters the measurement results from the investigations of Stein \cite{stein} were used. For the description of the electrical generator setup a large number of configurations can be used for this investigation. Concrete data on devices that are commonly used in medical practice can be found in Padma's publication \cite{padma}. 
 
 \subsection{Solving the PDEs}
-
-\subsection{Combine everything to continous time dependent simulation}
-- Electric potential $\varphi$ and the elecrical energy $Q_{rf}$ are calculated in advance hence they are time independent \\ 
-
-
-%\section{Programming technologies}
-%
-%\subsection{Performance Optimization}
-%\subsection{MatLab vs C++}
-%- Could have done the whole simulation using only MATLAB \\
-%- MATLAB is a scripting language that calls Fortran Subroutines, which are highly efficient in %calculating problems of linear algebra \\
-%- However, MATLAB has to call these subroutines in an efficient way to take these performance advantages %\\
-%- It is extremely easy to write bad and inperformant code in MATLAB, if it is used in the wrong way \\
-%- Efficient implementation required hardcoding routines and is very stiff \\ 
-%- To me it was important to write flexible code, that can be easily adapted and extended to try out %different modification \\
-%- This is way easier when using loops and subroutines instead of hard coded implementations, also the %code because way more easier to read and fix \\
-%- So I was going for a combined implementation of MatLab and C++ \\ 
-%- When using flexible code design, C++ allows performance advantages in using loops etc over MATLAB \\
-%- However, MATLAB allows easy function hadnling, what makes the algorithms more accessable for the reader %\\ 
-%- In the end I combined the advantages of both languages \\
-%- MatLab serves as frame for the pre- and postprocessing, like grid generation and graphical output of %the numerical results. \\
-%- Also the scripts serve as a mathematical documentation of the whole simulation for the reader \\
-%- Computation intense subroutines are done in C++ \\
+The electric potential $\varphi$ and the electric power $p$ are calculated in advance, because they are time independent. Therefore, the electrical energy $Q_{rf}$ can easily be obtained by multiplying the power by the step size of the time discretization. Since the thermal equation is inherently very stiff, the implicit Euler method for matrices is used to calculate the discrete solution. For each time step the temperature equation is recomposed and calculated. This results in a coherent time dependent simulation.
 
 
 \subsection{Graphical output}
-- 2D Data can be easily visualized on 3D plot \\
-- 3D visualization can be obtained by recreation \\
-- cross section solution is axis symmetric, so values apply for every angle $\phi$ \\
-- From this a 3D Recreation can be obtained by defining concrete angular points \\
-- Then retransformation into cartesian coordinates \\
-- Plot on 3D geometry with color gradient to visualize differences in result data \\
+The calculated 2D data for $\varphi$, the electrical power and the temperature distribution for each time step can easily be visualized on a 3D plot. Since the calculated cross-section solutions are axisymmetric, the calculated values are valid for every angle $\phi$. From this, a 3D reconstruction can be easily generated by defining concrete angle points. After retransforming the generated solution into cartesian coordinates, the 3D geometry can be visualized on a 4D plot with color gradient depending on the numerical solution.
 
 
 
@@ -687,23 +605,9 @@ See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step
 
 \section{Numerical results}
 
-%\begin{figure}[H]
-%    \centering
-%    \begin{minipage}{0.5\textwidth}[t]
-%        \centering
-%        \includegraphics[width=1.0\textwidth]{pictures/phi_2D_sideview.PNG}
-%        \caption{TODO}
-%        \label{phi_2D_sideview}
-%    \end{minipage}%
-%    \begin{minipage}{0.5\textwidth}[t]
-%        \centering
-%        \includegraphics[width=1.0\textwidth]{pictures/phi_2D_topview.PNG}
-%        \caption{TODO}
-%        \label{phi_2D_topview}
-%    \end{minipage}
-%\end{figure}
+In the following the numerical simulation results are presented. The calculations were performed with different element sizes and time step sizes on both the half and the whole cross-section. In the MatLab source code all results can be recalculated and further modified in their configuration. Depending on element size and time step size the expected calculation time is between some seconds and several minutes. \\
 
-TODO reserved for Text \\
+Basically all calculation results are qualitatively within the expected range. For comparison, we refer to the published results of a very similar simulation with accompanying experiments by Watanabe \cite{watanabe}.
 
 \begin{figure}[H]
     \centering
@@ -729,7 +633,35 @@ TODO reserved for Text \\
     \label{phi_3D}
 \end{figure}
 
-- TODO reserved for text \\
+
+- Ellectric power therefore calculated by using numerical gradient of  gradient  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{pictures/numericalGradient_2D.PNG}
+    \caption{Numerical gradient of the solution for $varphi$}
+    \label{numericalGradient_2D}
+\end{figure}
+
+- Leading to the applied electric energy  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{pictures/effectiveEnergy_2D.PNG}
+    \caption{Effective energy applied by the probe in one second}
+    \label{effectiveEnergy_2D}
+\end{figure}
+
+
+- Also temperature calculation generally meets expectation \\
+- Rises slowly but steady as more electric energy is apllied by the probe \\
+- Perfusion distributes the increasing temperature over the domain \\
+- TODO compared with other simulations make ref!
+- Temperature was calculated up to around 240 seconds \\
+- Further calculation would not be reasonable \\
+- Temperatures above around 90° Celsius usually get regulated \\
+- Also evaporation of water has great impacts on the material parameters which is not taken into account b the model \\
+
 
 \begin{figure}[H]
     \centering
