@@ -100,7 +100,7 @@ In addition, the blood circulation causes a cooling effect through heat dissipat
 
 Therefore the interesting result we are looking for is the discrete temperature distribution $\si{T}$ over time. \\
 
-The following description is derived from a RFA model by Kröger \cite{kroeger}.This description serves to illustrate the physical relationships. An adaptation to the calculation domain $\Omega$ will follow later.
+The following description is derived from a RFA model by Kröger \cite{kroeger}. This description serves to illustrate the physical relationships. An adaptation to the calculation domain $\Omega$ will follow later.
 
 For simplicity, all material parameters are considered constant. In reality, the material parameters are strongly non-linearly dependent on both the temperature and the personal body conditions of the individual patient. Research on this aspect can be found at Stein \cite{stein} and Watanabe \cite{watanabe}. \\
 
@@ -136,6 +136,7 @@ Tissue resistance is therefore modeled as linear depending on the total power.
 From these quantities, the electric energy can be calculated.
 \begin{equation}
    E_{el}(x,y,z,t) = p(x,y,z,t) \cdot \frac{p_{eff}(t)}{p_{total}(t)} = Q_{rf}(x,y,z,t)
+   \label{eq:q_rfa}
 \end{equation}
 
 
@@ -156,6 +157,7 @@ The total heat energy $Q_{total}$ on the right hand side is basically the sum of
 Where $Q_{rf}$ is descripted above and $Q_{perf}$ models the additional cooling effect due to blood perfusion, which is given by the following equation:
 \begin{equation}
     Q_{perf}(x,y,z,t) = \nu_{perf} \cdot \rho_{blood} c_{vlood} \cdot (T_{body} - T(x,y,z,t))
+    \label{q_perf}
 \end{equation}
  
  Where $\nu_{perf}$ serves as an additional perfusion coefficient.
@@ -166,61 +168,24 @@ This model serves as a basis for time-dependent discrete numerical simulation. A
 \section{Finite elements for discrete simulation}
 
 \subsection{Elliptical problems}
-- Elliptical problems in general \\
-- build up system of PDE's to describe problem \\
-
-- Ritz-Galerkin-Verfahren, for Details see ref book TODO \\
-- This documentation will be focused on the 3D -> 2D aspect
-
-
-- Using the cylindric domain, different domains, will be described later \\
-
-
-- Systems of equations by finite number of elements calculated with shape function \\
-- weak solution solution is approximation of real solution \\
-
-
-- Dirichlet with trick, define value to be solution of variable \\
-- TODO \\
-
-
-- Neumann boundary with curve integral \\
-\begin{equation}
-    f = f_{vol} + f_{surf}
-\end{equation}
-
-\begin{equation}
-    b = \int_{\Gamma_2} g \cdot \phi_{i} d S 
-\end{equation}
-
-- Note : In 2D dimension the surface integral is around the boundary line \\
-- For natural boundary conditions $g(x) = 0$, the surface integral added is zero, which is a trivial solution \\
+The Finite Element Method essentially consists of breaking down a problem into a finite number of sub-problems and solving them as a complete system of interrelated equations. For this purpose a given geometry is covered with a mesh of polygons and decomposed into sub-areas, the finite elements. Each element is described by a variation problem and approximated by local shape functions. For elliptical problems, the system of equations is built up successively as a system of systems of equations for each individual element. The assembly is initially done without consideration of boundary conditions. These are considered by subsequent manipulation of the system of equations. Especially for this simulation the Ritz-Galerkin method is used on a two-dimensional grid with triangular elements. 
 
 \subsection{Parabolic problems}
-- Parabolic / time-dependent problems \\
-- Usually involve an elliptic problem with additional time dependent factor \\
+Parabolic problems can be solved in a similar way. This is done with a combined finite element method and a solution method for systems of ODE equations. For this purpose the parabolic problem is first considered as a simple elliptic problem without the term with the time derivative. This can then be transformed into a system of equations for the variation problem using the finite element method for elliptical problems. Subsequently, the resulting problem is used as a system of ordinary differential equations for the original problem and is solved by means of appropriate computational methods such as a Runge-Kutta method.
+\begin{equation}
+     M_h \cdot \underline{\dot{u}_h}(t) + K_h(t) \cdot \underline{u_h}(t) = \underline{f_h}(t) \quad \forall \; t \in [0,T]
+\end{equation}
+\begin{equation}
+    \underline{\dot{u_h}}(t) = -M_h^{-1} K_h(t) \cdot \underline{u_h}(t) + M_h^{-1} \cdot \underline{f_h}(t) \quad \forall \; t \in [0,T]
+\end{equation}
+    
 
-- Time dependecy can be modeled continuously or in discrete intervalls \\
-- Discrete intervalls are is typically more practical in modeling but less efficient or exact \\
-- Discrete intervalls can be refined if necessary \\
 
-- Ignoring time dependency at first and calculate the resulting elliptical problem \\
-- Build system of equations for elliptical problem \\
-
-- Describe the parabolic PDE as an ODE with matrices from elliptical PDE \\
-- Solving the system of ODE equations over discrete time intervalls \\
-- Runge-Kutta \\
-- For this simulation, backward euler / implicit euler formula does the job \\
-
+The resulting system of ordinary differential equations can be solved either continuously or again discretely using concrete time steps. In this simulation a time discretization is used and the implicit Euler method for ODE systems is used for the solution. A detailed description can be found in the books by Munz \cite{munz} and Loustau \cite{loustau}.
 
 
 \subsection{Axial symmetrie}
-- In general, symmetrie should be used to reduce complexity whereever possible \\
-- Using axial symmetrie allows to reduce the domain from a 3D problem to a 2D cross-section \\
-- Thus this is to simplify and reduce time for computations \\
-- In a truely axial symmetric domain, the problem on the cross-section is aquivalent, which will be shown later \\
-- The allows significant savings on calculations time and complexity in general \\
-- approach: fourier decomposition in angular direction to reduce dependency on the angular $\varphi$ \\
+In general, symmetry should be exploited in numerical methods wherever possible, thereby drastically reducing complexity and computing time. If the chosen domain is cylindrical symmetric, the calculation can be reduced from a 3D problem to an equivalent 2D cross-sectional problem. The dimension reduction results in an immense saving of computing resources.
 
 \begin{figure}[H]
     \centering
@@ -229,15 +194,8 @@ This model serves as a basis for time-dependent discrete numerical simulation. A
     \label{projection_2D_general}
 \end{figure}
 
+A detailed description of the dimensional reduction for a finite element method for elliptic problems in a cylinder-symmetric domain can be found in the publication by Hengguang \cite{hengguang}.
 
-- TODO: write this more formal
-- Lax-Milgram-Lemma and Poincaré inequality on 3D-Domain determine a unique solution \\
-- $u \in H^{1}_{r}(\Omega) \cap \{ v|_{\Gamma_{0}} \}  $
-- Trace-operator \\
-- rotation axis becomes an artificial boundary on 2D half section \\
-
-- A more formal description can be found in : \\
-- Use input from article TODO \\
 
 
 \section{Discretization of PDEs}
@@ -352,84 +310,59 @@ A formal and detailed investigation of this statement can be found in the public
 
 \subsection{Calculation of electrical energy}
 
-- $\varphi$ can be calculated on every discrete point \\
-- Calculate power for every point with equations above (TODO add ref here) \\
-- Phi is evaluated on discrete mesh points \\
-- In a nutshell, Tissue Resistance and nonlinear behaviour of the generator generate an effective power which is as well the total power of the domain  a scalar multiplication factor for every discrete value for phi \\
-
-- Thus leading to the calculation of the electric energy from electric power above \\
-
+With the introduced descriptions $\varphi$ is calculated for each discrete point. If $\varphi$ is known, the electrical power $p$ can be calculated according to the above mentioned physical relations (\ref{eq:q_rfa}). Since $\varphi$ and all other parameters are time independent, the electrical power is also time independent. This allows to calculate the generated electrical energy $Q_{rf}$ as a linear dependence on time for each point in time. As time progresses, the total electrical energy introduced into the system accumulates. 
 
 \subsection{PDE for temperature Distribution}
 
 \subsubsection{Discretization of the problem}
 
 From physics above, the temperature distribution is modeled by the heat equation: 
-
 \begin{equation}
     \partial_t (\rho c T) - \nabla \cdot (\lambda \nabla T) = Q
 \end{equation}
 
 The heat equation is a well known parabolic partial differential equation. \\
 
-T = T(r,z,t) = temperature \\
-Q = Q(r,z,t) = heat energy \\
+Since the material parameters $\rho$, $c$ and $\lambda$ are assumed to be constant, the temperature $T(r,z,t)$ and thermal energy $Q(r,z,t)$ remain as variables of interest.
 
-The material parameters are taken as constant, as described above \\
-$\rho$ = density \\
-$c$ = specific heat capacity, \\
-$\lambda$ = thermal conductivity \\
-- In temperature range of radio frequency ablation, $c$ and $\lambda$ are especially nonlinear depending on the temperature, for which the phase change of water is reason to \\ Evaporated water has a totally different heat capacity and thermal conductivty, also the transition is smooth and not abrupt \\
-
-
-- However, Modeling the phase change of water and corresponding heat capacity does in practise lead to big numerical problems \\
-
-- It is reasonable to at least model the temperature dependency of lambda, which leads to the following description
-
-Cylindrical coordinates: see 'Transient Heat Transfer in a Partially Cooled Cylindrical Rod' from Lawrence Agbezuge
-
+In the temperature range of radiofrequency ablation, $c$ and $\lambda$ are particularly nonlinearly dependent on the respective temperature, this is especially due to the phase change of water from liquid to gaseous. Vaporized water has a completely different heat capacity and thermal conductivity, the corresponding transition is smooth and not abrupt. However, modeling the phase change of water and the corresponding heat capacity leads to great numerical challenges in practice. It is a reasonable compromise to model at least the temperature dependence of lambda, which leads to the following description in cylindrical coordinates:
 \begin{equation}
     \rho c \frac{\partial T}{\partial t} -  \frac{d\lambda}{dT} \left[ \left( \frac{\partial T}{\partial r} \right)^2 + \left( \frac{\partial T}{\partial z} \right)^2 \right] - \lambda \left( \frac{\partial^2 T}{\partial r^2} + \frac{1}{r} \frac{\partial T}{\partial r} + \frac{\partial^2 T}{\partial z^2} \right) = Q
 \end{equation}
 
-- For sake of simplicity in this academic approach, we will ignore the phase change of water willingly as a whole \\
+A model with variable thermal conductivity is used in the work of Watanabe \cite{watanabe}.
 
-- So it is "good" to assume that $lambda$ would also be constant too, which greatly reduces the complexity of the whole PDE \\
-
+In order to keep this simulation on an academic scale, $\lambda$ is still considered constant. This leads to the following simplification:
 \begin{equation}
     \rho c \frac{\partial T}{\partial t} - \lambda \left( \frac{\partial^2 T}{\partial r^2} + \frac{1}{r} \frac{\partial T}{\partial r} + \frac{\partial^2 T}{\partial z^2} \right) = Q
 \end{equation}
 
-- The right hand side is described in the physics, see ref\\
-- It is depending on the generated electrical energy and the cooling effect of perfusion \\
-
+As mentioned in the physical description, the right side is the sum of all thermal energies.
 \begin{equation}
     Q_{total} = Q_{rf} + Q_{perf}
 \end{equation}
 
-- Since the material parameters are constant, $Q_{perf}$ can be easily evaluated linear depending on T for every discrete time step \\
+Since the material parameters are constant, $Q_{perf}$ can be evaluated as linear dependence of T for each time step, see equation (\ref{q_perf}). 
 
 \subsubsection{Needle}
 
-- If we assume that the probe is cooled from outside, it is as simple and also accurate assumption to take the body temperature as constant temperature for the probe over the whole intervall
+If we assume that the probe is cooled from the outside, it is a simple and relatively accurate assumption to take the body temperature as a constant temperature for the probe.
 \begin{equation}
     T = T_{body} \
 \end{equation}
 
-- Usually body temperature is around $\cong$ 37 degree Celsius or 310.15 degree Kelvin \\
-- If the probe is not cooled, another simple approach is to model the behaviour of needle likewise as the outer boundary \\  
+Normally the body temperature is about $\cong$ 37 degrees Celsius or 310.15 degrees Kelvin. For a simulation of an uncooled probe, another simple approach is to model the behavior of the needle like the behavior at the other outer boundaries.
 
 \subsubsection{Outer boundary}
 
-- Assuming there is no "Disturbing" from outside, natural boundary conditions conditions are the correct assumption for the heat equation  
-
-- \begin{equation}
-    n \cdot \nabla \varphi = 0
+Assuming that there are no external disturbances, the natural boundary conditions are the correct assumption for the heat equation.
+\begin{equation}
+    n \cdot \nabla \, T = 0
 \end{equation}
 
-- These can also be used to model non cooled probes \\
+For simplicity, this assumption is also used to model an uncooled probe.
 
-- In the following, we will discribe how the PDE models for $\varphi$ and $T$ can be transformed in the context of finite elements and numerically evaluated at discrete points \\
+The following describes how the PDE models for $\varphi$ and $T$ are handled in the context of the finite element method and can be numerically evaluated at discrete points.
 
 
 \section{Applied FEM technologies}
@@ -437,12 +370,10 @@ Cylindrical coordinates: see 'Transient Heat Transfer in a Partially Cooled Cyli
 \subsection{Weak solutions}
 \subsubsection{Electric potential}
 
-For the Ritz-Galerkin method, it is mandatory to transform the PDEs above into weak formulations. Poisson's equation is given as follows:
-
+For the Ritz-Galerkin method, it is mandatory to transform the PDEs above into weak formulations. Poisson's equation for reference is given as follows:
 \begin{equation}
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = \int_{\Omega} f v r dr dz
 \end{equation}
-
 \begin{align}
     u \in H_r^1(\Omega) \cap \{v|_{\Gamma_{0}} &= 0 \} 
     \label{trial_functions1}\\
@@ -453,7 +384,6 @@ For the Ritz-Galerkin method, it is mandatory to transform the PDEs above into w
 More information about the above transformation for Laplace's equation as well as a detailed proof of conformity can be found in the work of Hengguang \cite{hengguang}. \\
 
 This formulation leads analogously to the following description of the electric potential $\varphi$ for the inner domain: 
-
 \begin{equation}
     a_w(u,v) := \int_{\Omega} (\partial_r u \partial_r v + \partial_z u \partial_z v) r drdz = 0 
 \end{equation}
@@ -464,10 +394,10 @@ Using the same trial functions as described above (\ref{trial_functions1}) (\ref
 
 The temperature distribution as a hyperbolic problem can be described as a fully discrete substitute problem by discontinuous Galerkin FEM. The variation problem consists of a local discretization of the Laplace problem and a subsequent discretization in the time dimension.   
 
- A weak formulation of the problem can be described as follows: \\
-
-We are looking for $u(r,z,t) \in V_{g1}$ with $\Dot{u} \in L_2(\Omega)$ for almost every $t \in (0,T)$, so \\ \begin{equation}
-(\Dot{u},v)_0 + a(t;u,v) = \langle F(t),v \rangle \; for \; all \; v \in V_0    
+A weak formulation of the problem can be described as follows: \\
+We are looking for $u(r,z,t) \in V_{g1}$ with $\Dot{u} \in L_2(\Omega)$ for almost every $t \in (0,T)$, so  
+\begin{equation}
+    (\Dot{u},v)_0 + a(t;u,v) = \langle F(t),v \rangle \; for \; all \; v \in V_0    
 \end{equation}
 and for almost every $t \in (0, T)$ is the condition given as 
 \begin{equation}
@@ -496,14 +426,9 @@ For further information on the fully discrete weak formulation, please refer to 
 
 \subsection{Discretization / Triangulation}
 
-- Grid generation and refinement \\
-- 2D domain \\
-- initial coarse grid trinagulation can be done by hand \\
-- coarse grid can be refined by algorithm \\
+A triangular grid is used for the calculations. Triangles are generally more flexible to adapt to the geometry than rectangles. An initial coarse grid triangulation is done by hand and then the elements are further refined with an algorithm as desired. A triangle can easily be broken down into 4 smaller triangles. For the simulation, both coarse and fine grids are used and the results are examined. Finer elements are generally better suited for the calculation accuracy of the numerical PDE solution, but especially when calculating the numerical gradient, too fine elements can lead to errors. 
 
-- refinement of triangle into 4 new pieces \\
-- \textcolor{blue}{insert picture here}
-
+Because of the symmetry it is sufficient to perform the calculations on half of the cross-section. For comparison and plausibility checks, some calculations are also performed on the full cross-section. Since the calculation results on the full cross-section should theoretically be completely symmetrical, a rough visual check for numerical errors can be made in advance.
 
 
 \begin{figure}[H]
@@ -519,51 +444,25 @@ For further information on the fully discrete weak formulation, please refer to 
     \caption{Triangulation on the halved cross-section}
     \label{fig:triangulation_halved}
 \end{figure}
+
+
 \subsection{Assembling system of equation}
 
-- assemble elementwise \\
-- Approximate elements with linear regression functions\\
-- Calculation on reference triangles to speed up performance and accuracy \\
+The assembly of the equation system is done element by element. To approximate the solution to the variation formulation, linear regressions functions are used. The calculation of the individual elements is performed on normalized reference triangles using the affin linear transformation.
 
-Linear regression functions for reference triangles:
+Linear regression functions in two space dimensions on reference triangle:
 \begin{align}
     \phi_1(\xi, \eta) &= 1 - \xi - \eta \\
     \phi_2(\xi, \eta) &= \xi \\
     \phi_2(\xi, \eta) &= \eta 
 \end{align}
 
-- use symmetrie of elements if coefficients are constant or allow it \\
-- Add boundary conditions afterwards \\
-- grouping of similar calculations allow more vectorized operations \\ 
-
-\subsection{ODE for parabolic problems}
-
-\textcolor{blue}{TODO}
-
-\subsection{Solving the system of equations}
-- direct solver would be preferred in general \\
-- if numbers of element grows, this computations takes up lots of memory \\
-- up from a certain point, high amount memory can't be efficiently handled with RAM anymore \\
-- using additional memory is extremely costly in terms of calculation speed \\
-- since matrix is sparse, iterative solver can be very fast \\
-- iterative solver is preferred if elements grow in numbers \\
-- TODO : when should you use iterative solver \\
 
 \subsection{Error estimations}
 
-\subsubsection{Element Error on 2D geometry}
-- H1-Norm \\
-- L2-Norm \\
+Error estimations concerning the elements for finite element methods are usually done using the H1 norm, L2 norm or the energy norm. The analytical solution of the problem is unknown in this case, which makes a safe estimation difficult. Nevertheless, the geometric error can be estimated relatively well by calculating the same partial area with different element sizes and comparing the results. If the difference is too large, the calculation should be continued on a finer grid with more elements. 
 
-- The analytical solution of the problem is unknown, but we can estimate it by calculating different element sizes on different sized fine grids \\
-
-Idea: Define geometric some geometric coordinates on triangle and look for best matching or choose some points on different geometrical entities \\
-
-Refine triangles around that point and see whether the error is smaller on the finer grid \\
-
-\subsubsection{Time step error on discrete intervalls}
-
-See Skript Numerik 2 Kroeger, after some take make a smaller or larger time step and compare the difference of results, use the smaller steps for calculation \\
+In a similar way the error in the time step size can be estimated. The same time interval is calculated once with step size in one step and once with halved step size in two steps. By comparing the error norms for both methods it can be roughly estimated whether the time step is too coarse for the stiff problem and should be reduced.
 
 
 \newpage
@@ -599,7 +498,7 @@ The electric potential $\varphi$ and the electric power $p$ are calculated in ad
 \subsection{Graphical output}
 The calculated 2D data for $\varphi$, the electrical power and the temperature distribution for each time step can easily be visualized on a 3D plot. Since the calculated cross-section solutions are axisymmetric, the calculated values are valid for every angle $\phi$. From this, a 3D reconstruction can be easily generated by defining concrete angle points. After retransforming the generated solution into cartesian coordinates, the 3D geometry can be visualized on a 4D plot with color gradient depending on the numerical solution.
 
-
+\newpage
 
 % < Section 8 Numerical results >
 
@@ -607,12 +506,16 @@ The calculated 2D data for $\varphi$, the electrical power and the temperature d
 
 In the following the numerical simulation results are presented. The calculations were performed with different element sizes and time step sizes on both the half and the whole cross-section. In the MatLab source code all results can be recalculated and further modified in their configuration. Depending on element size and time step size the expected calculation time is between some seconds and several minutes. \\
 
-Basically all calculation results are qualitatively within the expected range. For comparison, we refer to the published results of a very similar simulation with accompanying experiments by Watanabe \cite{watanabe}.
+In principle, all calculation results are qualitatively within the expected range. The calculated solutions are reasonably smooth and on sufficiently fine grids with low error tolerance. For a comparison of the plausibility of the results please refer to th.e published results of a very similar simulation with accompanying experiments by Watanabe \cite{watanabe}.
+
+As expected, the electrical potential is maximum at the electrodes and drops very quickly in the surrounding computing area. In the following picture the calculation was performed without additional mass as boundary condition, therefore the potential at the edge is not nullified. Since only the gradient of $\varphi$ is decisive for the electrical power, the peak power lies between the electrodes.
+
+\\
 
 \begin{figure}[H]
     \centering
         \includegraphics[width=0.8\textwidth]{pictures/phi_2D_sideview.PNG}
-        \caption{Time-independent numerical solution for $phi$ on a halved 2D cross-section}
+        \caption{Time-independent numerical solution for $\varphi$ on a halved 2D cross-section}
         \label{phi_2D_sideview}
 \end{figure}
 
@@ -634,16 +537,16 @@ Basically all calculation results are qualitatively within the expected range. F
 \end{figure}
 
 
-- Ellectric power therefore calculated by using numerical gradient of  gradient  
+ The electrical power is calculated using the numerical gradient of $\varphi$.  
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{pictures/numericalGradient_2D.PNG}
-    \caption{Numerical gradient of the solution for $varphi$}
+    \caption{Numerical gradient of the solution for $\varphi$}
     \label{numericalGradient_2D}
 \end{figure}
 
-- Leading to the applied electric energy  
+The applied electrical energy is greatest around the area between the electrodes. 
 
 \begin{figure}[H]
     \centering
@@ -653,15 +556,9 @@ Basically all calculation results are qualitatively within the expected range. F
 \end{figure}
 
 
-- Also temperature calculation generally meets expectation \\
-- Rises slowly but steady as more electric energy is apllied by the probe \\
-- Perfusion distributes the increasing temperature over the domain \\
-- TODO compared with other simulations make ref!
-- Temperature was calculated up to around 240 seconds \\
-- Further calculation would not be reasonable \\
-- Temperatures above around 90° Celsius usually get regulated \\
-- Also evaporation of water has great impacts on the material parameters which is not taken into account b the model \\
+Also the temperature calculation is generally as expected. Over time, the temperature increases slowly but steadily as continuous electrical energy is added to the system by the probe. The perfusion counteracts the temperature increase with a cooling effect. The calculations were performed over a calculated period of about 4 minutes. In the peak range, the temperature in this area rose to around 90 degrees Celsius. Temperatures above this level are usually regulated externally during RFA treatment in order not to exceed the target range. In addition, the phase change of the water must be increasingly taken into account. Both circumstances were not considered in the model, which means that a calculation over a longer period of time would no longer be appropriate.
 
+\\
 
 \begin{figure}[H]
     \centering
